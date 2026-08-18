@@ -216,10 +216,10 @@ vec3 nlRenderShootingStar(vec3 viewDir, vec3 FOG_COLOR, float t) {
   uv.x+=fade-p-2.0*r-3.5;
   uv.y+=viewDir.y*3.0;
   float source=1.0-saturate(abs(uv.x-0.95)*22.0);
-  float line=1.0-saturate(abs(uv.y)*9.0);
+  float lineMask=1.0-saturate(abs(uv.y)*9.0);
   float tail=smoothstep(-1.0+1.8*fade,0.98-p,uv.x);
   float head=smoothstep(1.0,0.98-p2,uv.x);
-  float star=line*line*line*tail*head*(1.0-p)*0.65;
+  float star=lineMask*lineMask*lineMask*tail*head*(1.0-p)*0.65;
   star*=0.6+12.0*source*source;
   star*=1.0-saturate(luminance(FOG_COLOR)*1.4);
   return NL_SHOOTING_STAR*star*vec3(0.72,0.86,1.0);
