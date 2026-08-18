@@ -35,7 +35,7 @@ vec4 renderCloudsSimple(nl_skycolor skycol, vec3 pos, highp float t, float rain)
 float cloudDf(vec3 pos, float rain, vec2 boxiness) {
   vec2 cell=floor(pos.xz);
   vec2 f=fract(pos.xz);
-  vec2 shape=mix(vec2(0.06),boxiness,0.55);
+  vec2 shape=mix(vec2(0.06,0.06),boxiness,0.55);
   vec2 u=smoothstep(shape,1.0-shape,f);
   vec4 r=vec4(rand(cell),rand(cell+vec2(1.0,0.0)),rand(cell+vec2(1.0,1.0)),rand(cell+vec2(0.0,1.0)));
   r=smoothstep(0.12+0.18*rain,0.72+0.05*rain,r);
