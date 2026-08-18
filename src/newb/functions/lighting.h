@@ -136,7 +136,7 @@ void nlUnderwaterLighting(inout vec3 light, inout vec3 pos, vec2 lit, vec2 uv1, 
   float depth=saturate(1.0-uv1.y);
   if(uv1.y<0.96) {
     float c0=disp(tiledCpos,NL_WATER_WAVE_SPEED*t);
-    float c1=disp(tiledCpos*1.7+vec3(2.0),NL_WATER_WAVE_SPEED*t*1.27);
+    float c1=disp(tiledCpos*1.7+vec3(2.0,2.0,2.0),NL_WATER_WAVE_SPEED*t*1.27);
     float caustics=saturate(0.62*c0+0.38*c1);
     caustics=caustics*caustics*(3.0-2.0*caustics);
     float causticLight=NL_CAUSTIC_INTENSITY*caustics*(0.12+lit.y+0.62*lit.x)*(0.55+0.45*depth);
@@ -227,7 +227,7 @@ vec4 nlEntityEdgeHighlightPreprocess(vec2 texcoord) {
 
 vec4 nlLavaNoise(vec3 gPos, float t) {
   float n0=movingNoise2D(gPos.xz+gPos.yy,NL_LAVA_NOISE_SPEED*t,0.85);
-  float n1=movingNoise2D(gPos.zx*1.35+vec2(2.0),NL_LAVA_NOISE_SPEED*t*0.7,0.55);
+  float n1=movingNoise2D(gPos.zx*1.35+vec2(2.0,2.0),NL_LAVA_NOISE_SPEED*t*0.7,0.55);
   float n=saturate(0.68*n0+0.32*n1);
   n=n*n*(3.0-2.0*n);
   vec3 dark=mix(vec3(0.24,0.035,0.005),vec3(0.72,0.18,0.015),n);
