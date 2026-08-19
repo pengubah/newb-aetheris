@@ -11,7 +11,11 @@ float nlRenderFogFade(float relativeDist, vec3 FOG_COLOR, vec2 FOG_CONTROL) {
     float rainMist=saturate(0.5*(FOG_COLOR.r+FOG_COLOR.g+FOG_COLOR.b));
     float cloudy=NL_CLOUDY_FOG*(1.0-smoothstep(0.15,0.65,lum));
     float result=max(base,mix(mist,1.0-mix(1.0,mist,0.55),cloudy));
-    result=mix(result,saturate(result+0.12*rainMist),NL_RAIN_MIST_OPACITY);
+
+    #ifdef NL_RAIN_MIST_OPACITY
+      result=mix(result,saturate(result+0.12*rainMist),NL_RAIN_MIST_OPACITY);
+    #endif
+
     return NL_FOG*saturate(result);
   #else
     return 0.0;
