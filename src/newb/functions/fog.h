@@ -20,7 +20,7 @@ float nlRenderGodRayIntensity(vec3 cPos,vec3 worldPos,float t,vec2 uv1,float rel
   offset=abs(2.0*fract(offset*0.0625)-1.0);
   offset=offset*offset*(3.0-2.0*offset);
   vec3 nrmof=normalize(worldPos);
-  float u=nrmof.z/length(nrmof.zy+vec2(0.0001));
+  float u=nrmof.z/length(nrmof.zy+vec2_splat(0.0001));
   float diff=dot(offset,vec3(0.1,0.2,1.0))+0.07*t;
   float mask=nrmof.x*nrmof.x;
   float vol=sin(7.0*u+1.5*diff)*sin(3.0*u+diff);
