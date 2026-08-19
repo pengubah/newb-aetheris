@@ -67,8 +67,8 @@ vec4 renderCloudsRounded(vec3 vDir,vec3 vPos,float rain,float time,vec3 horizonC
   d.x/=((stepsf/density)+d.x);
   if(vPos.y<0.0) d.y=1.0-d.y;
   vec3 col=mix(horizonCol*1.08,zenithCol*1.12,clamp(d.y,0.0,1.0));
-  col=mix(col,col*mix(vec3_splat(luminance(skycol.horizon)),skycol.horizon,0.35),rain*0.45);
-  col+=pow(d.x,4.0)*mix(skycol.horizon,skycol.zenith,0.65)*(1.0-rain)*0.18;
+  col=mix(col,col*mix(vec3_splat(luminance(horizonCol)),horizonCol,0.35),rain*0.45);
+  col+=pow(d.x,4.0)*mix(horizonCol,zenithCol,0.65)*(1.0-rain)*0.18;
   return vec4(col,d.x);
 }
 
@@ -97,7 +97,7 @@ vec4 renderClouds(vec2 p,float t,float rain,vec3 horizonCol,vec3 zenithCol,const
   d*=smoothstep(0.18,0.82,d);
   float alpha=a+c*(1.0-a);
   vec3 col=mix(horizonCol*1.10,0.5*(zenithCol+zenithCol.ggg),clamp(shadow*mix(b,d,c),0.0,1.0));
-  col=mix(col,col*mix(vec3_splat(luminance(skycol.horizon)),skycol.horizon,0.35),rain*0.45);
+  col=mix(col,col*mix(vec3_splat(luminance(horizonCol)),horizonCol,0.35),rain*0.45);
   col+=pow(alpha,4.0)*mix(horizonCol,zenithCol,0.65)*(1.0-rain)*0.12;
   return vec4(col,alpha);
 }
