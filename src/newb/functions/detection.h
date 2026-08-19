@@ -15,68 +15,53 @@ struct nl_environment {
 };
 
 bool detectEnd(float DIMENSION_ID) {
-  return abs(DIMENSION_ID-2.0)<0.01;
+  return DIMENSION_ID == 2.0;
 }
 
-bool detectNether(float DIMENSION_ID, vec3 FOG_COLOR, vec2 FOG_CONTROL) {
-  float warm=FOG_COLOR.r-max(FOG_COLOR.g,FOG_COLOR.b);
-  bool underLava=FOG_CONTROL.x<0.01 && FOG_COLOR.b<0.03 && FOG_COLOR.g<0.22 && warm>0.08;
-  return abs(DIMENSION_ID-1.0)<0.01 || underLava;
+bool detectNether(float DIMENSION_ID,vec3 FOG_COLOR,vec2 FOG_CONTROL) {
+  bool underLava=FOG_CONTROL.x==0.0 && FOG_COLOR.b==0.0 && FOG_COLOR.g<0.18 && FOG_COLOR.r-FOG_COLOR.g>0.1;
+  return DIMENSION_ID==1.0 || underLava;
 }
 
-bool detectUnderwater(vec3 FOG_COLOR, vec2 FOG_CONTROL) {
-  float blueBias=FOG_COLOR.b-max(FOG_COLOR.r,FOG_COLOR.g)*0.82;
-  float greenBias=FOG_COLOR.g-FOG_COLOR.r*0.92;
-  return FOG_CONTROL.x<0.01 && FOG_CONTROL.y<0.82 && max(blueBias,greenBias)>0.015;
+bool detectUnderwater(vec3 FOG_COLOR,vec2 FOG_CONTROL) {
+  float blueBias=FOG_COLOR.b-FOG_COLOR.r;
+  float greenBias=FOG_COLOR.g-FOG_COLOR.r;
+  return FOG_CONTROL.x==0.0 && FOG_CONTROL.y<0.8 && (blueBias>0.02 || greenBias>0.02);
 }
 
 float detectRain(vec3 FOG_CONTROL) {
-  float z=max(FOG_CONTROL.z,16.0);
-  float clearX=0.5+20.0/z;
-  float clearY=1.0;
-  float rx=remap01(FOG_CONTROL.x,clearX,0.23);
-  float ry=remap01(FOG_CONTROL.y,clearY,0.70);
-  float val=saturate(rx*ry);
-  val=softLightCurve(val);
-  return val*val*(3.0-2.0*val);
+  vec2 clear=vec2(0.5+20.0/max(FOG_CONTROL.z,1.0),1.0);
+  vec2 rain=vec2(0.23,0.70);
+  vec2 factor=clamp((FOG_CONTROL.xy-clear)/(rain-clear),vec2(0.0),vec2(1.0));
+  float val=factor.x*factor.y;
+  val=val*val*(3.0-2.0*val);
+  return clamp(val,0.0,1.0);
 }
 
 float detectDayFactor(vec3 FOG_COLOR) {
-  float v=dot(max(FOG_COLOR,vec3_splat(0.0)),vec3(0.48,0.70,0.50));
-  return saturate(v);
+  return clamp(dot(FOG_COLOR,vec3(0.5,0.7,0.5)), -1.0, 1.0);
 }
 
-nl_environment calculateSunParams(nl_environment env, float TIME_OF_DAY, float DAY) {
+nl_environment calculateSunParams(nl_environment env,float TIME_OF_DAY,float DAY) {
   float t=2.0*PI*TIME_OF_DAY;
   vec3 sunDir=vec3(sin(t),cos(t),0.0);
   vec3 moonDir=-sunDir;
   env.dayFactor=sunDir.y;
-
   sunDir.yz=mul(rmat2(-degToRad(NL_SUN_PATH_TILT)),sunDir.yz);
   sunDir.xz=mul(rmat2(degToRad(NL_SUN_PATH_YAW)),sunDir.xz);
   moonDir.yz=mul(rmat2(-degToRad(NL_MOON_PATH_TILT)),moonDir.yz);
   moonDir.xz=mul(rmat2(degToRad(NL_MOON_PATH_YAW)),moonDir.xz);
-
-  env.sunDir=safeNormalize(sunDir);
-  env.moonDir=safeNormalize(moonDir);
+  env.sunDir=normalize(sunDir);
+  env.moonDir=normalize(moonDir);
   return env;
 }
 
-nl_environment nlDetectEnvironment(float DIMENSION_ID, float TIME_OF_DAY, float DAY, vec3 FOG_COLOR, vec3 FOG_CONTROL) {
+nl_environment nlDetectEnvironment(float DIMENSION_ID,float TIME_OF_DAY,float DAY,vec3 FOG_COLOR,vec3 FOG_CONTROL) {
   nl_environment env;
-  env.end=false;
-  env.nether=false;
-  env.underwater=false;
-  env.rainFactor=0.0;
-  env.dayFactor=0.0;
-  env.sunDir=vec3(0.0,1.0,0.0);
-  env.moonDir=vec3(0.0,-1.0,0.0);
-  env.fogCol=FOG_COLOR;
-
   env.end=detectEnd(DIMENSION_ID);
   env.nether=detectNether(DIMENSION_ID,FOG_COLOR,FOG_CONTROL.xy);
-  env.underwater=!env.nether && !env.end && detectUnderwater(FOG_COLOR,FOG_CONTROL.xy);
-  env.rainFactor=detectRain(FOG_CONTROL);
+  env.underwater=detectUnderwater(FOG_COLOR,FOG_CONTROL.xy);
+  env.rainFactor=detectRain(FOG_CONTROL.xyz);
   env.fogCol=FOG_COLOR;
   env=calculateSunParams(env,TIME_OF_DAY,DAY);
   return env;

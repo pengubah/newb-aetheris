@@ -6,18 +6,38 @@
 #define PI_QUART 0.785398
 
 mat2 rmat2(float t) {
-  float s = sin(t);
-  float c = cos(t);
-  return mtxFromRows(vec2(c, -s), vec2(s, c));
+  float sint = sin(t);
+  float cost = cos(t);
+  return mtxFromRows(vec2(cost, -sint), vec2(sint, cost));
 }
 
 float degToRad(float t) { return 0.0174533*t; }
 
-float luminance(vec3 x) { return dot(max(x, vec3_splat(0.0)), vec3(0.2126,0.7152,0.0722)); }
-vec3 saturate3(vec3 x) { return clamp(x, vec3_splat(0.0), vec3_splat(1.0)); }
-float softLightCurve(float x) { x = saturate(x); return x*x*(3.0-2.0*x); }
-float remap01(float x, float a, float b) { return saturate((x-a)/max(b-a,0.0001)); }
-vec3 safeNormalize(vec3 v) { return v*inversesqrt(max(dot(v,v),0.000001)); }
-float smoothPulse(float x, float a, float b) { float p=smoothstep(a,b,x); return p*(1.0-p)*4.0; }
+float luminance(vec3 x) { return dot(x, vec3(0.21, 0.71, 0.08)); }
+
+float nlSaturate(float x) { return clamp(x, 0.0, 1.0); }
+vec3 nlSaturate3(vec3 x) { return clamp(x, vec3_splat(0.0), vec3_splat(1.0)); }
+
+float nlSoftLight(float x, float y) {
+  return mix(x, x*y*2.0 + x*x*(1.0-2.0*y), step(0.5,y));
+}
+
+float nlHash(float n) { return fract(sin(n)*43758.5453); }
+
+float nlHash2(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453);
+}
+
+vec2 nlHash22(vec2 p) {
+  return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
+}
+
+float nlPulse(float x, float center, float width) {
+  return 1.0-smoothstep(0.0,width,abs(x-center));
+}
+
+float nlContrast(float x, float c) {
+  return clamp((x-0.5)*c+0.5,0.0,1.0);
+}
 
 #endif
