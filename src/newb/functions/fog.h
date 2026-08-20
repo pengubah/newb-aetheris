@@ -8,11 +8,17 @@ float nlRenderFogFade(float relativeDist,vec3 FOG_COLOR,vec2 FOG_CONTROL) {
     float mist=1.0-exp(-relativeDist*relativeDist*colorDensity*0.0025);
     float horizonBias=1.0-abs(FOG_COLOR.r-FOG_COLOR.b);
     mist*=0.68+0.32*clamp(horizonBias,0.0,1.0);
-    float rainBoost=1.0+0.55*NL_RAIN_MIST_OPACITY;
+  
+#ifdef NL_RAIN_MIST_OPACITY
+  float rainBoost = 1.0 + 0.55 * NL_RAIN_MIST_OPACITY;
+#else
+  float rainBoost = 1.0;
+#endif
+  
     mist=1.0-pow(max(1.0-mist,0.0),rainBoost);
     float dawnAtmosphere=1.0;
     float configWarm=clamp(NL_DAWN_SUNLIGHT_COL.r-NL_DAWN_SUNLIGHT_COL.b,0.0,1.0);
-  float warm=clamp(FOG_COLOR.r-FOG_COLOR.b,0.0,1.0)+0.35*configWarm;
+    float warm=clamp(FOG_COLOR.r-FOG_COLOR.b,0.0,1.0)+0.35*configWarm;
     float cool=clamp(FOG_COLOR.b-FOG_COLOR.r,0.0,1.0);
     dawnAtmosphere+=0.22*warm+0.08*cool;
     mist*=dawnAtmosphere;
@@ -48,7 +54,9 @@ float nlRenderGodRayIntensity(vec3 cPos,vec3 worldPos,float t,vec2 uv1,float rel
   float broad=smoothstep(0.0,0.18,vol);
   float detail=smoothstep(0.0,0.055,vol*1.35+0.02*sin(t+diff));
   float result=mix(broad,0.65*broad+0.35*detail,0.55);
-  result*=1.0-0.55*NL_RAIN_MIST_OPACITY;
+#ifdef NL_RAIN_MIST_OPACITY
+  result *= 1.0 - 0.55 * NL_RAIN_MIST_OPACITY;
+#endif
   return NL_GODRAY*result;
 }
 
