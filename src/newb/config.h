@@ -33,14 +33,14 @@
 #define NL_EXPOSURE 1.35              // [toggle] 0.5 dark ~ 3.0 bright
 #define NL_SATURATION 1.3            // [toggle] 0.0 grayscale ~ 4.0 super saturated
 #define NL_TINT                      // [toggle] enable light/dark tone tinting
-#define NL_TINT_LOW  vec3(1.0,1.0,1.15) // color tint for dark tone
-#define NL_TINT_HIGH vec3(1.0,1.0,1.15) // color tint for light tone
+#define NL_TINT_LOW  vec3(1.0,1.0,1.05) // color tint for dark tone
+#define NL_TINT_HIGH vec3(1.0,1.0,1.05) // color tint for light tone
 
 /* Lighting */
 #define NL_SUNLIGHT_INTENSITY   3.3  // 1.0 weak ~ 5.0 bright
 #define NL_TORCHLIGHT_INTENSITY 1.5  // 0.5 weak ~ 3.0 bright
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
-#define NL_MIN_LIGHTING_BOOST   1.3  // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
+#define NL_MIN_LIGHTING_BOOST   1.4  // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
 #define NL_BLINKING_TORCH  // [toggle] flickering light
 #define NL_CLOUD_SHADOW      // [toggle] cloud shadow (simple clouds only)
 
@@ -93,8 +93,8 @@
 #define NL_BLACKHOLE  1.0
 #define NL_BH_COL_LOW  vec3(0.0,0.0,0.0)
 #define NL_BH_COL_HIGH vec3(1.0,1.0,1.0)
-#define NL_BH_DIST 1.9
-#define NL_BH_SPEED 0.3
+#define NL_BH_DIST 2.0
+#define NL_BH_SPEED 3.0
 
 /* Rainbow */
 #define NL_RAINBOW           // [toggle] enable rainbow in sky
@@ -131,7 +131,7 @@
 #define NL_UNDERWATER_TINT vec3(0.5,0.9,0.85) // fog tint color when underwater
 
 /* Cloud type */
-#define NL_CLOUD_TYPE 0 // 0:vanilla, 1:soft, 2:rounded, 3:realistic
+#define NL_CLOUD_TYPE 2 // 0:vanilla, 1:soft, 2:rounded, 3:realistic
 
 /* Vanilla cloud settings - make sure to remove clouds.png when using this */
 #define NL_CLOUD0_THICKNESS 1.0      // 0.5 slim ~ 8.0 fat
@@ -186,8 +186,8 @@
 #define NL_SHOOTING_STAR_DELAY 64.0 // 0.0 no delay ~ 100.0 long time (100 secs)
 
 /* Galaxy */
-//#define NL_GALAXY_STARS 2.0           // [toggle] 0.1 dim - 4.0 bright
-#define NL_GALAXY_VIBRANCE 0.7          // 0.0 white - 1.0 colorful
+//#define NL_GALAXY_STARS 0.5           // [toggle] 0.1 dim - 4.0 bright
+#define NL_GALAXY_VIBRANCE 0.5          // 0.0 white - 1.0 colorful
 #define NL_GALAXY_SPEED 0.03            // 0.01 slow motion - 0.2 fast motion
 #define NL_GALAXY_DAY_VISIBILITY 0.0    // 0.0 invisible - 1.0 visible
 
@@ -195,8 +195,8 @@
 #define NL_CHUNK_LOAD_ANIM 100.0 // [toggle] -600.0 fall from top ~ 600.0 rise from bottom
 
 /* Sun/Moon */
-#define NL_SUN_SIZE  1.2           // 0.3 tiny ~ 4.0 massive
-#define NL_MOON_SIZE 1.2           // 0.3 tiny ~ 4.0 massive
+#define NL_SUN_SIZE  1.7           // 0.3 tiny ~ 4.0 massive
+#define NL_MOON_SIZE 1.7           // 0.3 tiny ~ 4.0 massive
 #define NL_SUN_PATH_YAW    20.0 //
 #define NL_MOON_PATH_YAW   20.0 //
 #define NL_SUN_PATH_TILT   32.0 //
