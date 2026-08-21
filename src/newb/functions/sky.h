@@ -172,29 +172,34 @@ vec4 renderBlackhole(vec3 vdir,float t) {
   return vec4(col,hole);
 }
 
-vec3 renderEndSky(vec3 horizonCol,vec3 zenithCol,vec3 viewDir,float t) {
-  float a = atan2(viewDir.x,viewDir.z);
-  float tt = t*0.035;
-  float n0 = 0.5+0.5*sin(2.0*a+tt+4.0*viewDir.y);
-  float n1 = 0.5+0.5*sin(4.0*a-0.7*tt+5.0*n0);
-  float n2 = 0.5+0.5*sin(9.0*a+1.1*tt+7.0*n1+3.0*viewDir.x);
-  float neb = n0*n1;
-  float band = pow(max(1.0-abs(viewDir.y+0.12),0.0),2.0);
-  float horizon = smoothstep(0.9,-0.35,viewDir.y);
+vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
+  t*=0.06;
+  float a=atan2(viewDir.x,viewDir.z);
+  float band=0.5+0.5*sin(2.4*a+t+2.0*sin(0.35*a+viewDir.y*3.0));
+  float band2=0.5+0.5*sin(5.1*a-0.6*t+3.0*band);
+  float filament=0.5+0.5*sin(13.0*a+2.2*t+4.0*band2);
+  float vertical=pow(saturate(0.5+0.5*viewDir.y),0.7);
+  float voidEdge=pow(saturate(1.0-abs(viewDir.y)),0.45);
+  float nebula=saturate(0.58*band+0.30*band2+0.12*filament);
+  vec3 base=mix(horizonCol*0.68,zenithCol,vertical);
+  vec3 violet=vec3(0.32,0.035,0.68);
+  vec3 magenta=vec3(0.82,0.05,0.42);
+  vec3 cyan=vec3(0.05,0.22,0.50);
+  vec3 neb=mix(violet,magenta,band2);
+  neb=mix(neb,cyan,0.18*filament);
+  base=mix(base,base*0.35+neb*0.55,nebula*voidEdge);
+  float streak=smoothstep(0.18,0.82,filament)*pow(voidEdge,1.4);
+  base+=streak*(0.11*magenta+0.035*cyan);
+  float rim=pow(saturate(1.0-abs(viewDir.y)),4.0);
+  base+=rim*rim*vec3(0.22,0.015,0.12);
 
-  vec3 violet = NL_END_ZENITH_COL;
-  vec3 magenta = NL_END_HORIZON_COL;
-  vec3 blue = mix(NL_END_ZENITH_COL,NL_END_HORIZON_COL,0.5);
-  vec3 sky = mix(zenithCol,horizonCol,horizon);
-  sky += neb*band*mix(violet,magenta,n1)*1.8;
-  sky += n2*n2*band*blue*0.7;
+  #ifdef NL_BLACKHOLE
+    vec4 bh = renderBlackhole(viewDir, t);
+    base *= bh.a;
+    base += bh.rgb;
+  #endif
 
-  // distant star field
-  float stars = noise3D(viewDir*180.0+t*0.002);
-  stars = smoothstep(0.78,0.96,stars);
-  float starVar = 0.5+0.5*sin(31.0*viewDir.x+17.0*viewDir.z);
-  sky += stars*(0.7+0.7*starVar)*mix(NL_NIGHT_EDGE_COL,NL_END_HORIZON_COL,n1)*1.6;
-  return sky;
+  return max(base,vec3_splat(0.0));
 }
 
 vec3 nlRenderSky(nl_skycolor skycol,nl_environment env,vec3 viewDir,float t,bool isSkyPlane) {
@@ -202,11 +207,6 @@ vec3 nlRenderSky(nl_skycolor skycol,nl_environment env,vec3 viewDir,float t,bool
   viewDir.y = -viewDir.y;
   if (env.end) {
     sky = renderEndSky(skycol.horizon,skycol.zenith,viewDir,t);
-    #ifdef NL_BLACKHOLE
-      vec4 bh = renderBlackhole(viewDir,t);
-      sky *= bh.a;
-      sky += bh.rgb;
-    #endif
   } else {
     sky = renderOverworldSky(skycol,env,viewDir,isSkyPlane);
     #ifdef NL_UNDERWATER_STREAKS
