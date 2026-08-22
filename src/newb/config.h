@@ -49,9 +49,9 @@
 #define NL_END_AMBIENT vec3(0.65, 0.35, 1.05)
 
 /* Sun/moon light color */
-#define NL_DAWN_SUNLIGHT_COL    vec3(1.0, 0.50, 0.22)
-#define NL_NOON_SUNLIGHT_COL    vec3(0.90, 0.96, 1.0)
-#define NL_NIGHT_MOONLIGHT_COL  vec3(0.12, 0.24, 0.75)
+#define NL_DAWN_SUNLIGHT_COL    vec3(1.0, 0.52, 0.22)
+#define NL_NOON_SUNLIGHT_COL    vec3(0.92, 0.96, 1.0)
+#define NL_NIGHT_MOONLIGHT_COL  vec3(0.12, 0.24, 0.70)
 
 /* Torch colors */
 #define NL_OVERWORLD_TORCH_COL   vec3(1.0, 0.42, 0.12)
@@ -71,23 +71,23 @@
 #define NL_SKY_RAIN_MIX_FACTOR 0.9
 
 /* Sky colors */
-#define NL_DAWN_ZENITH_COL   vec3(0.48, 0.50, 0.44)
-#define NL_DAWN_HORIZON_COL  vec3(1.70, 0.62, 0.06)
-#define NL_DAWN_EDGE_COL     vec3(1.65, 0.86, 0.20)
+#define NL_DAY_ZENITH_COL    vec3(0.08,0.32,0.78)
+#define NL_DAY_HORIZON_COL   vec3(0.58,0.82,1.00)
+#define NL_DAY_EDGE_COL      vec3(0.88,0.96,1.00)
 
-#define NL_DAY_ZENITH_COL    vec3(0.08, 0.48, 1.35)
-#define NL_DAY_HORIZON_COL   vec3(0.32, 0.82, 1.30)
-#define NL_DAY_EDGE_COL      vec3(0.55, 1.05, 1.25)
+#define NL_NIGHT_ZENITH_COL  vec3(0.012,0.028,0.075)
+#define NL_NIGHT_HORIZON_COL vec3(0.045,0.085,0.17)
+#define NL_NIGHT_EDGE_COL    vec3(0.10,0.16,0.27)
 
-#define NL_NIGHT_ZENITH_COL   vec3(0.008, 0.045, 0.10)
-#define NL_NIGHT_HORIZON_COL  vec3(0.025, 0.11, 0.20)
-#define NL_NIGHT_EDGE_COL     vec3(0.06, 0.16, 0.23)
+#define NL_DAWN_ZENITH_COL   vec3(0.08,0.15,0.48)
+#define NL_DAWN_HORIZON_COL  vec3(1.00,0.34,0.10)
+#define NL_DAWN_EDGE_COL     vec3(1.00,0.58,0.24)
 
-#define NL_RAIN_ZENITH_COL   vec3(0.20, 0.24, 0.32)
-#define NL_RAIN_HORIZON_COL  vec3(0.46, 0.52, 0.61)
+#define NL_RAIN_ZENITH_COL   vec3(0.16,0.20,0.27)
+#define NL_RAIN_HORIZON_COL  vec3(0.38,0.45,0.53)
 
-#define NL_END_ZENITH_COL    vec3(0.055, 0.008, 0.16)
-#define NL_END_HORIZON_COL   vec3(0.58, 0.015, 0.42)
+#define NL_END_ZENITH_COL    vec3(0.012,0.002,0.035)
+#define NL_END_HORIZON_COL   vec3(0.28,0.018,0.42)
 
 /* The End blackhole */
 #define NL_BLACKHOLE  1.0
