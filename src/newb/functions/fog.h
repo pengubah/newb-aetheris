@@ -38,7 +38,7 @@ float nlRenderGodRayIntensity(vec3 cPos, vec3 worldPos, float t, vec2 uv1, float
   vec3 offset = cPos-16.0*fract(worldPos*0.0625);
   offset = abs(2.0*fract(offset*0.0625)-1.0);
   offset = offset*offset*(3.0-2.0*offset);
-  vec3 nrmof = normalize(worldPos+vec3(0.0001));
+  vec3 nrmof = normalize(worldPos+vec3(0.0001,0.0001,0.0001));
   float u = nrmof.z/max(length(nrmof.zy),0.0001);
   float diff = dot(offset,vec3(0.1,0.2,1.0))+0.055*t;
   float mask = nrmof.x*nrmof.x;
