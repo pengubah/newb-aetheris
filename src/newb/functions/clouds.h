@@ -37,6 +37,7 @@ vec4 renderCloudsSimple(nl_skycolor skycol, vec3 pos, highp float t, float rain)
 }
 
 // rounded clouds
+
 // rounded clouds 3D density map
 float cloudDf(vec3 pos, float rain, vec2 boxiness) {
   boxiness *= 0.999;
@@ -52,7 +53,6 @@ float cloudDf(vec3 pos, float rain, vec2 boxiness) {
   // round y
   n *= 1.0 - 1.5*smoothstep(boxiness.y, 2.0 - boxiness.y, 2.0*abs(pos.y-0.5));
 
-
   n = max(1.25*(n-0.2), 0.0); // smoothstep(0.2, 1.0, n)
   n *= n*(3.0 - 2.0*n);
   return n;
@@ -63,7 +63,7 @@ vec4 renderCloudsRounded(
     const int steps, const float thickness, const float thickness_rain, const float speed,
     const vec2 scale, const float density, const vec2 boxiness
 ) {
-  float height = 7.0*mix(thickness, thickness_rain, rain);
+  float height = 9.0*mix(thickness, thickness_rain, rain);
   float stepsf = float(steps);
 
   // scaled ray offset
@@ -100,6 +100,13 @@ vec4 renderCloudsRounded(
   return col;
 }
 
+
+vec4 renderCloudsPixelated(
+    vec2 p, highp float t, float rain,
+    vec3 horizonCol, vec3 zenithCol,
+    const vec2 scale, const float velocity, const float shadow
+);
+
 float cloudsNoiseVr(vec2 p, float t) {
   float n = fastVoronoi2(p + t, 1.8);
   n *= fastVoronoi2(3.0*p + t, 1.5);
@@ -110,6 +117,9 @@ float cloudsNoiseVr(vec2 p, float t) {
 }
 
 vec4 renderClouds(vec2 p, float t, float rain, vec3 horizonCol, vec3 zenithCol, const vec2 scale, const float velocity, const float shadow) {
+  #if NL_CLOUD_TYPE == 4
+    return renderCloudsPixelated(p, t, rain, horizonCol, zenithCol, scale, velocity, shadow);
+  #endif
   p *= scale;
   t *= velocity;
 
@@ -142,9 +152,127 @@ vec4 renderClouds(vec2 p, float t, float rain, vec3 horizonCol, vec3 zenithCol, 
   return col;
 }
 
+
+
+// pixelated clouds
+// Adapted from the standalone pixelated-cloud shader into the Newb/Lazurite cloud pipeline.
+// NL_CLOUD_TYPE == 4 selects this cloud style.
+#ifndef NL_CLOUD4_SCALE
+#define NL_CLOUD4_SCALE 0.075
+#endif
+#ifndef NL_CLOUD4_SPEED
+#define NL_CLOUD4_SPEED 0.012
+#endif
+#ifndef NL_CLOUD4_THRESHOLD
+#define NL_CLOUD4_THRESHOLD 0.725
+#endif
+#ifndef NL_CLOUD4_CELL_SIZE
+#define NL_CLOUD4_CELL_SIZE 0.60
+#endif
+#ifndef NL_CLOUD4_CLUSTER_SIZE
+#define NL_CLOUD4_CLUSTER_SIZE 4.93
+#endif
+float cloudPixelHash(vec2 p) {
+  return fract(cos(p.x + p.y*332.0)*335.552);
+}
+
+float cloudPixelNoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f*f*(3.0-2.0*f);
+
+  float a = cloudPixelHash(i);
+  float b = cloudPixelHash(i+vec2(1.0,0.0));
+  float c = cloudPixelHash(i+vec2(0.0,1.0));
+  float d = cloudPixelHash(i+vec2(1.0,1.0));
+
+  return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);
+}
+
+float cloudPixelCell(vec2 uv, float size) {
+  vec2 f = fract(uv)-0.5;
+  float d = max(abs(f.x),abs(f.y))-size;
+  return smoothstep(0.03,-0.03,d);
+}
+
+// Returns: x = cloud coverage, y = cloud body, z = pixelated rim.
+vec3 cloudPixelDensity(vec2 worldXZ, highp float t, float rain) {
+  vec2 uv = worldXZ*NL_CLOUD4_SCALE;
+  float cloudTime = -t*NL_CLOUD4_SPEED;
+  float clusterSize = NL_CLOUD4_CLUSTER_SIZE;
+  float threshold = mix(NL_CLOUD4_THRESHOLD, NL_CLOUD4_THRESHOLD-0.08, rain);
+
+  float body = 0.0;
+  float shade = 0.0;
+
+  for (int i=0; i<3; i++) {
+    uv /= 1.007;
+    float density = cloudPixelNoise(floor(uv+cloudTime)/clusterSize);
+    float c = step(threshold,density);
+    float cellMask = cloudPixelCell(uv+cloudTime,NL_CLOUD4_CELL_SIZE);
+    body = max(body,cellMask*c);
+  }
+
+  float shadeDensity = cloudPixelNoise(floor(uv+cloudTime)/clusterSize);
+  float shadeCell = step(threshold,shadeDensity);
+  float shadeShape = cloudPixelCell(uv+cloudTime,NL_CLOUD4_CELL_SIZE);
+  shade = shadeCell*shadeShape;
+
+  // Pixel-cell rim. Kept cheap: four neighboring samples.
+  float rim = 0.0;
+  vec2 e = vec2(0.15,0.0);
+  vec2 q = uv+cloudTime;
+
+  float n1 = step(threshold,cloudPixelNoise(floor(q+vec2(e.x,0.0))/clusterSize))*cloudPixelCell(q+vec2(e.x,0.0),NL_CLOUD4_CELL_SIZE);
+  float n2 = step(threshold,cloudPixelNoise(floor(q-vec2(e.x,0.0))/clusterSize))*cloudPixelCell(q-vec2(e.x,0.0),NL_CLOUD4_CELL_SIZE);
+  float n3 = step(threshold,cloudPixelNoise(floor(q+vec2(0.0,e.x))/clusterSize))*cloudPixelCell(q+vec2(0.0,e.x),NL_CLOUD4_CELL_SIZE);
+  float n4 = step(threshold,cloudPixelNoise(floor(q-vec2(0.0,e.x))/clusterSize))*cloudPixelCell(q-vec2(0.0,e.x),NL_CLOUD4_CELL_SIZE);
+
+  rim = shade*(1.0-n1);
+  rim += shade*(1.0-n2);
+  rim += shade*(1.0-n3);
+  rim += shade*(1.0-n4);
+  rim = clamp(rim,0.0,1.0);
+
+  body -= shade*body*0.20;
+  body = clamp(body,0.0,1.0);
+
+  // Rain makes the cloud layer flatter and slightly denser.
+  body = mix(body,body*0.88+0.12*shade,rain*0.35);
+
+  return vec3(body,shade,rim);
+}
+
+vec4 renderCloudsPixelated(
+    vec2 p, highp float t, float rain,
+    vec3 horizonCol, vec3 zenithCol,
+    const vec2 scale, const float velocity, const float shadow
+) {
+  vec2 cloudPos = p;
+  float localTime = t*velocity;
+  vec3 cloud = cloudPixelDensity(cloudPos,localTime,rain);
+
+  // Softer fade near the horizon prevents a hard rectangular cloud sheet.
+  float horizonFade = smoothstep(-0.15,0.18,p.y);
+  float alpha = cloud.x*horizonFade;
+
+  // Keep the original sky palette, but brighten the cloud top instead of using
+  // an overexposed vec3(1.5+) like the standalone preview shader.
+  vec3 baseCol = mix(horizonCol,zenithCol,0.72);
+  vec3 cloudTop = mix(baseCol,vec3_splat(1.0),0.68);
+  vec3 cloudBottom = mix(baseCol,0.55*baseCol,0.32);
+  vec3 col = mix(cloudBottom,cloudTop,0.55+0.45*cloud.y);
+
+  // Subtle pixel rim and shadow for depth.
+  col += 0.12*cloud.z*mix(1.0,0.65,rain)*shadow;
+  col *= 1.0-0.28*rain;
+
+  return vec4(col,alpha);
+}
+
 // aurora is rendered on clouds layer
 #ifdef NL_AURORA
-vec4 renderAurora(vec3 p, float t, float rain, float dayFactor) {
+vec4 renderAurora(vec3 p, float t, float rain, vec3 FOG_COLOR) {
   t *= NL_AURORA_VELOCITY;
   p.xz *= NL_AURORA_SCALE;
   p.xz += 0.05*sin(p.x*4.0 + 20.0*t);
@@ -155,8 +283,7 @@ vec4 renderAurora(vec3 p, float t, float rain, float dayFactor) {
   d0 *= d0; d1 *= d1; d2 *= d2;
   d2 = d0/(1.0 + d2/NL_AURORA_WIDTH);
 
-  float mask = max(-dayFactor, 0.0);
-  mask *= mask*(1.0-0.8*rain);
+  float mask = (1.0-0.8*rain)*max(1.0 - 4.0*max(FOG_COLOR.b, FOG_COLOR.g), 0.0);
   return vec4(NL_AURORA*mix(NL_AURORA_COL1,NL_AURORA_COL2,d1),1.0)*d2*mask;
 }
 #endif
@@ -170,13 +297,17 @@ vec4 nlCloudAuroraReflection(nl_skycolor skycol, nl_environment env, vec3 viewDi
   vec4 refl = vec4_splat(0.0);
 
   #ifdef NL_AURORA
-    vec4 aurora = renderAurora(cloudPos.xyy, t, env.rainFactor, smoothstep(0.2, -0.2, env.dayFactor));
+    vec4 aurora = renderAurora(cloudPos.xyy, t, env.rainFactor, env.fogCol);
     aurora.a *= fade;
     refl = vec4(2.0*aurora.rgb*aurora.a, aurora.a);
   #endif
 
   #if NL_CLOUD_TYPE == 1
     vec4 clouds = renderCloudsSimple(skycol, cloudPos.xyy, t, env.rainFactor);
+    clouds.a *= fade;
+    refl = vec4(mix(refl.rgb, clouds.rgb, clouds.a), min(refl.a + clouds.a, 1.0));
+  #elif NL_CLOUD_TYPE == 4
+    vec4 clouds = renderCloudsPixelated(cloudPos, t, env.rainFactor, skycol.horizon, skycol.zenith, vec2(NL_CLOUD4_SCALE, NL_CLOUD4_SCALE), 1.0, 1.0);
     clouds.a *= fade;
     refl = vec4(mix(refl.rgb, clouds.rgb, clouds.a), min(refl.a + clouds.a, 1.0));
   #endif

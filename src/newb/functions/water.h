@@ -58,8 +58,11 @@ vec4 nlWater(
   }
 
   #ifdef NL_WATER_REFL_MASK
-    float mask = 0.05+0.05*sin(viewDir.x*12.0)*sin(viewDir.z*6.0);
-    waterRefl *= smoothstep(mask-0.2,mask+0.13,viewDir.y*viewDir.y);
+    // Keep the reflection continuous across the water surface.
+    // The previous sine-based mask could create a visible moving boundary.
+    float reflAngle = abs(viewDir.y);
+    float reflMask = smoothstep(0.0, 0.32, reflAngle);
+    waterRefl *= mix(0.82, 1.0, reflMask);
   #endif
 
   cosR = abs(cosR);

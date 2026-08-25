@@ -14,6 +14,9 @@ vec3 sunLightTint(float dayFactor, float rain) {
   dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   vec3 tint = mix(NL_NOON_SUNLIGHT_COL, NL_NIGHT_MOONLIGHT_COL, nightFactor);
   tint = mix(tint, NL_DAWN_SUNLIGHT_COL, dawnFactor);
+  // Preserve the configured Dawn color while slightly softening the transition
+  // toward the neutral daylight color at the edge of sunrise.
+  tint = mix(tint, mix(NL_DAWN_SUNLIGHT_COL, NL_NOON_SUNLIGHT_COL, 0.16), dawnFactor*0.32);
   tint = mix(tint, vec3_splat(dot(tint, vec3_splat(0.33))), rain);
   return tint;
 }
@@ -70,7 +73,8 @@ vec3 nlLighting(
     float shadow = step(0.93, uv1.y);
     shadow = max(shadow, (1.0 - NL_SHADOW_INTENSITY + (0.6*NL_SHADOW_INTENSITY*nightIntensity))*lit.y);
     shadow *= shade > 0.8 ? 1.0 : 0.8;
-    #if defined(NL_CLOUD_SHADOW) && (NL_CLOUD_TYPE == 1 || NL_CLOUD_TYPE == 2)
+    shadow = pow(shadow, 1.65);
+    #if defined(NL_CLOUD_SHADOW) && (NL_CLOUD_TYPE == 1 || NL_CLOUD_TYPE == 2 || NL_CLOUD_TYPE == 4)
       vec3 mainLightDir = env.sunDir.y > 0.0 ? env.sunDir : env.moonDir;
       vec3 gPos = wPos + CAMERA_POS;
       float cloudRelativeHeight = gPos.y-187.0;
@@ -86,12 +90,19 @@ vec3 nlLighting(
         // shadow cast by rounded clouds  
         projectedPos = NL_CLOUD2_SCALE * (projectedPos + vec2(1.0, 0.5) * (t * NL_CLOUD2_VELOCITY));
         cmask = cloudDf(vec3(projectedPos.x, 0.5, projectedPos.y), env.rainFactor, NL_CLOUD2_SHAPE)*cloudFade;
+      #elif NL_CLOUD_TYPE == 4
+        // shadow cast by pixelated clouds
+        projectedPos *= NL_CLOUD4_SCALE;
+        cmask = cloudPixelDensity(projectedPos, t, env.rainFactor).x*cloudFade;
       #endif
       shadow *= 0.3 + 0.7*smoothstep(0.6, 0.0, cmask);
     #endif
 
     // direct light from top
-    light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation)*sunLightTint(env.dayFactor, env.rainFactor);
+    vec3 sunTint = sunLightTint(env.dayFactor, env.rainFactor);
+    float dawnGlow = smoothstep(0.0, 1.0, dawnFactor);
+    sunTint = mix(sunTint, NL_DAWN_SUNLIGHT_COL, dawnGlow*0.22);
+    light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation)*sunTint;
 
     // sky ambient
     lum = luminance(light);
@@ -114,7 +125,7 @@ vec3 nlLighting(
 
   // brighten tree leaves
   if (isTree) {
-    light *= 1.25;
+    light *= 1.08;
   }
 
   return light;
