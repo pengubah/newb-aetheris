@@ -1,20 +1,20 @@
-name = "Newb Classic"
-version = [0, 16, 53]
-min_supported_mc_version = [1, 26, 30]
+name = "Newb Aetheris"
+version = [1, 0, 0]
+min_supported_mc_version = [1, 26, 40]
 description = '''
-§c%w
-§7- An enchanced vanilla shader for Minecraft!
-%v
+§c Compatible with Android, iOS, Windows, and Linux platforms.
+§7- Newb Modified variant by Goboyy22.
+v1.0.0
 §3https://newb-shader.devendrn.com/
 ''' # %w = patch warning, %v = version
-authors = ["devendrn"]
+authors = ["devendrn, Goboyy22"]
 url = "https://newb-shader.devendrn.com/"
 uuid = "95f774cf-4afa-73e7-a21a-72146307b1d2" # Use https://www.uuidgenerator.net/version4
 materials = ["Sky", "RenderChunk", "Actor", "ActorGlint", "ActorMultiTexture", "EndSky", "Clouds", "SunMoon", "Weather", "ItemInHandTextured", "ItemInHandColor", "ItemInHandColorGlint", "Stars"]
 
 [info] 
 copyright = '''
-Copyright © 2026 %a, and "Newb Shader" Contributors
+Copyright © 2026 Goboyy22, devendrn and "Newb Shader" Contributors
 
 This compiled "Newb Shader" resource pack (source code: https://github.com/devendrn/newb-x-mcbe under MIT License) is licensed under CC BY-ND 4.0 (https://creativecommons.org/licenses/by-nd/4.0/). Redistribute only unmodified copies with proper attribution to "Newb Shader" and variant creators (if any). Do not distribute derivatives.
 
@@ -42,17 +42,10 @@ Rounded Clouds
 '''
 
 [[subpack]]
-define = "BOX_CLOUDS"
-materials = ["Clouds", "RenderChunk"]
-description = '''
-Box Clouds
-'''
-
-[[subpack]]
-define = "CHUNK_ANIM"
+define = "NO_CHUNK_ANIM"
 materials = ["RenderChunk"]
 description = '''
-Chunk loading animation
+No Chunk loading animation
 '''
 
 [[subpack]]
@@ -75,13 +68,6 @@ materials = ["RenderChunk"]
 description = '''
 No wave effects
 '''
-
-#[[subpack]]
-#define = "LITE"
-#materials = ["Sky", "RenderChunk", "Actor", "ActorGlint", "EndSky", "Clouds", "SunMoon", "Weather", "ItemInHandTextured", "ItemInHandColor", "ItemInHandColorGlint", "Stars"]
-#description = '''
-#Many effects disabled. A bit lighter!
-#'''
 
 [[subpack]]
 define = "DEFAULT"
