@@ -89,7 +89,7 @@ void main() {
         color.a *= NL_CLOUD1_OPACITY;
 
         #ifdef NL_AURORA
-          color += renderAurora(cloudPos, t, rain, env.dayFactor)*(1.0-color.a);
+          color += renderAurora(cloudPos, t, rain, env.dayFactor, 0.0)*(1.0-color.a);
         #endif
 
         color.a *= fade;
