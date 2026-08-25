@@ -34,7 +34,7 @@ void main() {
   vec4 position = jitterVertexPosition(wpos);
 
   #if !(defined(DEPTH_ONLY) || defined(INSTANCING))
-    nl_environment env = nlDetectEnvironment(TimeOfDay.x, FogColor.rgb, FogControl.xyz);
+    nl_environment env = nlDetectEnvironment(0.0, TimeOfDay.x, 0.0, FogColor.rgb, FogControl.xyz);
     nl_skycolor skycol = nlSkyColors(env);
 
     float relativeDist = position.z/FogControl.z;
