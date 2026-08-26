@@ -29,6 +29,15 @@ vec3 getEndHorizonCol() {
   return NL_END_HORIZON_COL;
 }
 
+// Dawn/dusk strength. 0.0 = full night/day, 1.0 = sun sitting on the horizon.
+// The mask is deliberately symmetric so sunrise and sunset use the same palette.
+float nlDawnFactor(float dayFactor) {
+  float d = abs(dayFactor);
+  float f = 1.0 - smoothstep(0.0, 0.58, d);
+  f = f*f*(3.0 - 2.0*f);
+  return f;
+}
+
 vec4 renderBlackhole(vec3 viewdir, float t) {
   t *= NL_BH_SPEED;
 
@@ -98,21 +107,15 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   s.horizon = mix(NL_DAY_HORIZON_COL, NL_NIGHT_HORIZON_COL*f, nightFactor);
   s.horizonEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL*f, nightFactor);
 
-  // Dawn: keep the configured NL_DAWN_* colors, but spread the transition
-  // wider so the sky becomes a soft warm gradient instead of a hard orange band.
-  float dawnFactor = 1.0 - env.dayFactor*env.dayFactor;
-  dawnFactor = smoothstep(0.0, 1.0, dawnFactor);
-  dawnFactor *= dawnFactor;
-  dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
+  // Dawn/dusk palette. Keep the colors entirely controlled by NL_CONFIG_H;
+  // only the transition shape is changed here. This gives a broad purple ->
+  // pink/orange -> gold gradient like a real low-sun atmosphere.
+  float dawnFactor = nlDawnFactor(env.dayFactor);
+  float dawnSoft = dawnFactor*dawnFactor*(3.0-2.0*dawnFactor);
 
-  vec3 dawnZenith = mix(NL_DAWN_ZENITH_COL, NL_NIGHT_HORIZON_COL, 0.18);
-  dawnZenith = mix(dawnZenith, NL_DAWN_EDGE_COL, 0.22);
-  vec3 dawnHorizon = mix(NL_DAWN_HORIZON_COL, NL_DAWN_EDGE_COL, 0.30);
-  vec3 dawnEdge = NL_DAWN_EDGE_COL;
-
-  s.zenith = mix(s.zenith, dawnZenith, dawnFactor*1.0);
-  s.horizon = mix(s.horizon, dawnHorizon, dawnFactor);
-  s.horizonEdge = mix(s.horizonEdge, dawnEdge, dawnFactor);
+  s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnSoft*0.92);
+  s.horizon = mix(s.horizon, NL_DAWN_HORIZON_COL, dawnSoft);
+  s.horizonEdge = mix(s.horizonEdge, NL_DAWN_EDGE_COL, dawnSoft);
 
   float zh = dot(s.zenith, vec3_splat(0.33));
   float hh = dot(s.horizon, vec3_splat(0.33));
@@ -162,13 +165,31 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   gradient1 = mix(gradient1*gradient1, 1.0, mg8);
   gradient2 = mix(gradient2, 1.0, mg8);
 
-  // Keep Dawn illumination concentrated around the sunrise direction while
-  // allowing the warm configured sky colors to cover a broad part of the sky.
-  float dawnFactor = 1.0 - env.dayFactor*env.dayFactor;
-  dawnFactor = smoothstep(0.0, 1.0, dawnFactor);
-  float df = mix(1.0, g2.x, dawnFactor*dawnFactor*1.10);
+  // Dawn sky shaping. Keep the configured dawn palette intact, but reduce
+  // the normal daytime angular gradient while the sun is near the horizon.
+  // This prevents a flat blue/orange split and creates the soft layered look
+  // seen during golden hour.
+  float dawnFactor = nlDawnFactor(env.dayFactor);
+  float dawnShape = dawnFactor*dawnFactor*(3.0-2.0*dawnFactor);
+  float df = mix(1.0, clamp(g2.x, 0.0, 1.0), dawnShape*0.72);
+
   vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*df*df);
   sky = mix(skyCol.zenith, sky, gradient2*df);
+
+  // Broad atmospheric glow around the low sun. The glow is intentionally
+  // derived from the configured dawn colors instead of hard-coded colors.
+  float sunDisc = max(dot(env.sunDir, viewDir), 0.0);
+  float sunGlow = pow(sunDisc, 5.0);
+  float horizonGlow = 1.0-smoothstep(0.02, 0.72, abs(viewDir.y));
+  float dawnGlow = dawnShape*horizonGlow;
+  vec3 dawnGlowCol = mix(skyCol.horizon, skyCol.horizonEdge, 0.35);
+  sky += dawnGlowCol*(0.55*dawnGlow + 2.8*sunGlow*dawnShape);
+
+  // Warm haze is strongest close to the horizon and fades smoothly into the
+  // configured dawn zenith. This is what produces the orange/yellow base seen
+  // in the reference without changing NL_DAWN_HORIZON_COL in the config.
+  float haze = dawnShape*(1.0-smoothstep(-0.12, 0.50, viewDir.y));
+  sky += skyCol.horizon*(0.18*haze);
 
   sky *= 0.5+0.5*gradient2;
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
@@ -225,11 +246,6 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   nebula = smoothstep(0.30,0.70,nebula);
   nebula *= 0.25+0.75*horizon;
 
-  float bands = sin(a*5.0+viewDir.y*13.0+sin(time*1.2)*3.0-time*2.5);
-  bands = bands*0.5+0.5;
-  bands = smoothstep(0.55,0.90,bands);
-  bands *= horizon*nebula;
-
   vec3 cyanNebula = vec3(0.004,0.30,0.38);
   cyanNebula *= nebula*2.2;
 
@@ -263,8 +279,6 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   sky += violetNebula;
   sky += centerGlow;
   sky += filamentColor;
-
-  sky += vec3(0.01,0.16,0.20)*bands*0.85;
 
   // cosmic thunderstorm
   float stormTime = time*0.55;
@@ -364,7 +378,7 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   float voidMask = smoothstep(0.12,0.90,abs(viewDir.y));
 
   sky *= 0.68+0.32*voidMask;
-  sky = max(sky,vec3(0.0,0.0,0.0));
+  sky = max(sky,vec3(0.0));
   sky *= 1.15;
 
   #ifdef NL_BLACKHOLE
@@ -457,10 +471,10 @@ vec3 nlRenderGalaxy(vec3 vdir, vec3 fogColor, nl_environment env, float t) {
   float n3 = noise3D(200.0*vdir - 10.0*sin(0.4*t + 0.500));
 
   // stars
-  n3 = smoothstep(0.04,0.3,n3+0.02*n2);
+  n3 = smoothstep(0.08,0.3,n3+0.02*n2);
   float gd = vdir.x + 0.1*vdir.y + 0.1*sin(10.0*vdir.z + 0.2*t);
-  float st = n1*n2*n3*n3*(1.0+70.0*gd*gd);
-  st = (1.0-st)/(1.0+400.0*st);
+  float st = n1*n2*n3*n3*(1.0+35.0*gd*gd);
+  st = (1.0-st)/(1.0+700.0*st);
   vec3 stars = (0.8 + 0.2*sin(vec3(8.0,6.0,10.0)*(2.0*n1+0.8*n2) + vec3(0.0,0.4,0.82)))*st;
 
   // glow
