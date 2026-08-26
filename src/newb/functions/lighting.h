@@ -16,7 +16,7 @@ vec3 sunLightTint(float dayFactor, float rain) {
   tint = mix(tint, NL_DAWN_SUNLIGHT_COL, dawnFactor);
   // Preserve the configured Dawn color while slightly softening the transition
   // toward the neutral daylight color at the edge of sunrise.
-  tint = mix(tint, mix(NL_DAWN_SUNLIGHT_COL, NL_NOON_SUNLIGHT_COL, 0.08), dawnFactor*0.18);
+  tint = mix(tint, mix(NL_DAWN_SUNLIGHT_COL, NL_NOON_SUNLIGHT_COL, 0.16), dawnFactor*0.32);
   tint = mix(tint, vec3_splat(dot(tint, vec3_splat(0.33))), rain);
   return tint;
 }
@@ -72,8 +72,7 @@ vec3 nlLighting(
     // shadow cast by sun light
     float shadow = step(0.93, uv1.y);
     shadow = max(shadow, (1.0 - NL_SHADOW_INTENSITY + (0.6*NL_SHADOW_INTENSITY*nightIntensity))*lit.y);
-    shadow *= shade > 0.8 ? 1.0 : 0.8;
-    shadow = pow(shadow, 1.65);
+    shadow *= shade > 0.8 ? 1.0 : 0.5;
     #if defined(NL_CLOUD_SHADOW) && (NL_CLOUD_TYPE == 1 || NL_CLOUD_TYPE == 2 || NL_CLOUD_TYPE == 4)
       vec3 mainLightDir = env.sunDir.y > 0.0 ? env.sunDir : env.moonDir;
       vec3 gPos = wPos + CAMERA_POS;
@@ -101,8 +100,7 @@ vec3 nlLighting(
     // direct light from top
     vec3 sunTint = sunLightTint(env.dayFactor, env.rainFactor);
     float dawnGlow = smoothstep(0.0, 1.0, dawnFactor);
-    dawnGlow = dawnGlow*dawnGlow*(3.0-2.0*dawnGlow);
-    sunTint = mix(sunTint, NL_DAWN_SUNLIGHT_COL, dawnGlow*0.42);
+    sunTint = mix(sunTint, NL_DAWN_SUNLIGHT_COL, dawnGlow*0.22);
     light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation)*sunTint;
 
     // sky ambient
@@ -171,10 +169,8 @@ vec3 nlEntityLighting(nl_skycolor skycol, nl_environment env, vec3 pos, vec4 nor
     nightIntensity *= nightIntensity;
 
     float sunLightAttenuation = clamp(0.5*(((2.0*step(TIME_OF_DAY, 0.5)-1.0)*(wPos.x*cos(NL_SUN_PATH_YAW)+wPos.y*sin(NL_SUN_PATH_YAW))/renderdistance) + 1.0), 0.0, 1.0);
-    float dawnLightMask = dawnFactor*dawnFactor;
-    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnLightMask);
+    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnFactor);
     sunLightAttenuation *= 1.0-0.5*env.rainFactor;
-    sunLightAttenuation *= 1.0+0.22*dawnLightMask;
 
     // direct light from top
     light = (NL_SUNLIGHT_INTENSITY*l*sunLightAttenuation)*sunLightTint(env.dayFactor, env.rainFactor);

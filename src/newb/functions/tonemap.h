@@ -14,14 +14,14 @@ vec3 colorCorrection(vec3 col) {
     const float whiteScale = 0.063;
     col = col*(1.0+col*whiteScale)/(1.0+col);
   #elif NL_TONEMAP_TYPE == 4
-    // soft natural ACES
-    const float a = 2.45;
-    const float b = 0.030;
-    const float c = 2.35;
-    const float d = 0.590;
-    const float e = 0.140;
-    col *= 0.92;
-    col = clamp((col*(a*col+b))/(col*(c*col+d)+e),0.0,1.0);
+    // aces tonemap
+    const float a = 1.04;
+    const float b = 0.025;
+    const float c = 0.95;
+    const float d = 0.58;
+    const float e = 0.14;
+    col *= 0.80;
+    col = clamp((col*(a*col + b)) / (col*(c*col + d) + e), 0.0, 1.0);
   #elif NL_TONEMAP_TYPE == 2
     // simple reinhard tonemap
     col = col/(1.0+col);
