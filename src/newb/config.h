@@ -49,9 +49,9 @@
 #define NL_END_AMBIENT    vec3(0.12, 0.20, 0.32)
 
 /* Sun/moon light color */
-#define NL_DAWN_SUNLIGHT_COL    vec3(1.0, 0.44, 0.13)
+#define NL_DAWN_SUNLIGHT_COL    vec3(1.00, 0.52, 0.12)
 #define NL_NOON_SUNLIGHT_COL    vec3(0.92, 0.96, 1.0)
-#define NL_NIGHT_MOONLIGHT_COL  vec3(0.095, 0.18, 0.52)
+#define NL_NIGHT_MOONLIGHT_COL  vec3(0.48, 0.55, 0.68)
 
 /* Torch colors */
 #define NL_OVERWORLD_TORCH_COL   vec3(1.0, 0.42, 0.12)
@@ -71,23 +71,23 @@
 #define NL_SKY_RAIN_MIX_FACTOR 0.9
 
 /* Sky colors - zenith=top, horizon=bottom */
-#define NL_DAY_ZENITH_COL    vec3(0.065, 0.34, 0.88)
-#define NL_DAY_HORIZON_COL   vec3(0.30, 0.88, 1.00)
-#define NL_DAY_EDGE_COL      vec3(0.62, 1.00, 0.92)
+#define NL_DAY_ZENITH_COL    vec3(0.10,0.38,0.92)
+#define NL_DAY_HORIZON_COL   vec3(0.30,0.72,1.00)
+#define NL_DAY_EDGE_COL      vec3(0.75,0.96,1.00)
 
-#define NL_NIGHT_ZENITH_COL  vec3(0.008, 0.030, 0.065)
-#define NL_NIGHT_HORIZON_COL vec3(0.025, 0.105, 0.155)
-#define NL_NIGHT_EDGE_COL    vec3(0.075, 0.22, 0.26)
+#define NL_NIGHT_ZENITH_COL  vec3(0.005,0.055,0.075)
+#define NL_NIGHT_HORIZON_COL vec3(0.000,0.14,0.22)
+#define NL_NIGHT_EDGE_COL    vec3(0.035,0.24,0.38)
 
-#define NL_DAWN_ZENITH_COL   vec3(0.22, 0.32, 0.62)
-#define NL_DAWN_HORIZON_COL  vec3(1.00, 0.30, 0.020)
-#define NL_DAWN_EDGE_COL     vec3(1.00, 0.55, 0.05)
+#define NL_RAIN_ZENITH_COL   vec3(0.25,0.25,0.25)
+#define NL_RAIN_HORIZON_COL  vec3(0.45,0.45,0.45)
 
-#define NL_RAIN_ZENITH_COL   vec3(0.18, 0.21, 0.23)
-#define NL_RAIN_HORIZON_COL  vec3(0.42, 0.46, 0.48)
+#define NL_END_ZENITH_COL    vec3(0.005,0.015,0.035)
+#define NL_END_HORIZON_COL   vec3(0.18,0.70,0.85)
 
-#define NL_END_ZENITH_COL    vec3(0.006, 0.010, 0.045)
-#define NL_END_HORIZON_COL   vec3(0.025, 0.22, 0.30)
+#define NL_DAWN_ZENITH_COL   vec3(0.10,0.11,0.44)
+#define NL_DAWN_HORIZON_COL  vec3(1.00,0.45,0.00)
+#define NL_DAWN_EDGE_COL     vec3(1.00,0.45,0.00)
 
 /* The End blackhole */
 #define NL_BLACKHOLE  1.0
@@ -121,14 +121,14 @@
 #define NL_WATER_TEX_OPACITY 0.0  // 0.0 plain water ~ 1.0 vanilla water texture
 #define NL_WATER_WAVE             // [toggle] wave effect
 //#define NL_WATER_REFL_MASK      // [toggle] fake water reflection mask
-#define NL_WATER_TINT vec3(0.3,0.85,0.75)
+#define NL_WATER_TINT vec3(0.0,0.05,0.2)
 
 /* Underwater */
-#define NL_UNDERWATER_BRIGHTNESS 1.0         // 0.0 dark ~ 3.0 bright
+#define NL_UNDERWATER_BRIGHTNESS 0.9         // 0.0 dark ~ 3.0 bright
 #define NL_CAUSTIC_INTENSITY 2.1             // 0.5 weak ~ 5.0 bright
 #define NL_UNDERWATER_WAVE 0.2               // [toggle] 0.02 subtle ~ 0.6 trippy
 #define NL_UNDERWATER_STREAKS 1.3            // [toggle] 0.8 subtle - 2.0 bright streaks from top
-#define NL_UNDERWATER_TINT vec3(0.5,0.9,0.85) // fog tint color when underwater
+#define NL_UNDERWATER_TINT vec3(0.0,0.21,0.46) // fog tint color when underwater
 
 /* Cloud type */
 #define NL_CLOUD_TYPE 0
@@ -151,9 +151,9 @@
 #define NL_CLOUD2_RAIN_THICKNESS 4.5       // 0.5 slim ~ 5.0 fat
 #define NL_CLOUD2_STEPS 16                  // 3 low quality ~ 16 high quality
 #define NL_CLOUD2_SCALE vec2(0.025, 0.025) // 0.003 large ~ 0.3 tiny
-#define NL_CLOUD2_SHAPE vec2(0.5, 0.5)     // 0.0 round ~ 1.0 box vec2(horizontal shape, vertical shape)
-#define NL_CLOUD2_DENSITY 40.0             // 1.0 blurry ~ 100.0 sharp
-#define NL_CLOUD2_VELOCITY 0.8             // 0.0 static ~ 4.0 very fast
+#define NL_CLOUD2_SHAPE vec2(0.5, 0.4)     // 0.0 round ~ 1.0 box vec2(horizontal shape, vertical shape)
+#define NL_CLOUD2_DENSITY 58.0             // 1.0 blurry ~ 100.0 sharp
+#define NL_CLOUD2_VELOCITY 1.0             // 0.0 static ~ 4.0 very fast
 //#define NL_CLOUD2_LAYER2                      // [toggle] extra cloud layer
 #define NL_CLOUD2_LAYER2_OFFSET 143.0           // 30.0 near ~ 300.0 very high
 #define NL_CLOUD2_LAYER2_THICKNESS 2.5          // 0.7 slim ~ 5.0 fat
@@ -212,7 +212,7 @@
 #define NL_MOON_TILT       45.0 // 0.0 no tilt ~ 90.0 tilt of 90 degrees
 
 /* Fake godrays during sunrise/sunset */
-#define NL_GODRAY 0.8 // [toggle] 0.1 subtle ~ 0.8 strong
+#define NL_GODRAY 1.1 // [toggle] 0.1 subtle ~ 0.8 strong
 
 /* Sky reflection */
 //#define NL_GROUND_REFL 0.4       // [toggle] 0.2 slightly reflective ~ 1.0 fully reflect sky
