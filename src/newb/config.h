@@ -42,22 +42,22 @@
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
 #define NL_MIN_LIGHTING_BOOST   0.20 // 0.0 darkest ~ 1.0 brighter dark areas
 #define NL_BLINKING_TORCH  // [toggle] flickering light
-#define NL_CLOUD_SHADOW      // [toggle] cloud shadow (simple clouds only)
+//#define NL_CLOUD_SHADOW      // [toggle] cloud shadow (simple clouds only)
 
 /* Ambient light for nether/end */
 #define NL_NETHER_AMBIENT vec3(1.45, 0.48, 0.28)
 #define NL_END_AMBIENT    vec3(0.085, 0.15, 0.27)
 
 /* Sun/moon light color */
-#define NL_DAWN_SUNLIGHT_COL    vec3(1.00, 0.52, 0.12)
+#define NL_DAWN_SUNLIGHT_COL    vec3(1.00, 0.91, 0.68)
 #define NL_NOON_SUNLIGHT_COL    vec3(0.92, 0.96, 1.0)
 #define NL_NIGHT_MOONLIGHT_COL  vec3(0.23, 0.30, 0.44)
 
 /* Torch colors */
-#define NL_OVERWORLD_TORCH_COL   vec3(1.0, 0.42, 0.12)
-#define NL_UNDERWATER_TORCH_COL  vec3(1.0, 0.42, 0.12)
-#define NL_NETHER_TORCH_COL      vec3(1.0, 0.42, 0.12)
-#define NL_END_TORCH_COL         vec3(1.0, 0.42, 0.12)
+#define NL_OVERWORLD_TORCH_COL   vec3(1.00, 0.55, 0.25)
+#define NL_UNDERWATER_TORCH_COL  vec3(1.00, 0.68, 0.40)
+#define NL_NETHER_TORCH_COL      vec3(1.00, 0.40, 0.16)
+#define NL_END_TORCH_COL         vec3(0.95, 0.62, 0.32)
 
 /* Fog */
 #define NL_FOG 1.0                // [toggle] 0.1 subtle ~ 1.0 blend with sky completely
@@ -93,7 +93,7 @@
 #define NL_BLACKHOLE  1.0
 #define NL_BH_COL_LOW  vec3(0.0,0.0,0.0)
 #define NL_BH_COL_HIGH vec3(0.72,0.72,1.0)
-#define NL_BH_DIST 0.9
+#define NL_BH_DIST 0.5
 #define NL_BH_SPEED 1.0
 
 /* Rainbow */
@@ -202,8 +202,8 @@
 #define NL_CHUNK_LOAD_ANIM 100.0 // [toggle] -600.0 fall from top ~ 600.0 rise from bottom
 
 /* Sun/Moon */
-#define NL_SUN_SIZE  1.8           // 0.3 tiny ~ 4.0 massive
-#define NL_MOON_SIZE 1.8           // 0.3 tiny ~ 4.0 massive
+#define NL_SUN_SIZE  2.8           // 0.3 tiny ~ 4.0 massive
+#define NL_MOON_SIZE 2.3           // 0.3 tiny ~ 4.0 massive
 #define NL_SUN_PATH_YAW    20.0 //
 #define NL_MOON_PATH_YAW   20.0 //
 #define NL_SUN_PATH_TILT   32.0 //
@@ -212,7 +212,7 @@
 #define NL_MOON_TILT       45.0 // 0.0 no tilt ~ 90.0 tilt of 90 degrees
 
 /* Fake godrays during sunrise/sunset */
-#define NL_GODRAY 1.1 // [toggle] 0.1 subtle ~ 0.8 strong
+#define NL_GODRAY 1.0 // [toggle] 0.1 subtle ~ 0.8 strong
 
 /* Sky reflection */
 //#define NL_GROUND_REFL 0.4       // [toggle] 0.2 slightly reflective ~ 1.0 fully reflect sky
@@ -220,7 +220,7 @@
 #define NL_GROUND_RAIN_PUDDLES 0.8 // 0.0 no puddles ~ 1.0 puddles
 
 /* Entity (Actor, ItemInHand) */
-#define NL_ENTITY_BRIGHTNESS     0.7 // 0.1 dark ~ 1.6 bright
+#define NL_ENTITY_BRIGHTNESS     0.65 // 0.1 dark ~ 1.6 bright
 #define NL_ENTITY_EDGE_HIGHLIGHT 0.5 // [toggle] 0.0 no highlight ~ 1.6 bright highlight
 
 /* Weather particles */
