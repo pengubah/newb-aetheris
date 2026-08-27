@@ -46,7 +46,7 @@
 
 /* Ambient light for nether/end */
 #define NL_NETHER_AMBIENT vec3(1.45, 0.48, 0.28)
-#define NL_END_AMBIENT    vec3(0.12, 0.20, 0.32)
+#define NL_END_AMBIENT    vec3(0.085, 0.15, 0.27)
 
 /* Sun/moon light color */
 #define NL_DAWN_SUNLIGHT_COL    vec3(1.00, 0.52, 0.12)
@@ -82,8 +82,8 @@
 #define NL_RAIN_ZENITH_COL   vec3(0.25,0.25,0.25)
 #define NL_RAIN_HORIZON_COL  vec3(0.45,0.45,0.45)
 
-#define NL_END_ZENITH_COL    vec3(0.005,0.015,0.035)
-#define NL_END_HORIZON_COL   vec3(0.18,0.70,0.85)
+#define NL_END_ZENITH_COL    vec3(0.004,0.012,0.030)
+#define NL_END_HORIZON_COL   vec3(0.15,0.60,0.76)
 
 #define NL_DAWN_ZENITH_COL   vec3(0.10,0.11,0.44)
 #define NL_DAWN_HORIZON_COL  vec3(1.00,0.45,0.00)
