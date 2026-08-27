@@ -149,7 +149,7 @@
 /* Rounded cloud settings */
 #define NL_CLOUD2_THICKNESS 4.1            // 0.5 slim ~ 5.0 fat
 #define NL_CLOUD2_RAIN_THICKNESS 4.5       // 0.5 slim ~ 5.0 fat
-#define NL_CLOUD2_STEPS 16                  // 3 low quality ~ 16 high quality
+#define NL_CLOUD2_STEPS 10                  // 3 low quality ~ 16 high quality
 #define NL_CLOUD2_SCALE vec2(0.025, 0.025) // 0.003 large ~ 0.3 tiny
 #define NL_CLOUD2_SHAPE vec2(0.5, 0.4)     // 0.0 round ~ 1.0 box vec2(horizontal shape, vertical shape)
 #define NL_CLOUD2_DENSITY 58.0             // 1.0 blurry ~ 100.0 sharp
