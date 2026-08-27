@@ -105,11 +105,18 @@ vec3 nlLighting(
     vec3 sunTint = sunLightTint(env.dayFactor, env.rainFactor);
     float dawnGlow = smoothstep(0.0, 1.0, dawnFactor);
     sunTint = mix(sunTint, NL_DAWN_SUNLIGHT_COL, dawnGlow*0.22);
-    light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation)*sunTint;
 
-    // sky ambient
+    // Keep moonlight visible and blue, but substantially below daytime sun
+    // intensity so exposed terrain stays dark without becoming pitch black.
+    float moonLightScale = mix(1.0, 0.52, nightFactor);
+    moonLightScale = mix(moonLightScale, 1.0, dawnGlow*0.55);
+    light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation*moonLightScale)*sunTint;
+
+    // sky ambient: reduced at night so the surface does not inherit the full
+    // brightness of the night sky.
     lum = luminance(light);
-    light += (skycol.horizon + skycol.zenith)*(uv1.y/(1.0+lum));
+    float nightAmbient = mix(1.0, 0.56, nightFactor);
+    light += (skycol.horizon + skycol.zenith)*(uv1.y*nightAmbient/(1.0+lum));
 
   }
 
@@ -177,13 +184,15 @@ vec3 nlEntityLighting(nl_skycolor skycol, nl_environment env, vec3 pos, vec4 nor
     sunLightAttenuation *= 1.0-0.5*env.rainFactor;
 
     // direct light from top
-    light = (NL_SUNLIGHT_INTENSITY*l*sunLightAttenuation)*sunLightTint(env.dayFactor, env.rainFactor);
+    float moonLightScale = mix(1.0, 0.56, nightFactor);
+    moonLightScale = mix(moonLightScale, 1.0, smoothstep(0.0, 1.0, dawnFactor)*0.55);
+    light = (NL_SUNLIGHT_INTENSITY*l*sunLightAttenuation*moonLightScale)*sunLightTint(env.dayFactor, env.rainFactor);
     vec3 N = normalize(mul(world, normal)).xyz;
     light *= 0.9 + max(N.y, 0.0);
 
     // sky ambient
     lum = luminance(light);
-    float nightAmbient = mix(1.0,0.82,nightFactor);
+    float nightAmbient = mix(1.0,0.56,nightFactor);
     light += (skycol.horizon + skycol.zenith)*(tileLightCol.b*nightAmbient/(1.0+lum));
   }
 

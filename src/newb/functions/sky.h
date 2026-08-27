@@ -38,6 +38,14 @@ float nlDawnFactor(float dayFactor) {
   return f;
 }
 
+// Keep the dawn/sunset horizon intact, but reduce how far its warm influence
+// carries into the deeper night. At the horizon (dayFactor ~= 0) this is 1.0,
+// while deep night keeps only a subtle residual atmospheric influence.
+float nlNightDawnAttenuation(float dayFactor) {
+  float nightDepth = smoothstep(0.0, 0.58, max(-dayFactor, 0.0));
+  return mix(1.0, 0.28, nightDepth);
+}
+
 vec4 renderBlackhole(vec3 viewdir, float t) {
   t *= NL_BH_SPEED;
 
@@ -101,7 +109,7 @@ nl_skycolor nlEndSkyColors(nl_environment env) {
 
 nl_skycolor nlOverworldSkyColors(nl_environment env) {
   nl_skycolor s;
-  float f = 1.0 + 2.0*(1.0-max(-env.dayFactor, 0.0));
+  float f = 0.68 + 0.30*(1.0-max(-env.dayFactor, 0.0));
   float nightFactor = step(env.dayFactor, 0.0);
   s.zenith = mix(NL_DAY_ZENITH_COL, NL_NIGHT_ZENITH_COL*f, nightFactor);
   s.horizon = mix(NL_DAY_HORIZON_COL, NL_NIGHT_HORIZON_COL*f, nightFactor);
@@ -112,6 +120,7 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   // pink/orange -> gold gradient like a real low-sun atmosphere.
   float dawnFactor = nlDawnFactor(env.dayFactor);
   float dawnSoft = dawnFactor*dawnFactor*(3.0-2.0*dawnFactor);
+  dawnSoft *= nlNightDawnAttenuation(env.dayFactor);
 
   s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnSoft*0.92);
   s.horizon = mix(s.horizon, NL_DAWN_HORIZON_COL, dawnSoft);
@@ -171,6 +180,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   // seen during golden hour.
   float dawnFactor = nlDawnFactor(env.dayFactor);
   float dawnShape = dawnFactor*dawnFactor*(3.0-2.0*dawnFactor);
+  dawnShape *= nlNightDawnAttenuation(env.dayFactor);
   float df = mix(1.0, clamp(g2.x, 0.0, 1.0), dawnShape*0.72);
 
   vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*df*df);
