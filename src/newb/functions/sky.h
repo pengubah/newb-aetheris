@@ -378,7 +378,7 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   float voidMask = smoothstep(0.12,0.90,abs(viewDir.y));
 
   sky *= 0.68+0.32*voidMask;
-  sky = max(sky,vec3(0.0));
+  sky = max(sky,vec3(0.0, 0.0, 0.0));
   sky *= 1.15;
 
   #ifdef NL_BLACKHOLE
