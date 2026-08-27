@@ -1,13 +1,14 @@
 $input v_color0
 #include <newb/config.h>
 #if NL_CLOUD_TYPE >= 2
-  $input v_color1, v_color2, v_fogColor
+  $input v_color1, v_color2
 #endif
 
 #include <bgfx_shader.sh>
 #include <newb/main.sh>
 
 uniform vec4 CameraPosition;
+uniform vec4 FogColor;
 
 #define NL_CLOUD_PARAMS(x) NL_CLOUD2##x##STEPS, NL_CLOUD2##x##THICKNESS, NL_CLOUD2##x##RAIN_THICKNESS, NL_CLOUD2##x##VELOCITY, NL_CLOUD2##x##SCALE, NL_CLOUD2##x##DENSITY, NL_CLOUD2##x##SHAPE
 
@@ -20,18 +21,18 @@ void main() {
     cloudPos.xz += CameraPosition.xz;
 
     #if NL_CLOUD_TYPE == 2
-      color = renderCloudsRounded(vDir, cloudPos, v_color1.w, v_color2.w, v_color2.rgb, v_color1.rgb, int(NL_CLOUD2_STEPS), float(NL_CLOUD2_THICKNESS), float(NL_CLOUD2_RAIN_THICKNESS), float(NL_CLOUD2_VELOCITY), NL_CLOUD2_SCALE, float(NL_CLOUD2_DENSITY), NL_CLOUD2_SHAPE);
+      color = renderCloudsRounded(vDir, cloudPos, v_color1.w, v_color2.w, v_color2.rgb, v_color1.rgb, NL_CLOUD_PARAMS(_));
 
       #ifdef NL_CLOUD2_LAYER2
         vec2 parallax = vDir.xz / abs(vDir.y) * NL_CLOUD2_LAYER2_OFFSET;
         vec3 offsetPos = cloudPos;
         offsetPos.xz += parallax;
-        vec4 color2 = renderCloudsRounded(vDir, offsetPos, v_color1.a, v_color2.a*2.0, v_color2.rgb, v_color1.rgb, int(NL_CLOUD2_LAYER2_STEPS), float(NL_CLOUD2_LAYER2_THICKNESS), float(NL_CLOUD2_LAYER2_RAIN_THICKNESS), float(NL_CLOUD2_LAYER2_VELOCITY), NL_CLOUD2_LAYER2_SCALE, float(NL_CLOUD2_LAYER2_DENSITY), NL_CLOUD2_LAYER2_SHAPE);
+        vec4 color2 = renderCloudsRounded(vDir, offsetPos, v_color1.a, v_color2.a*2.0, v_color2.rgb, v_color1.rgb, NL_CLOUD_PARAMS(_LAYER2_));
         color = mix(color2, color, 0.2 + 0.8*color.a);
       #endif
 
       #ifdef NL_AURORA
-        color += renderAurora(cloudPos, v_color2.a, v_color1.a, v_fogColor)*(1.0-0.95*color.a);
+        color += renderAurora(cloudPos, v_color2.a, v_color1.a, FogColor.rgb)*(1.0-0.95*color.a);
       #endif
 
       color.a *= v_color0.a;
@@ -46,7 +47,7 @@ void main() {
 
       #ifdef NL_AURORA
         p.xy *= 34.7;
-        color += renderAurora(p.xyy, v_color2.w, v_color1.w, v_fogColor)*(1.0-0.95*color.a);
+        color += renderAurora(p.xyy, v_color2.w, v_color1.w, FogColor.rgb)*(1.0-0.95*color.a);
       #endif
 
       color.a *= smoothstep(0.0, 0.7, vDir.y);
