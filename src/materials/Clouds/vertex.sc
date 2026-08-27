@@ -18,9 +18,9 @@ uniform vec4 TimeOfDay;
 uniform vec4 CameraPosition;
 
 float fog_fade(vec3 wPos) {
-  return clamp(2.0-length(wPos*vec3(0.005, 0.002, 0.005)), 0.0, 1.0);
+  float cloudDist = length(wPos.xz);
+  return 1.0-smoothstep(FogAndDistanceControl.z*0.85, FogAndDistanceControl.z, cloudDist);
 }
-
 void main() {
   #ifdef INSTANCING
     mat4 model = mtxFromCols(i_data0, i_data1, i_data2, i_data3);
@@ -49,6 +49,7 @@ void main() {
     #if NL_CLOUD_TYPE == 0
       pos.y *= (NL_CLOUD0_THICKNESS + rain*(NL_CLOUD0_RAIN_THICKNESS - NL_CLOUD0_THICKNESS));
       worldPos = mul(model, vec4(pos, 1.0)).xyz;
+      worldPos.y += 2.0;
 
       color.rgb = skycol.zenith + skycol.horizonEdge;
       color.rgb += dot(color.rgb, vec3(0.3,0.4,0.3))*a_position.y;
