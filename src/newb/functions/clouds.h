@@ -59,11 +59,11 @@ float cloudDf(vec3 pos, float rain, vec2 boxiness) {
 }
 
 vec4 renderCloudsRounded(
-    vec3 vDir, vec3 vPos, float rain, float time, vec3 horizonCol, vec3 zenithCol, const float thickness, const float thickness_rain, const float speed,
+    vec3 vDir, vec3 vPos, float rain, float time, vec3 horizonCol, vec3 zenithCol, const float steps, const float thickness, const float thickness_rain, const float speed,
     const vec2 scale, const float density, const vec2 boxiness
 ) {
   float height = 9.0*mix(thickness, thickness_rain, rain);
-  float stepsf = 5.0;
+  float stepsf = steps;
 
   // scaled ray offset
   vec3 deltaP;
