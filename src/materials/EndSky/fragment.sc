@@ -17,6 +17,8 @@ void main() {
     vec3 color = renderEndSky(getEndHorizonCol(), getEndZenithCol(), normalize(v_posTime.xyz), v_posTime.w);
     color += 2.8*diffuse.rgb; // stars
 
+    // Slight overall attenuation keeps The End magical but less washed-out.
+    color *= 0.86;
     color = colorCorrection(color);
 
     gl_FragColor = vec4(color, 1.0);
