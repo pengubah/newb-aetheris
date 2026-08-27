@@ -37,10 +37,10 @@
 #define NL_TINT_HIGH vec3(1.0,1.0,1.0) // color tint for light tone
 
 /* Lighting */
-#define NL_SUNLIGHT_INTENSITY   3.3  // 1.0 weak ~ 5.0 bright
+#define NL_SUNLIGHT_INTENSITY   2.85  // 1.0 weak ~ 5.0 bright
 #define NL_TORCHLIGHT_INTENSITY 1.6  // 0.5 weak ~ 3.0 bright
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
-#define NL_MIN_LIGHTING_BOOST   1.2  // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
+#define NL_MIN_LIGHTING_BOOST   0.20 // 0.0 darkest ~ 1.0 brighter dark areas
 #define NL_BLINKING_TORCH  // [toggle] flickering light
 #define NL_CLOUD_SHADOW      // [toggle] cloud shadow (simple clouds only)
 
@@ -51,7 +51,7 @@
 /* Sun/moon light color */
 #define NL_DAWN_SUNLIGHT_COL    vec3(1.00, 0.52, 0.12)
 #define NL_NOON_SUNLIGHT_COL    vec3(0.92, 0.96, 1.0)
-#define NL_NIGHT_MOONLIGHT_COL  vec3(0.48, 0.55, 0.68)
+#define NL_NIGHT_MOONLIGHT_COL  vec3(0.23, 0.30, 0.44)
 
 /* Torch colors */
 #define NL_OVERWORLD_TORCH_COL   vec3(1.0, 0.42, 0.12)
@@ -75,9 +75,9 @@
 #define NL_DAY_HORIZON_COL   vec3(0.30,0.72,1.00)
 #define NL_DAY_EDGE_COL      vec3(0.75,0.96,1.00)
 
-#define NL_NIGHT_ZENITH_COL  vec3(0.005,0.055,0.075)
-#define NL_NIGHT_HORIZON_COL vec3(0.000,0.14,0.22)
-#define NL_NIGHT_EDGE_COL    vec3(0.035,0.24,0.38)
+#define NL_NIGHT_ZENITH_COL  vec3(0.003,0.026,0.050)
+#define NL_NIGHT_HORIZON_COL vec3(0.000,0.066,0.120)
+#define NL_NIGHT_EDGE_COL    vec3(0.012,0.115,0.190)
 
 #define NL_RAIN_ZENITH_COL   vec3(0.25,0.25,0.25)
 #define NL_RAIN_HORIZON_COL  vec3(0.45,0.45,0.45)
