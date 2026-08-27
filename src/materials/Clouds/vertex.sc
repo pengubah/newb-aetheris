@@ -51,7 +51,45 @@ void main() {
       worldPos = mul(model, vec4(pos, 1.0)).xyz;
       worldPos.y += 2.0;
 
-      color.rgb = skycol.zenith + skycol.horizonEdge;
+      // Type 0 clouds adapt to the actual sky at each cloud vertex.
+      // Keep the base cloud brightness neutral so dawn/sunset colors are not
+      // painted uniformly across the whole cloud layer. The local sky sample
+      // supplies the time-of-day color and the viewing direction supplies the
+      // spatial gradient, so only the part of the cloud facing the dawn/sun
+      // picks up the warm color.
+      vec3 baseZenith = mix(NL_DAY_ZENITH_COL, NL_NIGHT_ZENITH_COL * (0.68 + 0.30*(1.0-max(-env.dayFactor, 0.0))), step(env.dayFactor, 0.0));
+      vec3 baseEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL * (0.68 + 0.30*(1.0-max(-env.dayFactor, 0.0))), step(env.dayFactor, 0.0));
+      float baseCloudLum = dot(baseZenith + baseEdge, vec3(0.2126, 0.7152, 0.0722));
+      vec3 baseCloud = vec3_splat(baseCloudLum);
+
+      vec3 cloudViewDir = normalize(worldPos - CameraPosition.xyz);
+      vec3 localSky = renderOverworldSky(skycol, env, cloudViewDir, true);
+      float localLum = max(dot(localSky, vec3(0.2126, 0.7152, 0.0722)), 0.001);
+      vec3 localTint = localSky / localLum;
+
+      // Dawn/sunset color is localized to the sun-facing part of the cloud
+      // layer. Keep a very small residual influence on the night side so the
+      // transition still feels atmospheric, but prevent the whole night sky
+      // from being washed by the dawn horizon.
+      float dawnMask = nlDawnFactor(env.dayFactor);
+      dawnMask *= nlNightDawnAttenuation(env.dayFactor);
+      float sunFacing = smoothstep(
+        0.0, 0.55, max(dot(env.sunDir, cloudViewDir), 0.0)
+      );
+      float dawnHorizon = 1.0 - smoothstep(0.05, 0.65, abs(cloudViewDir.y));
+      float dawnInfluence = dawnMask * (0.10 + 0.90*sunFacing);
+      dawnInfluence *= 0.35 + 0.65*dawnHorizon;
+
+      // Daytime clouds remain mostly neutral; warm dawn/sunset tint becomes
+      // strongest only where the low sun is actually visible.
+      float tintStrength =
+        0.10 + 0.30*dawnInfluence + 0.06*step(env.dayFactor, 0.0);
+      color.rgb = baseCloud * mix(vec3_splat(1.0), localTint, tintStrength);
+
+      // Let the local sky brightness darken clouds at night and softly brighten
+      // them near the illuminated part of the horizon during dawn/day.
+      float localLight = clamp(localLum * 2.2, 0.22, 1.25);
+      color.rgb *= localLight;
       color.rgb += dot(color.rgb, vec3(0.3,0.4,0.3))*a_position.y;
       color.rgb *= 1.0 - 0.8*rain;
       color.rgb = colorCorrection(color.rgb);
