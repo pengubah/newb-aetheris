@@ -24,6 +24,7 @@ vec3 sunLightTint(float dayFactor, float rain) {
   return tint;
 }
 
+
 vec3 nlLighting(
   sampler2D tex, nl_skycolor skycol, nl_environment env, vec3 wPos, out vec3 torchColor, vec3 COLOR,
   vec2 uv1, vec2 lit, bool isTree, float shade, highp float t, float renderdistance, float TIME_OF_DAY, vec3 CAMERA_POS
@@ -62,13 +63,14 @@ vec3 nlLighting(
   } else {
     // overworld lighting
     float nightFactor = step(env.dayFactor, 0.0);
-    float dawnFactor = nlDawnFactor(env.dayFactor);
+    float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
+    dawnFactor *= dawnFactor*dawnFactor;
+    dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
     float nightIntensity = 1.0-(0.5+0.5*env.dayFactor);
     nightIntensity *= nightIntensity;
 
     float sunLightAttenuation = clamp(0.5*(((2.0*step(TIME_OF_DAY, 0.5)-1.0)*(wPos.x*cos(NL_SUN_PATH_YAW)+wPos.y*sin(NL_SUN_PATH_YAW))/renderdistance) + 1.0), 0.0, 1.0);
-    float dawnLight = dawnFactor*dawnFactor*(3.0-2.0*dawnFactor);
-    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnLight);
+    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnFactor);
     sunLightAttenuation *= 1.0-0.4*env.rainFactor;
 
     // shadow cast by sun light
@@ -101,8 +103,8 @@ vec3 nlLighting(
 
     // direct light from top
     vec3 sunTint = sunLightTint(env.dayFactor, env.rainFactor);
-    float dawnGlow = dawnFactor*dawnFactor*(3.0-2.0*dawnFactor);
-    sunTint = mix(sunTint, NL_DAWN_SUNLIGHT_COL, dawnGlow*0.10);
+    float dawnGlow = smoothstep(0.0, 1.0, dawnFactor);
+    sunTint = mix(sunTint, NL_DAWN_SUNLIGHT_COL, dawnGlow*0.22);
     light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation)*sunTint;
 
     // sky ambient
@@ -164,13 +166,14 @@ vec3 nlEntityLighting(nl_skycolor skycol, nl_environment env, vec3 pos, vec4 nor
     tl *= 4.0*tl;
 
     float nightFactor = step(env.dayFactor, 0.0);
-    float dawnFactor = nlDawnFactor(env.dayFactor);
+    float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
+    dawnFactor *= dawnFactor*dawnFactor;
+    dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
     float nightIntensity = 1.0-(0.5+0.5*env.dayFactor);
     nightIntensity *= nightIntensity;
 
     float sunLightAttenuation = clamp(0.5*(((2.0*step(TIME_OF_DAY, 0.5)-1.0)*(wPos.x*cos(NL_SUN_PATH_YAW)+wPos.y*sin(NL_SUN_PATH_YAW))/renderdistance) + 1.0), 0.0, 1.0);
-    float dawnLight = dawnFactor*dawnFactor*(3.0-2.0*dawnFactor);
-    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnLight);
+    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnFactor);
     sunLightAttenuation *= 1.0-0.5*env.rainFactor;
 
     // direct light from top
