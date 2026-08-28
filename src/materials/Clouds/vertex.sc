@@ -18,9 +18,9 @@ uniform vec4 TimeOfDay;
 uniform vec4 CameraPosition;
 
 float fog_fade(vec3 wPos) {
-  float cloudDist = length(wPos.xz);
-  return 1.0-smoothstep(FogAndDistanceControl.z*0.85, FogAndDistanceControl.z, cloudDist);
+  return clamp(2.0-length(wPos*vec3(0.005, 0.002, 0.005)), 0.0, 1.0);
 }
+
 void main() {
   #ifdef INSTANCING
     mat4 model = mtxFromCols(i_data0, i_data1, i_data2, i_data3);
