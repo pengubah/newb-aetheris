@@ -57,6 +57,10 @@ void main() {
       color.rgb = colorCorrection(color.rgb);
       color.a = NL_CLOUD0_OPACITY * fog_fade(worldPos.xyz);
 
+      #ifdef NL_AURORA
+        color += renderAurora(worldPos, t, rain, env.fogCol)*(1.0-color.a);
+      #endif
+
       // clouds.png has two non-overlaping layers:
       // r=unused, g=layers, b=reference, a=unused
       // g=0 (layer 0), g=1 (layer 1)
