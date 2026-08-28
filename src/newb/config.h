@@ -90,11 +90,9 @@
 #define NL_DAWN_EDGE_COL     vec3(1.00,0.45,0.00)
 
 /* The End blackhole */
-#define NL_BLACKHOLE  1.0
-#define NL_BH_COL_LOW  vec3(0.0,0.0,0.0)
-#define NL_BH_COL_HIGH vec3(0.72,0.72,1.0)
-#define NL_BH_DIST 0.5
-#define NL_BH_SPEED 1.0
+#define NL_BLACKHOLE            // [toggle] enable blackhole in endsky
+#define NL_BLACKHOLE_SIZE  1.0  // 0.5 tiny - 2.0 massive
+#define NL_BH_SPEED        1.0  // 0.5 slow - 2.0 fast
 
 /* Rainbow */
 #define NL_RAINBOW           // [toggle] enable rainbow in sky
