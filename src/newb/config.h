@@ -108,7 +108,7 @@
 #define NL_GLOW_LEAK 0.5        // [toggle] 0.08 subtle ~ 1.0 100% brightness of NL_GLOW_TEX
 
 /* Waving */
-#define NL_PLANTS_WAVE 0.05    // [toggle] 0.02 gentle ~ 0.4 violent
+#define NL_PLANTS_WAVE 0.06    // [toggle] 0.02 gentle ~ 0.4 violent
 #define NL_LANTERN_WAVE 0.16   // [toggle] 0.05 subtle ~ 0.4 large swing
 #define NL_WAVE_SPEED 2.8      // 0.5 slow wave ~ 5.0 very fast wave
 //#define NL_EXTRA_PLANTS_WAVE // [toggle] !dont use! wave using texture coords (1.21.0 vanilla 2048x1024)
@@ -116,8 +116,8 @@
 
 /* Water */
 #define NL_WATER_TRANSPARENCY 0.82 // 0.0 transparent ~ 1.0 normal
-#define NL_WATER_BUMP 0.1        // 0.001 plain ~ 0.2 bumpy water
-#define NL_WATER_WAVE_SPEED  0.8  // 0.2 calm ~ 2.0 turbulent
+#define NL_WATER_BUMP 0.080        // 0.001 plain ~ 0.2 bumpy water
+#define NL_WATER_WAVE_SPEED  0.65  // 0.2 calm ~ 2.0 turbulent
 #define NL_WATER_TEX_OPACITY 0.0  // 0.0 plain water ~ 1.0 vanilla water texture
 #define NL_WATER_WAVE             // [toggle] wave effect
 //#define NL_WATER_REFL_MASK      // [toggle] fake water reflection mask
@@ -131,7 +131,7 @@
 #define NL_UNDERWATER_TINT vec3(0.0,0.21,0.46) // fog tint color when underwater
 
 /* Cloud type */
-#define NL_CLOUD_TYPE 0
+#define NL_CLOUD_TYPE 2
 
 /* Vanilla cloud settings - make sure to remove clouds.png when using this */
 #define NL_CLOUD0_THICKNESS 1.9      // 0.5 slim ~ 8.0 fat
@@ -202,8 +202,8 @@
 #define NL_CHUNK_LOAD_ANIM 100.0 // [toggle] -600.0 fall from top ~ 600.0 rise from bottom
 
 /* Sun/Moon */
-#define NL_SUN_SIZE  2.8           // 0.3 tiny ~ 4.0 massive
-#define NL_MOON_SIZE 2.3           // 0.3 tiny ~ 4.0 massive
+#define NL_SUN_SIZE  3.0           // 0.3 tiny ~ 4.0 massive
+#define NL_MOON_SIZE 2.5           // 0.3 tiny ~ 4.0 massive
 #define NL_SUN_PATH_YAW    20.0 //
 #define NL_MOON_PATH_YAW   20.0 //
 #define NL_SUN_PATH_TILT   32.0 //
@@ -265,10 +265,10 @@
   #undef NL_CHUNK_LOAD_ANIM
 #endif
 
-#ifdef ROUNDED_CLOUDS
+#ifdef VANILLA_CLOUDS
   #undef NL_CLOUD_TYPE
-  #define NL_CLOUD_TYPE 2
-  #undef NL_CLOUD_SHADOW // TODO: Cloud shadow for rounded, realistic clouds
+  #define NL_CLOUD_TYPE 0
+  #undef NL_CLOUD_SHADOW 
 #endif
 
 #ifdef REALISTIC_CLOUDS
