@@ -148,7 +148,7 @@ void nlWave(
       float wave = NL_PLANTS_WAVE*windStrength;
 
       if (isTreeLeaves) {
-        wave *= 0.5;
+        wave *= 1.0;
       } else if (isVines) {
         wave *= fract(0.01+tiledCpos.y*0.5);
       } else if (isPlants && isColored && !isTop) {
