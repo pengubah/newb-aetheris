@@ -47,56 +47,76 @@ float nlNightDawnAttenuation(float dayFactor) {
 }
 
 vec4 renderBlackhole(vec3 viewdir, float t) {
-  t *= NL_BH_SPEED;
+    t *= NL_BH_SPEED;
 
-  float r = 2.4;
-  vec3 vr = viewdir;
+    float size = max(NL_BLACKHOLE_SIZE,0.01);
+    vec2 p = viewdir.xz;
+    float vertical = viewdir.y;
+    float dist = length(p)/size;
+    float ang = atan2(p.y,p.x);
+    vec3 col = vec3(0.0, 0.0, 0.0);
 
-  float cr = cos(r);
-  float sr = sin(r);
+    float blackCore = smoothstep(0.160,0.132,dist);
 
-  vec2 rot;
-  rot.x = cr*vr.x-sr*vr.y;
-  rot.y = sr*vr.x+cr*vr.y;
-  vr.xy = rot;
+    float disk = exp(-pow((dist-0.190)/0.017,2.0));
+    float innerDisk = exp(-pow((dist-0.166)/0.012,2.0));
+    float outerDisk = exp(-pow((dist-0.210)/0.020,2.0));
 
-  vec3 viewd = vr-vec3(0.0,-1.0,0.0);
+    float spiral1 = sin(ang*7.0-dist*105.0+t*1.45);
+    float spiral2 = sin(ang*13.0-dist*145.0-t*0.90+spiral1*1.2);
+    float spiral3 = sin(ang*21.0-dist*190.0+t*0.55);
 
-  float d = length(viewd);
+    float spiral = spiral1*0.50+spiral2*0.32+spiral3*0.18;
+    spiral = spiral*0.5+0.5;
+    spiral = smoothstep(0.42,0.78,spiral);
 
-  float nl = sin(15.0*viewd.x+t)*sin(15.0*viewd.y-t)*sin(15.0*viewd.z+t);
+    vec2 noisePos = vec2(cos(ang),sin(ang))*9.0;
+    noisePos += vec2(dist*45.0-t*0.35,dist*30.0+t*0.20);
 
-  float df = sin(3.0*viewd.x-4.0*d+24.0*pow(1.4-d,4.0)+t);
+    float turbulence = noise3D(vec3(noisePos,dist));
 
-  float spiral = sin(18.0*atan2(viewd.z,viewd.x)-9.0*d+3.0*t);
+    spiral *= 0.72+0.38*turbulence;
 
-  df *= 0.92+0.08*sin(8.0*viewd.z+d+4.0*t-4.0*df);
+    float diskLight = disk*(0.38+0.82*spiral);
+    diskLight += innerDisk*(0.35+0.65*spiral);
+    diskLight += outerDisk*spiral*0.42;
 
-  df += spiral*0.035;
+    float purpleGlow = exp(-pow((dist-0.203)/0.036,2.0));
+    purpleGlow *= 0.35+0.65*spiral;
 
-  float d0 = (0.6-d)/0.6;
+    float whiteGlow = exp(-pow((dist-0.166)/0.017,2.0));
+    whiteGlow *= 0.55+0.45*spiral;
 
-  float dm0 = 1.0-max(d0,0.0);
+    vec3 deepPurple = vec3(0.12,0.005,0.30);
+    vec3 royalPurple = vec3(0.38,0.025,0.78);
+    vec3 violet = vec3(0.68,0.12,1.00);
+    vec3 whiteViolet = vec3(0.90,0.72,1.00);
+    vec3 white = vec3(1.0,0.97,1.0);
 
-  float gl = 1.0-clamp(-0.3*d0,0.0,1.0);
+    col += deepPurple*purpleGlow*1.10;
+    col += royalPurple*diskLight*1.15;
+    col += violet*diskLight*0.70;
+    col += whiteViolet*whiteGlow*1.20;
+    col += white*innerDisk*0.80;
 
-  float gla = pow(1.0-min(abs(d0),1.0),20.0);
+    float filament = smoothstep(0.62,0.90,spiral);
+    filament *= disk;
 
-  float gl8 = pow(gl,16.0);
+    col += vec3(0.78,0.22,1.0)*filament*0.60;
 
-  float hole = 0.96*pow(dm0,58.0)+0.04*pow(dm0,14.0);
+    float aura = exp(-pow((dist-0.160)/0.026,2.0));
 
-  float bh = (gla+0.78*gl8+0.16*gl8*gl8)*hole;
+    col += vec3(0.42,0.06,0.82)*aura*0.38;
 
-  float spiralLight = 0.88+0.12*pow(max(spiral,0.0),2.0);
+    col *= 1.0-blackCore;
+    col *= 0.88;
+    col = col/(1.0+col*0.38);
 
-  bh *= spiralLight;
+    float visibility = smoothstep(0.02,0.20,abs(vertical));
 
-  bh *= 1.0+pow(df,4.0)*hole*max(1.0-bh,0.0);
+    col *= visibility;
 
-  vec3 col = bh*4.0*mix(NL_BH_COL_LOW,NL_BH_COL_HIGH,min(bh,1.0));
-
-  return vec4(col,hole);
+    return vec4(col,visibility);
 }
 
 nl_skycolor nlEndSkyColors(nl_environment env) {
