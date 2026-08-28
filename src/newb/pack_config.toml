@@ -35,10 +35,10 @@ Realistic clouds
 '''
 
 [[subpack]]
-define = "ROUNDED_CLOUDS"
-materials = ["Clouds"]
+define = "VANILLA_CLOUDS"
+materials = ["Clouds", "RenderChunk"]
 description = '''
-Rounded Clouds
+Vanilla Clouds
 '''
 
 [[subpack]]
