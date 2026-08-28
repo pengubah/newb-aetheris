@@ -49,6 +49,7 @@ void main() {
     #if NL_CLOUD_TYPE == 0
       pos.y *= (NL_CLOUD0_THICKNESS + rain*(NL_CLOUD0_RAIN_THICKNESS - NL_CLOUD0_THICKNESS));
       worldPos = mul(model, vec4(pos, 1.0)).xyz;
+      worldPos.y += 1.5;
 
       color.rgb = skycol.zenith + skycol.horizonEdge;
       color.rgb += dot(color.rgb, vec3(0.3,0.4,0.3))*a_position.y;
