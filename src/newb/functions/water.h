@@ -20,8 +20,8 @@ vec4 nlWater(
   float fractCposY, float camDist, highp float t
 ) {
 
-  vec2 bump = vec2_splat(movingNoise2D(gPos.xz + gPos.yy, NL_WATER_WAVE_SPEED*t, 0.6));
-
+    vec2 bump = vec2(movingNoise2D(gPos.xz*0.72 + vec2(0.0,1.7) + gPos.yy*0.18, NL_WATER_WAVE_SPEED*t, 0.42), movingNoise2D(gPos.xz*0.56 + vec2(2.3,0.0) - gPos.yy*0.14, NL_WATER_WAVE_SPEED*t*0.82, 0.46));
+  
   vec3 nrm;
   if (fractCposY > 0.0) { // top plane
     nrm.xz = bump*NL_WATER_BUMP;
@@ -72,9 +72,12 @@ vec4 nlWater(
   color.rgb *= 0.22*NL_WATER_TINT*(1.0-0.8*fresnel);
   color.a = mix(COLOR.a*NL_WATER_TRANSPARENCY, 1.0, opacity*opacity);
 
-  #ifdef NL_WATER_WAVE
+    #ifdef NL_WATER_WAVE
     if (camDist < 14.0) {
-      wPos.y -= 0.5*(bump.x+0.5)*NL_WATER_BUMP;
+      float smallWave = 0.5 + 0.5*sin(gPos.x*1.35 + gPos.z*0.82 + NL_WATER_WAVE_SPEED*t*1.15);
+      float softWave = 0.5 + 0.5*sin(gPos.x*0.72 - gPos.z*1.10 + NL_WATER_WAVE_SPEED*t*0.72);
+      float waveShape = mix(smallWave, softWave, 0.35);
+      wPos.y -= waveShape*0.035*NL_WATER_BUMP + (bump.x+bump.y)*0.012*NL_WATER_BUMP;
     }
   #endif
 
