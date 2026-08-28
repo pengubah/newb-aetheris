@@ -72,7 +72,7 @@
 
 /* Sky colors - zenith=top, horizon=bottom */
 #define NL_DAY_ZENITH_COL    vec3(0.10,0.38,0.92)
-#define NL_DAY_HORIZON_COL   vec3(0.30,0.72,1.00)
+#define NL_DAY_HORIZON_COL   vec3(0.22,0.62,0.98)
 #define NL_DAY_EDGE_COL      vec3(0.75,0.96,1.00)
 
 #define NL_NIGHT_ZENITH_COL  vec3(0.003,0.026,0.050)
@@ -91,8 +91,8 @@
 
 /* The End blackhole */
 #define NL_BLACKHOLE            // [toggle] enable blackhole in endsky
-#define NL_BLACKHOLE_SIZE  1.0  // 0.5 tiny - 2.0 massive
-#define NL_BH_SPEED        1.0  // 0.5 slow - 2.0 fast
+#define NL_BLACKHOLE_SIZE  2.2  // 0.5 tiny - 5.0 massive
+#define NL_BH_SPEED        1.1  // 0.5 slow - 5.0 fast
 
 /* Rainbow */
 #define NL_RAINBOW           // [toggle] enable rainbow in sky
@@ -147,7 +147,7 @@
 /* Rounded cloud settings */
 #define NL_CLOUD2_THICKNESS 4.1            // 0.5 slim ~ 5.0 fat
 #define NL_CLOUD2_RAIN_THICKNESS 4.5       // 0.5 slim ~ 5.0 fat
-#define NL_CLOUD2_STEPS 10                  // 3 low quality ~ 16 high quality
+#define NL_CLOUD2_STEPS 5                  // 3 low quality ~ 16 high quality
 #define NL_CLOUD2_SCALE vec2(0.025, 0.025) // 0.003 large ~ 0.3 tiny
 #define NL_CLOUD2_SHAPE vec2(0.5, 0.4)     // 0.0 round ~ 1.0 box vec2(horizontal shape, vertical shape)
 #define NL_CLOUD2_DENSITY 58.0             // 1.0 blurry ~ 100.0 sharp
@@ -176,7 +176,7 @@
 #define NL_CLOUD4_CLUSTER_SIZE 4.93
 
 /* Aurora settings */
-#define NL_AURORA 1.5           // [toggle] 0.4 dim ~ 4.0 very bright
+#define NL_AURORA 1.2           // [toggle] 0.4 dim ~ 4.0 very bright
 #define NL_AURORA_VELOCITY 0.03 // 0.0 static ~ 0.3 very fast
 #define NL_AURORA_SCALE 0.04    // 0.002 large ~ 0.4 tiny
 #define NL_AURORA_WIDTH 0.18    // 0.04 thin line ~ 0.4 thick lines
@@ -210,7 +210,7 @@
 #define NL_MOON_TILT       45.0 // 0.0 no tilt ~ 90.0 tilt of 90 degrees
 
 /* Fake godrays during sunrise/sunset */
-#define NL_GODRAY 1.0 // [toggle] 0.1 subtle ~ 0.8 strong
+#define NL_GODRAY 0.8 // [toggle] 0.1 subtle ~ 0.8 strong
 
 /* Sky reflection */
 //#define NL_GROUND_REFL 0.4       // [toggle] 0.2 slightly reflective ~ 1.0 fully reflect sky
