@@ -36,6 +36,10 @@ void main() {
   env.nether = false;
   env.underwater = false;
   env.rainFactor = rain;
+  env.dayFactor = 0.0;
+  env.sunDir = vec3(0.0,0.0,0.0);
+  env.moonDir = vec3(0.0,0.0,0.0);
+  env.fogCol = vec3(0.0,0.0,0.0);
   env = calculateSunParams(env, TimeOfDay.x, 0.0);
 
   nl_skycolor skycol = nlOverworldSkyColors(env);
