@@ -108,7 +108,7 @@ vec4 renderBlackhole(vec3 viewdir, float t) {
 
     col += vec3(0.42,0.06,0.82)*aura*0.38;
 
-    col *= 1.0-blackCore;
+    col = mix(col,vec3(0.0, 0.0, 0.0),blackCore);
     col *= 0.88;
     col = col/(1.0+col*0.38);
 
@@ -130,7 +130,7 @@ nl_skycolor nlEndSkyColors(nl_environment env) {
 nl_skycolor nlOverworldSkyColors(nl_environment env) {
   nl_skycolor s;
   float f = 0.68 + 0.30*(1.0-max(-env.dayFactor, 0.0));
-  float nightFactor = step(env.dayFactor, 0.0);
+  float nightFactor = nlNightFactor(env.dayFactor);
   s.zenith = mix(NL_DAY_ZENITH_COL, NL_NIGHT_ZENITH_COL*f, nightFactor);
   s.horizon = mix(NL_DAY_HORIZON_COL, NL_NIGHT_HORIZON_COL*f, nightFactor);
   s.horizonEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL*f, nightFactor);
@@ -247,10 +247,10 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
 vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   float time = t*0.12;
   float y = clamp(viewDir.y*0.5+0.5,0.0,1.0);
-  float grad = 0.5 + 0.5*viewDir.y;
-  float verticalCloud = 1.0 - grad*grad*grad;
-  float horizon = 1.0-abs(viewDir.y);
-  horizon = clamp(horizon,0.0,1.0);
+  float grad = 0.5+0.5*viewDir.y;
+  float verticalCloud = 1.0-grad*grad*grad;
+
+  float horizon = smoothstep(-0.20,0.08,viewDir.y);
 
   float upper = smoothstep(0.0,1.0,y);
   upper *= upper;
@@ -259,17 +259,17 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
 
   float a = atan2(viewDir.x,viewDir.z);
 
-  float wave1 = sin(a*3.0+time*1.8+viewDir.y*5.0);
-  float wave2 = sin(a*6.0-time*1.15+wave1*2.2+viewDir.y*9.0);
-  float wave3 = sin(a*12.0+time*0.65+viewDir.y*15.0);
+  float wave1 = sin(3.0*a+time*1.8+10.0*viewDir.x*viewDir.y);
+  float wave2 = sin(5.0*a-time*1.15+5.0*wave1+0.1*sin(40.0*a-4.0*time));
+  float wave3 = sin(12.0*a+time*0.65+15.0*viewDir.x*viewDir.y);
 
   float cosmic = wave1*0.45+wave2*0.35+wave3*0.20;
   cosmic = cosmic*0.5+0.5;
   cosmic = smoothstep(0.18,0.86,cosmic);
 
-  vec3 flowPos1 = vec3(viewDir.x*2.8+time*0.42,viewDir.y*3.2+sin(time*0.65)*0.16,viewDir.z*2.8);
-  vec3 flowPos2 = vec3(viewDir.x*7.0-time*0.28,viewDir.y*6.0-time*0.10,viewDir.z*7.0);
-  vec3 flowPos3 = vec3(viewDir.x*17.0+time*0.18,viewDir.y*13.0,viewDir.z*17.0-time*0.24);
+  vec3 flowPos1 = vec3(viewDir.x*2.8+time*0.42+10.0*viewDir.x*viewDir.y*0.10, viewDir.y*3.2+sin(time*0.65)*0.16, viewDir.z*2.8);
+  vec3 flowPos2 = vec3(viewDir.x*7.0-time*0.28+5.0*viewDir.x*viewDir.y*0.08, viewDir.y*6.0-time*0.10, viewDir.z*7.0);
+  vec3 flowPos3 = vec3(viewDir.x*17.0+time*0.18+15.0*viewDir.x*viewDir.y*0.05, viewDir.y*13.0, viewDir.z*17.0-time*0.24);
 
   float n1 = noise3D(flowPos1);
   float n2 = noise3D(flowPos2);
@@ -280,12 +280,10 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   nebula *= 0.20+0.80*verticalCloud;
   nebula *= 0.72+0.28*cosmic;
 
-  // deep cyan cosmic cloud
   vec3 cyanNebula = vec3(0.003,0.22,0.31);
   cyanNebula *= nebula*1.75;
 
-  // royal violet cloud
-  float violetPattern = sin(a*4.0-viewDir.y*8.0+time*1.35);
+  float violetPattern = sin(4.0*a-viewDir.y*8.0+time*1.35);
   violetPattern = violetPattern*0.5+0.5;
   violetPattern *= nebula;
   violetPattern = smoothstep(0.20,0.82,violetPattern);
@@ -293,8 +291,7 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   vec3 violetNebula = vec3(0.17,0.008,0.36);
   violetNebula *= violetPattern*1.70;
 
-  // deep magenta fantasy cloud
-  float magentaPattern = sin(a*7.0+viewDir.y*12.0-time*0.85+n2*3.0);
+  float magentaPattern = sin(7.0*a+viewDir.y*12.0-time*0.85+n2*3.0);
   magentaPattern = magentaPattern*0.5+0.5;
   magentaPattern *= nebula;
   magentaPattern = smoothstep(0.38,0.88,magentaPattern);
@@ -302,7 +299,6 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   vec3 magentaNebula = vec3(0.20,0.008,0.25);
   magentaNebula *= magentaPattern*1.05;
 
-  // soft cosmic center
   float center = verticalCloud;
   center = smoothstep(0.02,0.94,center);
   center *= 0.30+0.70*nebula;
@@ -313,15 +309,13 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   vec3 centerGlow = vec3(0.008,0.20,0.29);
   centerGlow *= center*0.72;
 
-  // royal purple atmospheric aura
   float aura = smoothstep(0.02,0.72,verticalCloud);
   aura *= 0.35+0.65*nebula;
 
   vec3 royalAura = vec3(0.075,0.004,0.17);
   royalAura *= aura*0.80;
 
-  // elegant cosmic filaments
-  float filament = abs(sin(a*17.0+viewDir.y*24.0+n1*8.0-time*2.4));
+  float filament = abs(sin(17.0*a+24.0*viewDir.y+n1*8.0-time*2.4));
   filament = 1.0-filament;
   filament = smoothstep(0.82,0.997,filament);
   filament *= nebula*verticalCloud;
@@ -329,8 +323,7 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   vec3 filamentColor = vec3(0.012,0.29,0.38);
   filamentColor *= filament*0.82;
 
-  // violet filament layer
-  float violetFilament = abs(sin(a*10.0-viewDir.y*21.0+n2*7.0+time*1.3));
+  float violetFilament = abs(sin(10.0*a-21.0*viewDir.y+n2*7.0+time*1.3));
   violetFilament = 1.0-violetFilament;
   violetFilament = smoothstep(0.84,0.997,violetFilament);
   violetFilament *= nebula*verticalCloud;
@@ -346,11 +339,10 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   sky += filamentColor;
   sky += violetFilamentColor;
 
-  // cosmic thunderstorm
   float stormTime = time*0.50;
 
-  vec3 stormPos1 = vec3(viewDir.x*4.0+stormTime*0.16,viewDir.y*3.5-stormTime*0.07,viewDir.z*4.0);
-  vec3 stormPos2 = vec3(viewDir.x*9.0-stormTime*0.11,viewDir.y*7.0+stormTime*0.05,viewDir.z*9.0);
+  vec3 stormPos1 = vec3(viewDir.x*4.0+stormTime*0.16, viewDir.y*3.5-stormTime*0.07, viewDir.z*4.0);
+  vec3 stormPos2 = vec3(viewDir.x*9.0-stormTime*0.11, viewDir.y*7.0+stormTime*0.05, viewDir.z*9.0);
 
   float storm1 = noise3D(stormPos1);
   float storm2 = noise3D(stormPos2);
@@ -359,23 +351,20 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   stormCloud = smoothstep(0.48,0.76,stormCloud);
   stormCloud *= verticalCloud;
 
-  // random lightning event
-  float strikeNoise = noise3D(vec3(viewDir.x*12.0+time*0.38,viewDir.y*10.0-time*0.27,viewDir.z*12.0+time*0.31));
+  float strikeNoise = noise3D(vec3(viewDir.x*12.0+time*0.38+10.0*viewDir.x*viewDir.y*0.05, viewDir.y*10.0-time*0.27, viewDir.z*12.0+time*0.31));
+
   float strike = smoothstep(0.91,0.985,strikeNoise);
   strike *= stormCloud;
 
-  // primary lightning branch
-  float bolt = abs(sin(a*9.0+viewDir.y*19.0+storm1*9.0));
+  float bolt = abs(sin(9.0*a+19.0*viewDir.y+storm1*9.0));
   bolt = 1.0-bolt;
   bolt = smoothstep(0.972,0.999,bolt);
 
-  // secondary branching
-  float branch1 = abs(sin(a*17.0-viewDir.y*31.0+storm2*13.0+storm1*5.0));
+  float branch1 = abs(sin(17.0*a-31.0*viewDir.y+storm2*13.0+storm1*5.0));
   branch1 = 1.0-branch1;
   branch1 = smoothstep(0.978,0.999,branch1);
 
-  // smaller secondary branch
-  float branch2 = abs(sin(a*27.0+viewDir.y*42.0+storm1*17.0));
+  float branch2 = abs(sin(27.0*a+42.0*viewDir.y+storm1*17.0));
   branch2 = 1.0-branch2;
   branch2 = smoothstep(0.984,0.999,branch2);
 
@@ -384,22 +373,18 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   lightning *= strike;
   lightning *= smoothstep(0.08,0.88,verticalCloud);
 
-  // atmospheric flash
   float flash = strike*stormCloud;
-  flash *= 0.20+0.80*horizon;
+  flash *= horizon;
 
   vec3 thunderFlash = vec3(0.004,0.075,0.13);
   thunderFlash *= flash*1.20;
 
-  // cyan outer glow
   vec3 lightningGlow = vec3(0.004,0.20,0.30);
   lightningGlow *= lightning*2.35;
 
-  // violet secondary glow
   vec3 violetLightning = vec3(0.065,0.004,0.19);
   violetLightning *= lightning*1.05;
 
-  // white-cyan core
   vec3 lightningCore = vec3(0.78,0.96,1.0);
   lightningCore *= lightning*3.55;
 
@@ -408,8 +393,7 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
   sky += violetLightning;
   sky += lightningCore;
 
-  // End stars
-  float voidMask = smoothstep(0.08,0.92,abs(viewDir.y));
+  float voidMask = smoothstep(-0.25,0.18,viewDir.y);
 
   float lon = atan2(viewDir.x,viewDir.z)/(2.0*PI)+0.5;
   float lat = asin(clamp(viewDir.y,-1.0,1.0))/PI+0.5;
@@ -427,33 +411,28 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
 
   float starDistance = length((starLocal-starCenter)*vec2(1.0,1.12));
 
-  // consistent star size
   float starRadius = 0.027;
   float starPoint = smoothstep(starRadius,starRadius*0.16,starDistance);
   starPoint *= step(0.935,starSeed);
 
-  // brighter stars
   float brightSeed = rand(starCell+vec2(101.7,37.4));
   float brightRadius = 0.030;
   float brightPoint = smoothstep(brightRadius,brightRadius*0.15,starDistance);
   brightPoint *= step(0.981,brightSeed);
 
-  // fixed subtle star halo
   float starGlow = smoothstep(0.075,0.012,starDistance);
   starGlow *= step(0.935,starSeed);
 
-  // stars cover almost the entire sky
   float starMask = 0.92+0.08*voidMask;
-  starMask *= smoothstep(0.0,0.025,abs(viewDir.y));
+  starMask *= smoothstep(-0.02,0.08,viewDir.y);
 
   float starBrightness = starPoint*1.18+brightPoint*1.75;
 
-  vec3 starColor = mix( vec3(0.72,0.84,1.0), vec3(1.0,0.91,0.76), brightSeed);
+  vec3 starColor = mix(vec3(0.72,0.84,1.0),vec3(1.0,0.91,0.76),brightSeed);
 
   sky += starColor*starBrightness*starMask;
   sky += starColor*starGlow*0.08*starMask;
 
-  // final cinematic balance
   sky *= 0.70+0.30*voidMask;
   sky = max(sky,vec3(0.0,0.0,0.0));
   sky *= 1.10;
@@ -565,7 +544,7 @@ vec3 nlRenderGalaxy(vec3 vdir, vec3 fogColor, nl_environment env, float t) {
   vec3 gfcol = normalize(vec3(n0, cos(2.0*vdir.y), sin(vdir.x+n0)));
   stars += (0.4*gf + 0.012)*mix(vec3(0.5, 0.5, 0.5), gfcol*gfcol, NL_GALAXY_VIBRANCE);
 
-  stars *= mix(1.0, NL_GALAXY_DAY_VISIBILITY, env.dayFactor);
+  stars *= mix(1.0, NL_GALAXY_DAY_VISIBILITY, nlDayLightFactor(env.dayFactor));
 
   return stars*(1.0-env.rainFactor);
 }

@@ -30,19 +30,23 @@ bool detectUnderwater(vec3 FOG_COLOR, vec2 FOG_CONTROL) {
 
 float detectRain(vec3 FOG_CONTROL) {
   vec2 clear = vec2(0.5 + 20.0 / FOG_CONTROL.z, 1.0);
-  vec2 rain  = vec2(0.23, 0.70);
+  vec2 rain = vec2(0.23, 0.70);
   vec2 factor = clamp((FOG_CONTROL.xy - clear)/(rain - clear),vec2(0.0, 0.0),vec2(1.0, 1.0));
   float val = factor.x * factor.y;
-  
-  // Smooth rain transition
-  val = smoothstep(0.0, 1.0, val);
-  
-  // Make rain color strongly visible
-  return val;
+
+  return smoothstep(0.0, 0.45, val);
 }
 
 float detectDayFactor(vec3 FOG_COLOR) {
   return min(dot(FOG_COLOR, vec3(0.5,0.7,0.5)), 1.0);
+}
+
+float nlDayLightFactor(float dayFactor) {
+  return smoothstep(-0.35, 0.35, dayFactor);
+}
+
+float nlNightFactor(float dayFactor) {
+  return 1.0 - nlDayLightFactor(dayFactor);
 }
 
 nl_environment calculateSunParams(nl_environment env, float TIME_OF_DAY, float DAY) {
