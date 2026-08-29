@@ -52,7 +52,8 @@ void main() {
 
   vec4 light = v_light;
   #if defined(EMISSIVE) || defined(EMISSIVE_ONLY)
-    light.rgb = max(light.rgb, 2.0*NL_GLOW_TEX*(1.0-albedo.a)); // glow effect
+    light.rgb = max(light.rgb, 2.0*NL_GLOW_TEX*(1.0-albedo.a));
+    light.rgb = max(light.rgb, nlEntityEyeGlow(albedo.rgb, s_MatTexture, v_texcoord0));
   #endif
   light = nlGlint(light, v_glintuv, s_MatTexture1, GlintColor, TileLightColor, albedo);
 
