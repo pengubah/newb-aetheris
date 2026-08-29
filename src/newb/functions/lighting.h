@@ -249,9 +249,26 @@ vec4 nlEntityEdgeHighlightPreprocess(vec2 texcoord) {
 }
 
 vec4 nlLavaNoise(vec3 gPos, float t) {
-  float n = movingNoise2D(gPos.xz + gPos.yy, NL_LAVA_NOISE_SPEED*t, 0.9);
-  n *= n;
-  return vec4(mix(vec3(0.7, 0.4, 0.0)*smoothstep(-0.1, 0.5, n), vec3_splat(1.5), n*n),n);
+  vec2 p = gPos.xz;
+
+  float n0 = movingNoise2D(p*0.42, NL_LAVA_NOISE_SPEED*t*0.45, 0.35);
+  float n1 = movingNoise2D(p*0.85 + vec2(4.7,1.9), NL_LAVA_NOISE_SPEED*t*0.70, 0.40);
+  float n2 = movingNoise2D(p*1.60 - vec2(2.3,5.1), NL_LAVA_NOISE_SPEED*t, 0.28);
+
+  float n = n0*0.48 + n1*0.34 + n2*0.18;
+  n = smoothstep(0.18, 0.82, n);
+
+  float hot = smoothstep(0.42, 0.78, n);
+  float glow = smoothstep(0.30, 0.68, n);
+
+  vec3 darkLava = vec3(0.30,0.055,0.008);
+  vec3 warmLava = vec3(0.95,0.22,0.015);
+  vec3 hotLava  = vec3(1.55,0.72,0.08);
+
+  vec3 col = mix(darkLava, warmLava, glow);
+  col = mix(col, hotLava, hot);
+
+  return vec4(col, n);
 }
 
 #endif
