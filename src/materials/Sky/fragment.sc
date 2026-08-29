@@ -23,13 +23,13 @@ vec3 GetAurora(vec3 vDir, float time, float dither) {
     float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.225));
     visibility *= 2.0 - VdotU * 0.9;
 
-    if (visibility <= 1.0) return vec3(0.0);
+    if (visibility <= 1.0) return vec3(0.0,0.0,0.0);
 
     vec3 aurora = vec3(0.0);
     vec3 wpos = vDir;
 
     wpos.xz /= max(wpos.y, 0.1);
-    vec2 cameraPosM = vec2(0.0);
+    vec2 cameraPosM = vec2(0.0,0.0);
     cameraPosM.x += time * 2.0;
 
     const int sampleCount = 10;
