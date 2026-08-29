@@ -219,6 +219,7 @@
 /* Entity (Actor, ItemInHand) */
 #define NL_ENTITY_BRIGHTNESS     0.65 // 0.1 dark ~ 1.6 bright
 #define NL_ENTITY_EDGE_HIGHLIGHT 0.5 // [toggle] 0.0 no highlight ~ 1.6 bright highlight
+#define NL_ENTITY_EYE_GLOW 1.65 // 0.0 off ~ 3.0 strong eye emission
 
 /* Weather particles */
 #define NL_WEATHER_SPECK 1.0         // [toggle] 0.0 vanilla texture ~ 1.0 soft speck
