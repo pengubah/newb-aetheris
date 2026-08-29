@@ -40,7 +40,7 @@
 #define NL_SUNLIGHT_INTENSITY   2.85  // 1.0 weak ~ 5.0 bright
 #define NL_TORCHLIGHT_INTENSITY 1.6  // 0.5 weak ~ 3.0 bright
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
-#define NL_MIN_LIGHTING_BOOST   0.20 // 0.0 darkest ~ 1.0 brighter dark areas
+#define NL_MIN_LIGHTING_BOOST   0.10 // 0.0 darkest ~ 1.0 brighter dark areas
 #define NL_BLINKING_TORCH  // [toggle] flickering light
 //#define NL_CLOUD_SHADOW      // [toggle] cloud shadow (simple clouds only)
 
@@ -50,7 +50,7 @@
 
 /* Sun/moon light color */
 #define NL_DAWN_SUNLIGHT_COL    vec3(1.00, 0.91, 0.68)
-#define NL_NOON_SUNLIGHT_COL    vec3(0.92, 0.96, 1.0)
+#define NL_NOON_SUNLIGHT_COL    vec3(0.9, 0.94, 1.0)
 #define NL_NIGHT_MOONLIGHT_COL  vec3(0.23, 0.30, 0.44)
 
 /* Torch colors */
@@ -176,10 +176,10 @@
 #define NL_CLOUD4_CLUSTER_SIZE 4.93
 
 /* Aurora settings */
-#define NL_AURORA 1.2           // [toggle] 0.4 dim ~ 4.0 very bright
+#define NL_AURORA 0.8           // [toggle] 0.4 dim ~ 4.0 very bright
 #define NL_AURORA_VELOCITY 0.03 // 0.0 static ~ 0.3 very fast
-#define NL_AURORA_SCALE 0.04    // 0.002 large ~ 0.4 tiny
-#define NL_AURORA_WIDTH 0.18    // 0.04 thin line ~ 0.4 thick lines
+#define NL_AURORA_SCALE 0.025    // 0.002 large ~ 0.4 tiny
+#define NL_AURORA_WIDTH 0.09    // 0.04 thin line ~ 0.4 thick lines
 #define NL_AURORA_COL1 vec3(0.1,1.0,0.0)
 #define NL_AURORA_COL2 vec3(0.1,0.0,1.0)
 
