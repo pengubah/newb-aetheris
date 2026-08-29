@@ -175,14 +175,14 @@
 #define NL_CLOUD4_CLUSTER_SIZE 4.93
 
 /* Aurora settings */
-#define NL_AURORA 0.8           // [toggle] 0.4 dim ~ 4.0 very bright
-#define NL_AURORA_VELOCITY 0.03 // 0.0 static ~ 0.3 very fast
-#define NL_AURORA_SCALE 0.025    // 0.002 large ~ 0.4 tiny
-#define NL_AURORA_WIDTH 0.09    // 0.04 thin line ~ 0.4 thick lines
-#define NL_AURORA_COL1 vec3(0.1,1.0,0.0)
-#define NL_AURORA_COL2 vec3(0.1,0.0,1.0)
+//#define NL_AURORA 0.8           // [toggle] 0.4 dim ~ 4.0 very bright
+//#define NL_AURORA_VELOCITY 0.03 // 0.0 static ~ 0.3 very fast
+//#define NL_AURORA_SCALE 0.025    // 0.002 large ~ 0.4 tiny
+//#define NL_AURORA_WIDTH 0.09    // 0.04 thin line ~ 0.4 thick lines
+//#define NL_AURORA_COL1 vec3(0.1,1.0,0.0)
+//#define NL_AURORA_COL2 vec3(0.1,0.0,1.0)
 
-#define NL_CLOUD_AURORA_REFLECTION // [toggle] simple clouds/aurora reflection
+//#define NL_CLOUD_AURORA_REFLECTION // [toggle] simple clouds/aurora reflection
 
 /* Shooting star */
 #define NL_SHOOTING_STAR 1.0        // [toggle] 0.2 dim ~ 1.0 bright
