@@ -91,7 +91,7 @@ vec3 nlEntityEyeGlow(vec3 color, sampler2D tex, vec2 uv) {
   float colored = smoothstep(0.12, 0.42, sat);
   float mask = bright * colored;
 
-  vec3 eyeColor = color / max(mx, 0.001);
+  vec3 eyeColor = color / max(mx, 0.001, 0.001);
 
   vec2 texel = 1.0 / vec2(textureSize(tex, 0));
   vec3 n0 = texture2DLod(tex, uv + texel*vec2(-1.0, 0.0), 0.0).rgb;
