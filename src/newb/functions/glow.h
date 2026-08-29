@@ -91,7 +91,7 @@ vec3 nlEntityEyeGlow(vec3 color, sampler2D tex, vec2 uv) {
   float colored = smoothstep(0.12, 0.42, sat);
   float mask = bright * colored;
 
-  vec3 eyeColor = color / max(mx, 0.001, 0.001);
+  vec3 eyeColor = color / max(mx, 0.001);
 
   vec2 texel = 1.0 / vec2(textureSize(tex, 0));
   vec3 n0 = texture2DLod(tex, uv + texel*vec2(-1.0, 0.0), 0.0).rgb;
@@ -117,23 +117,6 @@ float nlGlowShimmer(vec3 cPos, float t) {
   return mix(1.0, shimmer*shimmer, NL_GLOW_SHIMMER);
 }
 #endif
-
-vec3 nlEntityEyeGlow(vec3 color, float t) {
-  float mx = max(color.r, max(color.g, color.b));
-  float mn = min(color.r, min(color.g, color.b));
-  float saturation = mx - mn;
-
-  float bright = smoothstep(0.20, 0.75, mx);
-  float colored = smoothstep(0.10, 0.45, saturation);
-
-  float eye = bright * colored;
-
-  vec3 glowColor = normalize(color + vec3(0.001));
-
-  float pulse = 0.92 + 0.08*sin(t*2.0);
-
-  return glowColor * eye * pulse;
-}
 
 vec4 nlGlint(vec4 light, vec4 layerUV, sampler2D glintTexture, vec4 glintColor, vec4 tileLightColor, vec4 albedo) {
   float d = fract(dot(albedo.rgb, vec3_splat(4.0)));
