@@ -73,12 +73,20 @@ vec4 nlWater(
   color.a = mix(COLOR.a*NL_WATER_TRANSPARENCY, 1.0, opacity*opacity);
 
     #ifdef NL_WATER_WAVE
-    if (camDist < 14.0) {
-      float smallWave = 0.5 + 0.5*sin(gPos.x*1.35 + gPos.z*0.82 + NL_WATER_WAVE_SPEED*t*1.15);
-      float softWave = 0.5 + 0.5*sin(gPos.x*0.72 - gPos.z*1.10 + NL_WATER_WAVE_SPEED*t*0.72);
-      float waveShape = mix(smallWave, softWave, 0.35);
-      wPos.y -= waveShape*0.035*NL_WATER_BUMP + (bump.x+bump.y)*0.012*NL_WATER_BUMP;
-    }
+  if (camDist < 14.0) {
+    float time = NL_WATER_WAVE_SPEED*t;
+
+    float wave1 = sin(gPos.x*0.82 + gPos.z*0.46 + time*0.82);
+    float wave2 = sin(gPos.x*0.48 - gPos.z*0.91 + time*0.61);
+    float wave3 = sin(gPos.x*1.35 + gPos.z*1.12 - time*1.08);
+    float swell = wave1*0.50 + wave2*0.32 + wave3*0.18;
+    float ripple = sin(gPos.x*2.8 - gPos.z*2.1 + time*1.35);
+    swell += ripple*0.08;
+    float waveShape = smoothstep(-0.75,0.75,swell);
+    wPos.y -= waveShape*0.030*NL_WATER_BUMP;
+    wPos.y -= (bump.x+bump.y)*0.010*NL_WATER_BUMP;
+    
+  }
   #endif
 
   return vec4(waterRefl, fresnel);
