@@ -69,25 +69,52 @@ void main() {
     env.dayFactor = v_underwaterRainTimeDay.w;
     env.fogCol = FogColor.rgb;
     env = calculateSunParams(env, TimeOfDay.x, 0.0);
-    
-    float mask = (1.0-1.0*env.rainFactor)*max(1.0 - 3.0*max(v_fogColor.b, v_fogColor.g), 0.0);
-
-    vec3 aurora = GetAurora(viewDir, v_underwaterRainTimeDay.z, dither) * mask;
-    skyColor += aurora;
 
     nl_skycolor skycol = nlOverworldSkyColors(env);
 
-    vec3 skyColor = nlRenderSky(skycol, env, -viewDir, v_underwaterRainTimeDay.z, true);
+    vec3 skyColor = nlRenderSky(
+      skycol,
+      env,
+      -viewDir,
+      v_underwaterRainTimeDay.z,
+      true
+    );
+
     #ifdef NL_SHOOTING_STAR
-      skyColor += NL_SHOOTING_STAR*nlRenderShootingStar(viewDir, env.fogCol, v_underwaterRainTimeDay.z);
+      skyColor += NL_SHOOTING_STAR*nlRenderShootingStar(
+        viewDir,
+        env.fogCol,
+        v_underwaterRainTimeDay.z
+      );
     #endif
+
     #ifdef NL_GALAXY_STARS
-      skyColor += NL_GALAXY_STARS*nlRenderGalaxy(viewDir, env.fogCol, env, v_underwaterRainTimeDay.z);
+      skyColor += NL_GALAXY_STARS*nlRenderGalaxy(
+        viewDir,
+        env.fogCol,
+        env,
+        v_underwaterRainTimeDay.z
+      );
     #endif
-    
-    float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
-    vec3 aurora = GetAurora(viewDir, v_underwaterRainTimeDay.z, dither);
-    skyColor += aurora;
+
+    float dither = fract(
+      sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453
+    );
+
+    float mask =
+      (1.0-env.rainFactor) *
+      max(
+        1.0-3.0*max(v_fogColor.b, v_fogColor.g),
+        0.0
+      );
+
+    vec3 aurora = GetAurora(
+      viewDir,
+      v_underwaterRainTimeDay.z,
+      dither
+    );
+
+    skyColor += aurora*mask;
 
     skyColor = colorCorrection(skyColor);
 
