@@ -77,7 +77,9 @@ vec4 renderCloudsRounded(
   pos += deltaP;
 
   deltaP /= -stepsf;
-  pos += deltaP * hash(vPos.xz + time); // Displace Clouds' Step
+  float grazing = 1.0 - smoothstep(0.08, 0.35, abs(vDir.y));
+  float jitter = mix(1.0, 0.15, grazing);
+  pos += deltaP * hash(vPos.xz + time) * jitter;
 
   // alpha, gradient
   vec2 d = vec2(0.0,0.5);
