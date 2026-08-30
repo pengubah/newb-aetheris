@@ -466,7 +466,7 @@ vec3 nlRenderSky(nl_skycolor skycol, nl_environment env, vec3 viewDir, float t, 
          //streaks *= streaks;
          //streaks = (spread + 3.0*grad*grad + 4.0*streaks*streaks);
          //sky += 2.0*streaks*skycol.horizon;
-       /)}
+       //}
     #endif
   }
 
