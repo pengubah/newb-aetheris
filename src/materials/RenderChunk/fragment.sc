@@ -1,92 +1,125 @@
-$input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra, v_position
+#ifndef INSTANCING
+  $input v_fogColor, v_worldPos, v_underwaterRainTimeDay
+#endif
 
 #include <bgfx_shader.sh>
-#include <newb/main.sh>
 
-SAMPLER2D_AUTOREG(s_MatTexture);
-SAMPLER2D_AUTOREG(s_SeasonsTexture);
-SAMPLER2D_AUTOREG(s_LightMapTexture);
-SAMPLER2D_AUTOREG(s_Caustics);
+#ifndef INSTANCING
+  #include <newb/main.sh>
+  uniform vec4 TimeOfDay;
+  uniform vec4 FogColor;
+  uniform vec4 FogAndDistanceControl;
+#endif
 
-uniform vec4 FogAndDistanceControl;
-uniform vec4 ViewPositionAndTime;
-uniform vec4 FogColor;
-uniform vec4 TimeOfDay;
+SAMPLER2D_AUTOREG(s_NoiseTex);
 
-void main() {
-  #if defined(DEPTH_ONLY_OPAQUE) || defined(DEPTH_ONLY) || defined(INSTANCING)
-    gl_FragColor = vec4(1.0,1.0,1.0,1.0);
-    return;
-  #endif
+float pow2(float x) { return x * x; }
+float pow1_5(float x) { return pow(x, 1.5); }
+float clamp01(float x) { return clamp(x, 0.0, 1.0); }
+float sqrt1(float x) { return sqrt(max(x, 0.0)); }
 
-  vec4 diffuse = texture2D(s_MatTexture, v_texcoord0);
-  vec4 color = v_color0;
-  
-  nl_environment env = nlDetectEnvironment(0.0, TimeOfDay.x, 0.0, FogColor.rgb, FogAndDistanceControl.xyz);
+vec3 GetAurora(vec3 vDir, float time, float dither) {
+    float VdotU = clamp(vDir.y, 0.0, 1.0);
+    float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.225));
+    visibility *= 2.0 - VdotU * 0.9;
 
-  float time = ViewPositionAndTime.w;
-  
-  vec3 N;
-     N = normalize(cross(dFdx(v_position), dFdy(v_position)));
+    if (visibility <= 1.0) return vec3(0.0,0.0,0.0);
 
-  bool blockUnderWater = (v_lightmapUV.y < 0.9 && abs((2.0 * v_position.y - 15.0) / 16.0 - v_lightmapUV.y) < 0.00002);
+    vec3 aurora = vec3(0.0,0.0,0.0);
+    vec3 wpos = vDir;
 
-  #ifdef ALPHA_TEST
-    if (diffuse.a < 0.6) {
-      discard;
+    wpos.xz /= max(wpos.y, 0.1);
+    vec2 cameraPosM = vec2(0.0,0.0);
+    cameraPosM.x += time * 2.0;
+
+    const int sampleCount = 10;
+    const int sampleCountP = sampleCount + 10;
+
+    float ditherM = dither + 9.0;
+    float auroraAnimate = time * 0.01;for (int i = 0; i < sampleCount; i++) {
+        float current = pow2((float(i) + ditherM) / float(sampleCountP));
+
+        vec2 planePos = wpos.xz * (0.8 + current) * 10.0 + cameraPosM;
+
+        planePos *= 0.0007;
+        float noise = texture2D(s_NoiseTex, planePos).r;
+
+        noise = pow2(pow2(1.0 - 0.8 * abs(noise - 0.5)));
+        noise *= texture2D(s_NoiseTex, planePos * 8.0 + auroraAnimate).b;
+        noise *= texture2D(s_NoiseTex, planePos * 1.0 - auroraAnimate).g;
+
+        float currentM = 1.0 - current;
+
+        aurora += noise * currentM * mix(vec3(0.65, 0.48, 1.05), vec3(0.0, 4.5, 3.0), pow2(pow2(currentM)));
     }
-  #endif
 
-  #if defined(SEASONS) && (defined(OPAQUE) || defined(ALPHA_TEST))
-    diffuse.rgb *= mix(vec3(1.0,1.0,1.0), texture2D(s_SeasonsTexture, v_color1.xy).rgb * 2.0, v_color1.z);
-  #endif
-
-  vec3 glow = nlGlow(s_MatTexture, v_texcoord0, v_extra.a);
-
-  diffuse.rgb *= diffuse.rgb;
-
-  #if defined(TRANSPARENT) && !(defined(SEASONS) || defined(RENDER_AS_BILLBOARDS))
-    if (v_extra.b > 0.9) {
-      diffuse.rgb = vec3_splat(1.0 - NL_WATER_TEX_OPACITY*(1.0 - diffuse.b*1.8));
-      diffuse.a = color.a;
-    }
-  #else
-    diffuse.a = 1.0;
-  #endif
-
-  diffuse.rgb *= color.rgb;
-  diffuse.rgb += glow;
-
-  if (v_extra.b > 0.9) {
-    diffuse.rgb += v_refl.rgb*v_refl.a;
-  } else if (v_refl.a > 0.0) {
-    // reflective effect - only on xz plane
-    float dy = abs(dFdy(v_extra.g));
-    if (dy < 0.0002) {
-      float mask = v_refl.a*(clamp(v_extra.r*10.0,8.2,8.8)-7.8);
-      diffuse.rgb *= 1.0 - 0.6*mask;
-      diffuse.rgb += v_refl.rgb*mask;
-    }
-  }
-
-if(env.underwater || blockUnderWater){
-    vec2 uv = v_position.xz * 0.15; 
-    uv += vec2(time * 0.02, time * 0.02); 
-    vec3 caustic = texture2D(s_Caustics, uv).rgb;
-
-    float ndotl = max(N.y, 0.0); 
-     caustic *= ndotl * 0.5;
-
-    vec3 watercol = vec3(0.0, 0.3, 0.5);
-    vec3 finalColor = watercol + caustic;
-
-    diffuse.rgb *= finalColor;
-    diffuse.rgb *= 2.7;
+    aurora *= 3.8;
+    return aurora * visibility / float(sampleCount);
 }
 
-  diffuse.rgb = mix(diffuse.rgb, v_fog.rgb, v_fog.a);
+void main() {
+  #ifndef INSTANCING
+    vec3 viewDir = normalize(v_worldPos);
 
-  diffuse.rgb = colorCorrection(diffuse.rgb);
+    nl_environment env;
+    env.end = false;
+    env.nether = false;
+    env.underwater = v_underwaterRainTimeDay.x > 0.5;
+    env.rainFactor = v_underwaterRainTimeDay.y;
+    env.dayFactor = v_underwaterRainTimeDay.w;
+    env.fogCol = FogColor.rgb;
+    env = calculateSunParams(env, TimeOfDay.x, 0.0);
 
-  gl_FragColor = diffuse;
+    nl_skycolor skycol = nlOverworldSkyColors(env);
+
+    vec3 skyColor = nlRenderSky(
+      skycol,
+      env,
+      -viewDir,
+      v_underwaterRainTimeDay.z,
+      true
+    );
+
+    #ifdef NL_SHOOTING_STAR
+      skyColor += NL_SHOOTING_STAR*nlRenderShootingStar(
+        viewDir,
+        env.fogCol,
+        v_underwaterRainTimeDay.z
+      );
+    #endif
+
+    #ifdef NL_GALAXY_STARS
+      skyColor += NL_GALAXY_STARS*nlRenderGalaxy(
+        viewDir,
+        env.fogCol,
+        env,
+        v_underwaterRainTimeDay.z
+      );
+    #endif
+
+    float dither = fract(
+      sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453
+    );
+
+    float mask =
+      (1.0-env.rainFactor) *
+      max(
+        1.0-3.0*max(v_fogColor.b, v_fogColor.g),
+        0.0
+      );
+
+    vec3 aurora = GetAurora(
+      viewDir,
+      v_underwaterRainTimeDay.z,
+      dither
+    );
+
+    skyColor += aurora*mask;
+
+    skyColor = colorCorrection(skyColor);
+
+    gl_FragColor = vec4(skyColor, 1.0);
+  #else
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+  #endif
 }
