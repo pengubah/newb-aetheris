@@ -22,7 +22,7 @@ void main() {
 
 bool blockUnderWater = (v_lightmapUV.y < 0.9 && abs((2.0 * v_position.y - 15.0) / 16.0 - v_lightmapUV.y) < 0.00002);
 
-if(env.underwater || blockUnderWater){
+if (blockUnderWater) {
     vec2 uv = v_position.xz * 0.15; 
     uv += vec2(time * 0.02, time * 0.02); 
     vec3 caustic = texture2D(s_Caustics, uv).rgb;
