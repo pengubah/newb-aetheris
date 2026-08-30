@@ -85,7 +85,7 @@ void main() {
     bool isTree = false;
   #endif
 
-  nl_environment env = nlDetectEnvironment(0.0, TimeOfDay.x, 0.0, FogColor.rgb, FogAndDistanceControl.xyz);
+  nl_environment env = nlDetectEnvironment(TimeOfDay.x, FogColor.rgb, FogAndDistanceControl.xyz);
   nl_skycolor skycol = nlSkyColors(env);
 
   // time
@@ -181,13 +181,11 @@ void main() {
 
   v_extra = vec4(shade, worldPos.y, water, shimmer);
   v_refl = refl;
-  v_texcoord0 = a_texcoord0;
+  v_texcoord0 = uv0;
   v_lightmapUV = uv1;
   v_color0 = color;
   v_color1 = a_color0;
   v_fog = fogColor;
-  v_position = a_position;
-  v_wpos = worldPos.xyz;
 
   #else
 
