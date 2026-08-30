@@ -180,6 +180,7 @@ void main() {
   #endif
 
   v_extra = vec4(shade, worldPos.y, water, shimmer);
+  v_underwater = env.underwater ? 1.0 : 0.0;
   v_refl = refl;
   v_texcoord0 = uv0;
   v_lightmapUV = uv1;
