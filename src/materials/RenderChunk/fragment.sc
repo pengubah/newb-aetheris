@@ -9,8 +9,15 @@ SAMPLER2D_AUTOREG(s_LightMapTexture);
 SAMPLER2D_AUTOREG(s_Caustics);
 
 void main() {
+  #if defined(DEPTH_ONLY_OPAQUE) || defined(DEPTH_ONLY) || defined(INSTANCING)
+    gl_FragColor = vec4(1.0,1.0,1.0,1.0);
+    return;
+  #endif
 
-vec3 N;
+  vec4 diffuse = texture2D(s_MatTexture, v_texcoord0);
+  vec4 color = v_color0;
+  
+  vec3 N;
      N = normalize(cross(dFdx(v_position), dFdy(v_position)));
 
 bool blockUnderWater = (v_lightmapUV.y < 0.9 && abs((2.0 * v_position.y - 15.0) / 16.0 - v_lightmapUV.y) < 0.00002);
@@ -29,14 +36,6 @@ if(env.underwater || blockUnderWater){
     diffuse.rgb *= finalColor;
     diffuse.rgb *= 2.7;
 }
-
-  #if defined(DEPTH_ONLY_OPAQUE) || defined(DEPTH_ONLY) || defined(INSTANCING)
-    gl_FragColor = vec4(1.0,1.0,1.0,1.0);
-    return;
-  #endif
-
-  vec4 diffuse = texture2D(s_MatTexture, v_texcoord0);
-  vec4 color = v_color0;
 
   #ifdef ALPHA_TEST
     if (diffuse.a < 0.6) {
