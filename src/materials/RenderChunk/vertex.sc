@@ -2,7 +2,7 @@ $input a_color0, a_position, a_texcoord0, a_texcoord1
 #ifdef INSTANCING
   $input i_data0, i_data1, i_data2, i_data3
 #endif
-$output v_position, v_underwater, v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra
+$output v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra
 
 #include <bgfx_shader.sh>
 #include <newb/main.sh>
@@ -180,13 +180,14 @@ void main() {
   #endif
 
   v_extra = vec4(shade, worldPos.y, water, shimmer);
-  v_underwater = env.underwater ? 1.0 : 0.0;
   v_refl = refl;
-  v_texcoord0 = uv0;
+  v_texcoord0 = a_texcoord0;
   v_lightmapUV = uv1;
   v_color0 = color;
   v_color1 = a_color0;
   v_fog = fogColor;
+  v_position = a_position;
+  v_wpos = worldPos.xyz;
 
   #else
 
