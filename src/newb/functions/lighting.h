@@ -143,9 +143,9 @@ vec3 nlLighting(
 
 void nlUnderwaterLighting(inout vec3 light, inout vec3 pos, vec2 lit, vec2 uv1, vec3 tiledCpos, vec3 cPos, highp float t, vec3 horizonCol) {
   if (uv1.y < 0.9) {
-    float caustics = disp(tiledCpos, NL_WATER_WAVE_SPEED*t);
-    caustics *= 3.0*caustics;
-    light += NL_UNDERWATER_BRIGHTNESS + NL_CAUSTIC_INTENSITY*caustics*(0.15 + lit.y + lit.x*0.7);
+    //float caustics = disp(tiledCpos, NL_WATER_WAVE_SPEED*t);
+    //caustics *= 3.0*caustics;
+    //light += NL_UNDERWATER_BRIGHTNESS + NL_CAUSTIC_INTENSITY*caustics*(0.15 + lit.y + lit.x*0.7);
   }
   light *= mix(normalize(horizonCol), vec3_splat(0.6), lit.y*0.6);
   #ifdef NL_UNDERWATER_WAVE
@@ -219,10 +219,7 @@ vec3 nlEntityLighting(nl_skycolor skycol, nl_environment env, vec3 pos, vec4 nor
   }
 
   if (env.underwater) {
-    vec3 gPos = wPos + CAMERA_POS;
-    float caustics = 0.2 + 0.2*sin(dot(gPos, vec3(1.8, 2.4, 2.1)) + 0.8*t);
-    light += 0.8*NL_UNDERWATER_BRIGHTNESS + NL_CAUSTIC_INTENSITY*caustics*(0.1 + tl);
-    light *= mix(normalize(skycol.horizon), vec3_splat(0.5), tileLightCol.b*0.2);
+    light += 0.8*NL_UNDERWATER_BRIGHTNESS;
   }
 
   lum = luminance(light);
