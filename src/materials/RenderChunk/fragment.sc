@@ -1,4 +1,4 @@
-$input v_position, v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra
+$input v_position, v_underwater, v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra
 
 #include <bgfx_shader.sh>
 #include <newb/main.sh>
@@ -19,6 +19,9 @@ void main() {
   
   vec3 N;
      N = normalize(cross(dFdx(v_position), dFdy(v_position)));
+
+nl_environment env;
+env.underwater = v_underwater > 0.5;
 
 bool blockUnderWater = (v_lightmapUV.y < 0.9 && abs((2.0 * v_position.y - 15.0) / 16.0 - v_lightmapUV.y) < 0.00002);
 
