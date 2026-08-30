@@ -8,6 +8,11 @@ SAMPLER2D_AUTOREG(s_SeasonsTexture);
 SAMPLER2D_AUTOREG(s_LightMapTexture);
 SAMPLER2D_AUTOREG(s_Caustics);
 
+uniform vec4 FogAndDistanceControl;
+uniform vec4 ViewPositionAndTime;
+uniform vec4 FogColor;
+uniform vec4 TimeOfDay;
+
 void main() {
   #if defined(DEPTH_ONLY_OPAQUE) || defined(DEPTH_ONLY) || defined(INSTANCING)
     gl_FragColor = vec4(1.0,1.0,1.0,1.0);
@@ -16,6 +21,10 @@ void main() {
 
   vec4 diffuse = texture2D(s_MatTexture, v_texcoord0);
   vec4 color = v_color0;
+  
+  nl_environment env = nlDetectEnvironment(0.0, TimeOfDay.x, 0.0, FogColor.rgb, FogAndDistanceControl.xyz);
+
+  float time = ViewPositionAndTime.w;
   
   vec3 N;
      N = normalize(cross(dFdx(v_position), dFdy(v_position)));
