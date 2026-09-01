@@ -387,7 +387,7 @@ vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
 	sky = pow(sky, vec3(0.96));
 	
 	#ifdef NL_BLACKHOLE
-      vec4 bh = renderBlackhole(viewdir,t);
+      vec4 bh = renderBlackhole(viewDir,t);
       sky *= bh.a;
       sky += bh.rgb;
     #endif
