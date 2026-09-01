@@ -1,5 +1,5 @@
 #ifndef INSTANCING
-  $input v_fogColor, v_worldPos, v_underwaterRainTimeDay
+  $input v_worldPos, v_underwaterRainTimeDay, v_fogColor
 #endif
 
 #include <bgfx_shader.sh>
@@ -21,39 +21,34 @@ float sqrt1(float x) { return sqrt(max(x, 0.0)); }
 vec3 GetAurora(vec3 vDir, float time, float dither) {
     float VdotU = clamp(vDir.y, 0.0, 1.0);
     float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.225));
-    visibility *= 2.0 - VdotU * 0.9;
-
+    visibility *= 4.0 - VdotU * 0.9;
     if (visibility <= 1.0) return vec3(0.0,0.0,0.0);
 
     vec3 aurora = vec3(0.0,0.0,0.0);
     vec3 wpos = vDir;
-
     wpos.xz /= max(wpos.y, 0.1);
     vec2 cameraPosM = vec2(0.0,0.0);
-    cameraPosM.x += time * 2.0;
+    cameraPosM.x += time * 0.8;
 
-    const int sampleCount = 10;
+    const int sampleCount = 20;
     const int sampleCountP = sampleCount + 10;
 
-    float ditherM = dither + 9.0;
-    float auroraAnimate = time * 0.01;for (int i = 0; i < sampleCount; i++) {
+    float ditherM = dither + 10.0;
+    float auroraAnimate = time * 0.0;
+
+    for (int i = 0; i < sampleCount; i++) {
         float current = pow2((float(i) + ditherM) / float(sampleCountP));
-
         vec2 planePos = wpos.xz * (0.8 + current) * 10.0 + cameraPosM;
-
         planePos *= 0.0007;
         float noise = texture2D(s_NoiseTex, planePos).r;
-
-        noise = pow2(pow2(1.0 - 0.8 * abs(noise - 0.5)));
+        noise = pow2(pow2(pow2(pow2(1.0- 0.8* abs(noise - 0.5)))));
         noise *= texture2D(s_NoiseTex, planePos * 8.0 + auroraAnimate).b;
         noise *= texture2D(s_NoiseTex, planePos * 1.0 - auroraAnimate).g;
-
         float currentM = 1.0 - current;
-
-        aurora += noise * currentM * mix(vec3(0.65, 0.48, 1.05), vec3(0.0, 4.5, 3.0), pow2(pow2(currentM)));
+        aurora += noise * currentM * mix(vec3(0.5, 0.6, 1.0), vec3(0.0, 4.5, 3.2), pow2(pow2(currentM)));
     }
 
-    aurora *= 3.8;
+    aurora *= 1.0;
     return aurora * visibility / float(sampleCount);
 }
 
@@ -68,54 +63,24 @@ void main() {
     env.rainFactor = v_underwaterRainTimeDay.y;
     env.dayFactor = v_underwaterRainTimeDay.w;
     env.fogCol = FogColor.rgb;
-    env = calculateSunParams(env, TimeOfDay.x, 0.0);
+    env = calculateSunParams(env, TimeOfDay.x);
+
+    float mask = (1.0-1.0*env.rainFactor)*max(1.0 - 3.0*max(v_fogColor.b, v_fogColor.g), 0.0);
 
     nl_skycolor skycol = nlOverworldSkyColors(env);
 
-    vec3 skyColor = nlRenderSky(
-      skycol,
-      env,
-      -viewDir,
-      v_underwaterRainTimeDay.z,
-      true
-    );
-
+    vec3 skyColor = nlRenderSky(skycol, env, -viewDir, v_underwaterRainTimeDay.z, true);
     #ifdef NL_SHOOTING_STAR
-      skyColor += NL_SHOOTING_STAR*nlRenderShootingStar(
-        viewDir,
-        env.fogCol,
-        v_underwaterRainTimeDay.z
-      );
+      skyColor += NL_SHOOTING_STAR*nlRenderShootingStar(viewDir, env.fogCol, v_underwaterRainTimeDay.z);
     #endif
-
     #ifdef NL_GALAXY_STARS
-      skyColor += NL_GALAXY_STARS*nlRenderGalaxy(
-        viewDir,
-        env.fogCol,
-        env,
-        v_underwaterRainTimeDay.z
-      );
+      skyColor += NL_GALAXY_STARS*nlRenderGalaxy(viewDir, env.fogCol, env, v_underwaterRainTimeDay.z);
     #endif
 
-    float dither = fract(
-      sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453
-    );
+  float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+  vec3 aurora = GetAurora(viewDir, v_underwaterRainTimeDay.z, dither) * mask;
 
-    float mask =
-      (1.0-env.rainFactor) *
-      max(
-        1.0-3.0*max(v_fogColor.b, v_fogColor.g),
-        0.0
-      );
-
-    vec3 aurora = GetAurora(
-      viewDir,
-      v_underwaterRainTimeDay.z,
-      dither
-    );
-
-    skyColor += aurora*mask;
-
+  skyColor += aurora;
     skyColor = colorCorrection(skyColor);
 
     gl_FragColor = vec4(skyColor, 1.0);
