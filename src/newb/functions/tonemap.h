@@ -16,11 +16,11 @@ vec3 colorCorrection(vec3 col) {
   #elif NL_TONEMAP_TYPE == 4
     // aces tonemap
     const float a = 1.04;
-    const float b = 0.025;
-    const float c = 0.95;
-    const float d = 0.58;
+    const float b = 0.03;
+    const float c = 0.93;
+    const float d = 0.56;
     const float e = 0.14;
-    col *= 0.80;
+    col *= 0.85;
     col = clamp((col*(a*col + b)) / (col*(c*col + d) + e), 0.0, 1.0);
   #elif NL_TONEMAP_TYPE == 2
     // simple reinhard tonemap

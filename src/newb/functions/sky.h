@@ -29,96 +29,6 @@ vec3 getEndHorizonCol() {
   return NL_END_HORIZON_COL;
 }
 
-// Dawn/dusk strength. 0.0 = full night/day, 1.0 = sun sitting on the horizon.
-// The mask is deliberately symmetric so sunrise and sunset use the same palette.
-float nlDawnFactor(float dayFactor) {
-  float d = abs(dayFactor);
-  float f = 1.0 - smoothstep(0.0, 0.58, d);
-  f = f*f*(3.0 - 2.0*f);
-  return f;
-}
-
-// Keep the dawn/sunset horizon intact, but reduce how far its warm influence
-// carries into the deeper night. At the horizon (dayFactor ~= 0) this is 1.0,
-// while deep night keeps only a subtle residual atmospheric influence.
-float nlNightDawnAttenuation(float dayFactor) {
-  float nightDepth = smoothstep(0.0, 0.58, max(-dayFactor, 0.0));
-  return mix(1.0, 0.28, nightDepth);
-}
-
-vec4 renderBlackhole(vec3 viewdir, float t) {
-    t *= NL_BH_SPEED;
-
-    float size = max(NL_BLACKHOLE_SIZE,0.01);
-    vec2 p = viewdir.xz;
-    float vertical = viewdir.y;
-    float dist = length(p)/size;
-    float ang = atan2(p.y,p.x);
-    vec3 col = vec3(0.0, 0.0, 0.0);
-
-    float blackCore = smoothstep(0.160,0.132,dist);
-
-    float disk = exp(-pow((dist-0.190)/0.017,2.0));
-    float innerDisk = exp(-pow((dist-0.166)/0.012,2.0));
-    float outerDisk = exp(-pow((dist-0.210)/0.020,2.0));
-
-    float spiral1 = sin(ang*7.0-dist*105.0+t*1.45);
-    float spiral2 = sin(ang*13.0-dist*145.0-t*0.90+spiral1*1.2);
-    float spiral3 = sin(ang*21.0-dist*190.0+t*0.55);
-
-    float spiral = spiral1*0.50+spiral2*0.32+spiral3*0.18;
-    spiral = spiral*0.5+0.5;
-    spiral = smoothstep(0.42,0.78,spiral);
-
-    vec2 noisePos = vec2(cos(ang),sin(ang))*9.0;
-    noisePos += vec2(dist*45.0-t*0.35,dist*30.0+t*0.20);
-
-    float turbulence = noise3D(vec3(noisePos,dist));
-
-    spiral *= 0.72+0.38*turbulence;
-
-    float diskLight = disk*(0.38+0.82*spiral);
-    diskLight += innerDisk*(0.35+0.65*spiral);
-    diskLight += outerDisk*spiral*0.42;
-
-    float purpleGlow = exp(-pow((dist-0.203)/0.036,2.0));
-    purpleGlow *= 0.35+0.65*spiral;
-
-    float whiteGlow = exp(-pow((dist-0.166)/0.017,2.0));
-    whiteGlow *= 0.55+0.45*spiral;
-
-    vec3 deepPurple = vec3(0.12,0.005,0.30);
-    vec3 royalPurple = vec3(0.38,0.025,0.78);
-    vec3 violet = vec3(0.68,0.12,1.00);
-    vec3 whiteViolet = vec3(0.90,0.72,1.00);
-    vec3 white = vec3(1.0,0.97,1.0);
-
-    col += deepPurple*purpleGlow*1.10;
-    col += royalPurple*diskLight*1.15;
-    col += violet*diskLight*0.70;
-    col += whiteViolet*whiteGlow*1.20;
-    col += white*innerDisk*0.80;
-
-    float filament = smoothstep(0.62,0.90,spiral);
-    filament *= disk;
-
-    col += vec3(0.78,0.22,1.0)*filament*0.60;
-
-    float aura = exp(-pow((dist-0.160)/0.026,2.0));
-
-    col += vec3(0.42,0.06,0.82)*aura*0.38;
-
-    col = mix(col,vec3(0.0, 0.0, 0.0),blackCore);
-    col *= 0.88;
-    col = col/(1.0+col*0.38);
-
-    float visibility = smoothstep(0.02,0.20,abs(vertical));
-
-    col *= visibility;
-
-    return vec4(col,visibility);
-}
-
 nl_skycolor nlEndSkyColors(nl_environment env) {
   nl_skycolor s;
   s.zenith = getEndZenithCol();
@@ -129,22 +39,23 @@ nl_skycolor nlEndSkyColors(nl_environment env) {
 
 nl_skycolor nlOverworldSkyColors(nl_environment env) {
   nl_skycolor s;
-  float f = 0.68 + 0.30*(1.0-max(-env.dayFactor, 0.0));
-  float nightFactor = nlNightFactor(env.dayFactor);
+  float f = 1.0 + 2.0*(1.0-max(-env.dayFactor, 0.0));
+  float nightFactor = step(env.dayFactor, 0.0);
   s.zenith = mix(NL_DAY_ZENITH_COL, NL_NIGHT_ZENITH_COL*f, nightFactor);
   s.horizon = mix(NL_DAY_HORIZON_COL, NL_NIGHT_HORIZON_COL*f, nightFactor);
   s.horizonEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL*f, nightFactor);
 
-  // Dawn/dusk palette. Keep the colors entirely controlled by NL_CONFIG_H;
-  // only the transition shape is changed here. This gives a broad purple ->
-  // pink/orange -> gold gradient like a real low-sun atmosphere.
-  float dawnFactor = nlDawnFactor(env.dayFactor);
-  float dawnSoft = dawnFactor*dawnFactor*(3.0-2.0*dawnFactor);
-  dawnSoft *= nlNightDawnAttenuation(env.dayFactor);
-
-  s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnSoft*0.92);
-  s.horizon = mix(s.horizon, NL_DAWN_HORIZON_COL, dawnSoft);
-  s.horizonEdge = mix(s.horizonEdge, NL_DAWN_EDGE_COL, dawnSoft);
+  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
+  dawnFactor = smoothstep(0.0,1.0,dawnFactor);
+  dawnFactor *= dawnFactor;
+  dawnFactor *= dawnFactor;
+  dawnFactor *= mix(1.0,dawnFactor*dawnFactor,nightFactor);
+  float dawnZenith = smoothstep(0.02,0.82,dawnFactor);
+  float dawnHorizon = smoothstep(0.0,0.72,dawnFactor);
+  float dawnEdge = smoothstep(0.0,0.48,dawnFactor);
+  s.zenith = mix(s.zenith,NL_DAWN_ZENITH_COL,dawnZenith);
+  s.horizon = mix(s.horizon,NL_DAWN_HORIZON_COL,dawnHorizon);
+  s.horizonEdge = mix(s.horizonEdge,NL_DAWN_EDGE_COL,dawnEdge);
 
   float zh = dot(s.zenith, vec3_splat(0.33));
   float hh = dot(s.horizon, vec3_splat(0.33));
@@ -194,42 +105,42 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   gradient1 = mix(gradient1*gradient1, 1.0, mg8);
   gradient2 = mix(gradient2, 1.0, mg8);
 
-  // Dawn sky shaping. Keep the configured dawn palette intact, but reduce
-  // the normal daytime angular gradient while the sun is near the horizon.
-  // This prevents a flat blue/orange split and creates the soft layered look
-  // seen during golden hour.
-  float dawnFactor = nlDawnFactor(env.dayFactor);
-  float dawnShape = dawnFactor*dawnFactor*(3.0-2.0*dawnFactor);
-  dawnShape *= nlNightDawnAttenuation(env.dayFactor);
-  float df = mix(1.0, clamp(g2.x, 0.0, 1.0), dawnShape*0.72);
-
+  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
+  float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
   vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*df*df);
   sky = mix(skyCol.zenith, sky, gradient2*df);
-
-  // Broad atmospheric glow around the low sun. The glow is intentionally
-  // derived from the configured dawn colors instead of hard-coded colors.
-  float sunDisc = max(dot(env.sunDir, viewDir), 0.0);
-  float sunGlow = pow(sunDisc, 5.0);
-  float horizonGlow = 1.0-smoothstep(0.02, 0.72, abs(viewDir.y));
-  float dawnGlow = dawnShape*horizonGlow;
-  vec3 dawnGlowCol = mix(skyCol.horizon, skyCol.horizonEdge, 0.35);
-  sky += dawnGlowCol*(0.53*dawnGlow + 2.6*sunGlow*dawnShape);
-
-  // Warm haze is strongest close to the horizon and fades smoothly into the
-  // configured dawn zenith. This is what produces the orange/yellow base seen
-  // in the reference without changing NL_DAWN_HORIZON_COL in the config.
-  float haze = dawnShape*(1.0-smoothstep(-0.12, 0.50, viewDir.y));
-  sky += skyCol.horizon*(0.18*haze);
+  float sunDot = max(dot(env.sunDir,viewDir),0.0);
+  float sunHorizon = 1.0-smoothstep(0.0,0.42,abs(viewDir.y));
+  float sunLow = 1.0-smoothstep(0.0,0.48,abs(env.sunDir.y));
+  float dawnAtmosphere = 1.0-env.dayFactor*env.dayFactor;
+  dawnAtmosphere = smoothstep(0.0,1.0,dawnAtmosphere);
+  dawnAtmosphere *= dawnAtmosphere;
+  dawnAtmosphere *= dawnAtmosphere;
+  float sunHalo = pow(sunDot,2.0);
+  sunHalo *= sunHorizon;
+  sunHalo *= sunLow;
+  sunHalo *= dawnAtmosphere;
+  float sunGlow = pow(sunDot,8.0);
+  sunGlow *= sunHorizon;
+  sunGlow *= sunLow;
+  sunGlow *= dawnAtmosphere;
+  float horizonLight = sunHorizon*sunLow*dawnAtmosphere;
+  horizonLight *= smoothstep(0.0,0.75,sunDot);
+  sky += skyCol.horizonEdge*sunHalo*2.8;
+  sky += skyCol.horizon*sunGlow*4.0;
+  sky += skyCol.horizonEdge*horizonLight*0.65;
 
   sky *= 0.5+0.5*gradient2;
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
 
   if (!isSkyPlane) {
-    float source = max(0.0, (mg8-0.25)/0.82);
+    float source = max(0.0,(mg8-0.22)/0.78);
     source *= source;
     source *= source;
-    sky *= 1.0 + 16.0*source*(1.0-env.rainFactor);
-  }
+    float dawnSource = source*dawnAtmosphere;
+    sky *= 1.0+15.0*source*(1.0-env.rainFactor);
+    sky += skyCol.horizonEdge*dawnSource*1.8;
+}
 
   #ifdef NL_RAINBOW
     if (!env.underwater) {
@@ -244,206 +155,244 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   return sky;
 }
 
+vec4 renderBlackhole(vec3 viewdir,float t) {
+    t *= NL_BH_SPEED;
+    float r = 2.4;
+    vec3 vr = viewdir;
+    vr.xy = mat2(cos(r),-sin(r),sin(r),cos(r)) * vr.xy;
+    vec3 viewd = vr - vec3(0.0,-1.0,0.0);
+    float nl = sin(15.0 * viewd.x + t) * sin(15.0 * viewd.y - t) * sin(15.0 * viewd.z + t);
+    float a = atan2(viewd.x,viewd.z);
+    float d = NL_BH_DIST * length(viewd + 0.003 * nl);
+    float d0 = (0.6 - d) / 0.6;
+    float dm0 = 1.0 - max(d0,0.0);
+    float gl = 1.0 - clamp(-0.3 * d0,0.0,1.0);
+    float gla = pow(1.0 - min(abs(d0),1.0),8.0);
+    float gl8 = pow(gl,8.0);
+    float hole = 0.9 * pow(dm0,32.0) + 0.1 * pow(dm0,3.0);
+    float bh = (gla + 0.8 * gl8 + 0.2 * gl8 * gl8) * hole;
+    float spiralPhase = 3.0 * a - 4.0 * d + 24.0 * pow(max(1.4 - d,0.0),4.0) + t;
+    float df = sin(spiralPhase);
+    df *= 0.9 + 0.1 * sin(8.0 * a + d + 4.0 * t - 4.0 * df);
+    float df2 = sin(7.0 * a - 8.0 * d + 13.0 * pow(max(1.25 - d,0.0),3.0) - t * 1.35);
+    df += 0.08 * df2;
+    bh *= 1.0 + pow(df,4.0) * hole * max(1.0 - bh,0.0);
+    float spiralWave = 0.5 + 0.5 * sin(spiralPhase);
+    float spiralShape = pow(spiralWave,2.6);
+    float innerSpiral = smoothstep(0.18,0.62,d) * spiralShape;
+    float innerBreakup = 0.72 + 0.28 * spiralShape;
+    float detail = 0.96 + 0.04 * sin(12.0 * a - 15.0 * d + t * 1.5);
+    bh *= innerBreakup * detail;
+    float edge = pow(max(1.0 - smoothstep(0.34,0.62,d),0.0),3.0);
+    float halo = pow(max(1.0 - smoothstep(0.45,1.15,d),0.0),4.0);
+    float spiralLight = 0.72 + 0.28 * spiralShape;
+    float light = bh * 4.0;
+    light += edge * bh * 0.20;
+    light += innerSpiral * bh * 0.16;
+    light += halo * bh * 0.10;
+    light *= spiralLight;
+    float colorMix = clamp(bh * (0.72 + 0.28 * spiralShape),0.0,1.0);
+    vec3 col = light * mix(NL_BH_COL_LOW,NL_BH_COL_HIGH,colorMix);
+    return vec4(col,hole);
+}
+
 vec3 renderEndSky(vec3 horizonCol, vec3 zenithCol, vec3 viewDir, float t) {
-  float time = t*0.12;
-  float y = clamp(viewDir.y*0.5+0.5,0.0,1.0);
-  float grad = 0.5+0.5*viewDir.y;
-  float verticalCloud = 1.0-grad*grad*grad;
+	t *= 0.015;
+	float a = atan2(viewDir.x, viewDir.z);
+	float y = viewDir.y;
 
-  float horizon = smoothstep(-0.20,0.08,viewDir.y);
+	// Base sky
+	float upper = smoothstep(-0.8, 0.95, y);
+	vec3 sky = mix(vec3(0.0025, 0.0006, 0.008), vec3(0.009, 0.0015, 0.028), upper);
+	sky += vec3(0.006, 0.001, 0.018)*smoothstep(-0.7, 0.8, y);
 
-  float upper = smoothstep(0.0,1.0,y);
-  upper *= upper;
+	// Main nebula coordinates
+	vec2 nUV = vec2(a/3.14159265, y)*1.18;
+	nUV.x += t*0.3;
+	nUV.y += sin(nUV.x*1.6+t*0.35)*0.07;
 
-  vec3 sky = mix(horizonCol,zenithCol,upper);
+	// Large cloud
+	float n1 = endFbm(nUV*1.05);
+	float n2 = endFbm(nUV*2.0+vec2(8.3, -4.1));
+	float n3 = endFbm(nUV*3.8+vec2(-6.2, 13.7));
 
-  float a = atan2(viewDir.x,viewDir.z);
+	float cloud = n1*0.56+n2*0.29+n3*0.15;
+	cloud = smoothstep(0.33, 0.67, cloud);
 
-  float wave1 = sin(3.0*a+time*1.8+10.0*viewDir.x*viewDir.y);
-  float wave2 = sin(5.0*a-time*1.15+5.0*wave1+0.1*sin(40.0*a-4.0*time));
-  float wave3 = sin(12.0*a+time*0.65+15.0*viewDir.x*viewDir.y);
+	// Broad nebula
+	float center = -0.02+sin(nUV.x*1.35+t*0.2)*0.15;
+	float band = exp(-pow((y-center)*2.05, 2.0));
+	cloud *= band;
 
-  float cosmic = wave1*0.45+wave2*0.35+wave3*0.20;
-  cosmic = cosmic*0.5+0.5;
-  cosmic = smoothstep(0.18,0.86,cosmic);
+	// Organic breakup
+	float breakup = endFbm(nUV*5.0+vec2(t*0.45, -t*0.22));
+	cloud *= 0.48+breakup*0.95;
 
-  vec3 flowPos1 = vec3(viewDir.x*2.8+time*0.42+10.0*viewDir.x*viewDir.y*0.10, viewDir.y*3.2+sin(time*0.65)*0.16, viewDir.z*2.8);
-  vec3 flowPos2 = vec3(viewDir.x*7.0-time*0.28+5.0*viewDir.x*viewDir.y*0.08, viewDir.y*6.0-time*0.10, viewDir.z*7.0);
-  vec3 flowPos3 = vec3(viewDir.x*17.0+time*0.18+15.0*viewDir.x*viewDir.y*0.05, viewDir.y*13.0, viewDir.z*17.0-time*0.24);
+	// Deep voids
+	float voidNoise = endFbm(nUV*2.6+vec2(21.3, 6.7));
+	float voids = smoothstep(0.48, 0.7, voidNoise);
+	cloud *= 1.0-voids*0.64;
 
-  float n1 = noise3D(flowPos1);
-  float n2 = noise3D(flowPos2);
-  float n3 = noise3D(flowPos3);
+	// Secondary cloud
+	vec2 farUV = vec2(a/3.14159265, y)*0.72+vec2(t*0.12, -0.04);
+	float farCloud = endFbm(farUV*1.8+vec2(14.2, 7.3));
+	farCloud = smoothstep(0.48, 0.73, farCloud);
+	farCloud *= smoothstep(-0.65, 0.35, y);
+	farCloud *= 0.42;
 
-  float nebula = n1*0.50+n2*0.32+n3*0.18;
-  nebula = smoothstep(0.27,0.73,nebula);
-  nebula *= 0.20+0.80*verticalCloud;
-  nebula *= 0.72+0.28*cosmic;
+	sky += vec3(0.035, 0.002, 0.085)*farCloud;
 
-  vec3 cyanNebula = vec3(0.003,0.22,0.31);
-  cyanNebula *= nebula*1.75;
+	// Purple gas
+	float purpleMix = smoothstep(0.34, 0.78, n2);
+	vec3 purpleGas = mix(vec3(0.045, 0.0015, 0.13), vec3(0.27, 0.004, 0.34), purpleMix);
 
-  float violetPattern = sin(4.0*a-viewDir.y*8.0+time*1.35);
-  violetPattern = violetPattern*0.5+0.5;
-  violetPattern *= nebula;
-  violetPattern = smoothstep(0.20,0.82,violetPattern);
+	// Magenta gas
+	float magentaMix = smoothstep(0.57, 0.84, n3);
+	purpleGas = mix(purpleGas, vec3(0.56, 0.008, 0.31), magentaMix*0.72);
 
-  vec3 violetNebula = vec3(0.17,0.008,0.36);
-  violetNebula *= violetPattern*1.70;
+	// Blue violet gas
+	float blueMix = smoothstep(0.6, 0.88, n1);
+	purpleGas = mix(purpleGas, vec3(0.018, 0.025, 0.22), blueMix*0.32);
 
-  float magentaPattern = sin(7.0*a+viewDir.y*12.0-time*0.85+n2*3.0);
-  magentaPattern = magentaPattern*0.5+0.5;
-  magentaPattern *= nebula;
-  magentaPattern = smoothstep(0.38,0.88,magentaPattern);
+	sky += purpleGas*cloud*1.82;
 
-  vec3 magentaNebula = vec3(0.20,0.008,0.25);
-  magentaNebula *= magentaPattern*1.05;
+	// Bright gas
+	float brightGas = endFbm(nUV*5.7+vec2(-t*0.35, t*0.18));
+	brightGas = smoothstep(0.61, 0.82, brightGas);
+	brightGas *= cloud;
+	brightGas *= smoothstep(-0.7, 0.42, y);
 
-  float center = verticalCloud;
-  center = smoothstep(0.02,0.94,center);
-  center *= 0.30+0.70*nebula;
+	sky += vec3(0.68, 0.012, 0.39)*brightGas*0.95;
 
-  float pulse = 0.5+0.5*sin(time*2.5);
-  center *= 0.76+0.24*pulse;
+	// Violet emission
+	float violetGas = endFbm(nUV*8.0+vec2(7.2, -12.1));
+	violetGas = smoothstep(0.64, 0.84, violetGas);
+	violetGas *= cloud;
 
-  vec3 centerGlow = vec3(0.008,0.20,0.29);
-  centerGlow *= center*0.72;
+	sky += vec3(0.3, 0.018, 0.7)*violetGas*0.62;
 
-  float aura = smoothstep(0.02,0.72,verticalCloud);
-  aura *= 0.35+0.65*nebula;
+	// Fine cosmic dust
+	float dust = endFbm(nUV*13.0+vec2(t*0.6, -t*0.32));
+	dust = smoothstep(0.57, 0.79, dust);
+	dust *= cloud;
 
-  vec3 royalAura = vec3(0.075,0.004,0.17);
-  royalAura *= aura*0.80;
+	sky += vec3(0.32, 0.015, 0.3)*dust*0.32;
 
-  float filament = abs(sin(17.0*a+24.0*viewDir.y+n1*8.0-time*2.4));
-  filament = 1.0-filament;
-  filament = smoothstep(0.82,0.997,filament);
-  filament *= nebula*verticalCloud;
+	// Dust lanes
+	float laneNoise = endFbm(nUV*7.0+vec2(-t*0.15, t*0.08));
+	float lanes = smoothstep(0.42, 0.58, laneNoise);
+	lanes *= cloud;
+	lanes = 1.0-lanes;
+	lanes *= cloud;
 
-  vec3 filamentColor = vec3(0.012,0.29,0.38);
-  filamentColor *= filament*0.82;
+	sky *= 1.0-lanes*0.28;
 
-  float violetFilament = abs(sin(10.0*a-21.0*viewDir.y+n2*7.0+time*1.3));
-  violetFilament = 1.0-violetFilament;
-  violetFilament = smoothstep(0.84,0.997,violetFilament);
-  violetFilament *= nebula*verticalCloud;
+	// Blue gas
+	float blueGas = endFbm(nUV*3.5+vec2(-16.0, 8.0));
+	blueGas = smoothstep(0.54, 0.8, blueGas);
+	blueGas *= cloud;
 
-  vec3 violetFilamentColor = vec3(0.11,0.004,0.25);
-  violetFilamentColor *= violetFilament*0.72;
+	sky += vec3(0.01, 0.04, 0.2)*blueGas*0.55;
 
-  sky += cyanNebula;
-  sky += violetNebula;
-  sky += magentaNebula;
-  sky += centerGlow;
-  sky += royalAura;
-  sky += filamentColor;
-  sky += violetFilamentColor;
+	// Stars
+	vec2 starUV = vec2(a/3.14159265, y)*108.0;
+	vec2 starCell = floor(starUV);
+	vec2 starLocal = fract(starUV)-0.5;
 
-  float stormTime = time*0.50;
+	float starRandom = endHash21(starCell);
+	float starX = endHash21(starCell+vec2(17.3, 41.8))-0.5;
+	float starY = endHash21(starCell+vec2(63.7, 9.2))-0.5;
 
-  vec3 stormPos1 = vec3(viewDir.x*4.0+stormTime*0.16, viewDir.y*3.5-stormTime*0.07, viewDir.z*4.0);
-  vec3 stormPos2 = vec3(viewDir.x*9.0-stormTime*0.11, viewDir.y*7.0+stormTime*0.05, viewDir.z*9.0);
+	float starDistance = length(starLocal-vec2(starX, starY));
+	float starSize = mix(0.007, 0.019, endHash21(starCell+vec2(4.7, 21.4)));
+	float star = 1.0-smoothstep(starSize, starSize+0.006, starDistance);
 
-  float storm1 = noise3D(stormPos1);
-  float storm2 = noise3D(stormPos2);
+	star *= step(0.74, starRandom);
+	star *= smoothstep(-0.32, 0.16, y);
 
-  float stormCloud = storm1*0.65+storm2*0.35;
-  stormCloud = smoothstep(0.48,0.76,stormCloud);
-  stormCloud *= verticalCloud;
+	// Star colors
+	float starType = endHash21(starCell+vec2(71.4, 19.7));
+	vec3 starColor = vec3(0.86, 0.9, 1.0);
 
-  float strikeNoise = noise3D(vec3(viewDir.x*12.0+time*0.38+10.0*viewDir.x*viewDir.y*0.05, viewDir.y*10.0-time*0.27, viewDir.z*12.0+time*0.31));
+	if (starType > 0.91) {
+		starColor = vec3(1.0, 0.38, 0.22);
+	} else if (starType > 0.8) {
+		starColor = vec3(1.0, 0.7, 0.35);
+	} else if (starType > 0.66) {
+		starColor = vec3(0.4, 0.58, 1.0);
+	} else if (starType > 0.5) {
+		starColor = vec3(0.78, 0.42, 1.0);
+	}
 
-  float strike = smoothstep(0.91,0.985,strikeNoise);
-  strike *= stormCloud;
+	sky += starColor*star*1.18;
 
-  float bolt = abs(sin(9.0*a+19.0*viewDir.y+storm1*9.0));
-  bolt = 1.0-bolt;
-  bolt = smoothstep(0.972,0.999,bolt);
+	// Tiny stars
+	vec2 tinyUV = vec2(a/3.14159265, y)*215.0;
+	vec2 tinyCell = floor(tinyUV);
+	vec2 tinyLocal = fract(tinyUV)-0.5;
 
-  float branch1 = abs(sin(17.0*a-31.0*viewDir.y+storm2*13.0+storm1*5.0));
-  branch1 = 1.0-branch1;
-  branch1 = smoothstep(0.978,0.999,branch1);
+	float tinyRandom = endHash21(tinyCell);
+	float tinyX = endHash21(tinyCell+vec2(13.2, 37.6))-0.5;
+	float tinyY = endHash21(tinyCell+vec2(52.4, 8.7))-0.5;
 
-  float branch2 = abs(sin(27.0*a+42.0*viewDir.y+storm1*17.0));
-  branch2 = 1.0-branch2;
-  branch2 = smoothstep(0.984,0.999,branch2);
+	float tinyDistance = length(tinyLocal-vec2(tinyX, tinyY));
+	float tinyStar = 1.0-smoothstep(0.005, 0.014, tinyDistance);
 
-  float lightning = bolt*0.90+branch1*0.65+branch2*0.38;
-  lightning = clamp(lightning,0.0,1.0);
-  lightning *= strike;
-  lightning *= smoothstep(0.08,0.88,verticalCloud);
+	tinyStar *= step(0.84, tinyRandom);
+	tinyStar *= smoothstep(-0.15, 0.2, y);
 
-  float flash = strike*stormCloud;
-  flash *= horizon;
+	float tinyType = endHash21(tinyCell+vec2(91.7, 24.2));
+	vec3 tinyColor = mix(vec3(0.55, 0.63, 0.95), vec3(0.95, 0.52, 0.76), tinyType);
 
-  vec3 thunderFlash = vec3(0.004,0.075,0.13);
-  thunderFlash *= flash*1.20;
+	sky += tinyColor*tinyStar*0.48;
 
-  vec3 lightningGlow = vec3(0.004,0.20,0.30);
-  lightningGlow *= lightning*2.35;
+	// Rare bright stars
+	vec2 brightUV = vec2(a/3.14159265, y)*61.0;
+	vec2 brightCell = floor(brightUV);
+	vec2 brightLocal = fract(brightUV)-0.5;
 
-  vec3 violetLightning = vec3(0.065,0.004,0.19);
-  violetLightning *= lightning*1.05;
+	float brightRandom = endHash21(brightCell+vec2(31.7, 81.3));
+	float brightX = endHash21(brightCell+vec2(14.1, 51.8))-0.5;
+	float brightY = endHash21(brightCell+vec2(67.2, 8.1))-0.5;
 
-  vec3 lightningCore = vec3(0.78,0.96,1.0);
-  lightningCore *= lightning*3.55;
+	float brightDistance = length(brightLocal-vec2(brightX, brightY));
+	float brightStar = 1.0-smoothstep(0.009, 0.026, brightDistance);
 
-  sky += thunderFlash;
-  sky += lightningGlow;
-  sky += violetLightning;
-  sky += lightningCore;
+	brightStar *= step(0.969, brightRandom);
+	brightStar *= smoothstep(-0.12, 0.22, y);
 
-  float voidMask = smoothstep(-0.25,0.18,viewDir.y);
+	float brightType = endHash21(brightCell+vec2(43.8, 17.4));
+	vec3 brightColor = mix(vec3(0.82, 0.88, 1.0), vec3(1.0, 0.43, 0.55), brightType);
 
-  float lon = atan2(viewDir.x,viewDir.z)/(2.0*PI)+0.5;
-  float lat = asin(clamp(viewDir.y,-1.0,1.0))/PI+0.5;
+	sky += brightColor*brightStar*1.9;
 
-  vec2 starGrid = vec2(205.0,102.0);
-  vec2 starPos = vec2(lon,lat)*starGrid;
-  vec2 starCell = floor(starPos);
-  vec2 starLocal = fract(starPos);
+	// Stellar glow
+	float stellarGlow = endFbm(vec2(a/3.14159265, y)*9.0+vec2(31.0, 12.0));
+	stellarGlow = smoothstep(0.78, 0.96, stellarGlow);
+	stellarGlow *= star*0.18;
 
-  float starSeed = rand(starCell+vec2(17.13,41.71));
-  float starJitterX = rand(starCell+vec2(83.21,11.37));
-  float starJitterY = rand(starCell+vec2(29.47,67.83));
+	sky += vec3(0.12, 0.08, 0.22)*stellarGlow;
 
-  vec2 starCenter = 0.18+0.64*vec2(starJitterX,starJitterY);
+	// Horizon atmosphere
+	float horizonGlow = pow(max(0.0, 1.0-abs(y)), 9.0);
+	sky += vec3(0.09, 0.002, 0.13)*horizonGlow*0.5;
 
-  float starDistance = length((starLocal-starCenter)*vec2(1.0,1.12));
+	// Nebula bloom
+	float bloom = smoothstep(0.42, 0.78, cloud);
+	sky += vec3(0.055, 0.001, 0.09)*bloom*0.3;
 
-  float starRadius = 0.027;
-  float starPoint = smoothstep(starRadius,starRadius*0.16,starDistance);
-  starPoint *= step(0.935,starSeed);
+	// Final tone
+	sky = max(sky, vec3(0.0));
+	sky = sky/(1.0+sky*0.18);
+	sky = pow(sky, vec3(0.96));
+	
+	#ifdef NL_BLACKHOLE
+      vec4 bh = renderBlackhole(viewdir,t);
+      sky *= bh.a;
+      sky += bh.rgb;
+    #endif
 
-  float brightSeed = rand(starCell+vec2(101.7,37.4));
-  float brightRadius = 0.030;
-  float brightPoint = smoothstep(brightRadius,brightRadius*0.15,starDistance);
-  brightPoint *= step(0.981,brightSeed);
-
-  float starGlow = smoothstep(0.075,0.012,starDistance);
-  starGlow *= step(0.935,starSeed);
-
-  float starMask = 0.92+0.08*voidMask;
-  starMask *= smoothstep(-0.02,0.08,viewDir.y);
-
-  float starBrightness = starPoint*1.18+brightPoint*1.75;
-
-  vec3 starColor = mix(vec3(0.72,0.84,1.0),vec3(1.0,0.91,0.76),brightSeed);
-
-  sky += starColor*starBrightness*starMask;
-  sky += starColor*starGlow*0.08*starMask;
-
-  sky *= 0.70+0.30*voidMask;
-  sky = max(sky,vec3(0.0,0.0,0.0));
-  sky *= 1.10;
-
-  #ifdef NL_BLACKHOLE
-    vec4 bh = renderBlackhole(viewDir,t);
-    sky *= bh.a;
-    sky += bh.rgb;
-  #endif
-
-  return sky;
+	return sky;
 }
 
 vec3 nlRenderSky(nl_skycolor skycol, nl_environment env, vec3 viewDir, float t, bool isSkyPlane) {
@@ -455,18 +404,18 @@ vec3 nlRenderSky(nl_skycolor skycol, nl_environment env, vec3 viewDir, float t, 
   } else {
     sky = renderOverworldSky(skycol, env, viewDir, isSkyPlane);
     #ifdef NL_UNDERWATER_STREAKS
-       if (env.underwater) {
-         float a = atan2(viewDir.x, viewDir.z);
-         float grad = 0.5 + 0.5*viewDir.y;
-         grad *= grad;
-         float spread = (0.5 + 0.5*sin(3.0*a + 0.2*t + 2.0*sin(5.0*a - 0.4*t)));
-         spread *= (0.5 + 0.5*sin(3.0*a - sin(0.5*t)))*grad;
-         spread += (1.0-spread)*grad;
-         float streaks = spread*spread;
-         streaks *= streaks;
-         streaks = (spread + 3.0*grad*grad + 4.0*streaks*streaks);
-         sky += 2.0*streaks*skycol.horizon;
-       }
+      // if (env.underwater) {
+      //   float a = atan2(viewDir.x, viewDir.z);
+      //   float grad = 0.5 + 0.5*viewDir.y;
+      //   grad *= grad;
+      //   float spread = (0.5 + 0.5*sin(3.0*a + 0.2*t + 2.0*sin(5.0*a - 0.4*t)));
+      //   spread *= (0.5 + 0.5*sin(3.0*a - sin(0.5*t)))*grad;
+      //   spread += (1.0-spread)*grad;
+      //   float streaks = spread*spread;
+      //   streaks *= streaks;
+      //   streaks = (spread + 3.0*grad*grad + 4.0*streaks*streaks);
+      //   sky += 2.0*streaks*skycol.horizon;
+      // }
     #endif
   }
 
@@ -530,7 +479,7 @@ vec3 nlRenderGalaxy(vec3 vdir, vec3 fogColor, nl_environment env, float t) {
   n3 = smoothstep(0.04,0.3,n3+0.02*n2);
   float gd = vdir.x + 0.1*vdir.y + 0.1*sin(10.0*vdir.z + 0.2*t);
   float st = n1*n2*n3*n3*(1.0+70.0*gd*gd);
-  st = (1.0-st)/(1.0+200.0*st);
+  st = (1.0-st)/(1.0+400.0*st);
   vec3 stars = (0.8 + 0.2*sin(vec3(8.0,6.0,10.0)*(2.0*n1+0.8*n2) + vec3(0.0,0.4,0.82)))*st;
 
   // glow
@@ -544,7 +493,7 @@ vec3 nlRenderGalaxy(vec3 vdir, vec3 fogColor, nl_environment env, float t) {
   vec3 gfcol = normalize(vec3(n0, cos(2.0*vdir.y), sin(vdir.x+n0)));
   stars += (0.4*gf + 0.012)*mix(vec3(0.5, 0.5, 0.5), gfcol*gfcol, NL_GALAXY_VIBRANCE);
 
-  stars *= mix(1.0, NL_GALAXY_DAY_VISIBILITY, nlDayLightFactor(env.dayFactor));
+  stars *= mix(1.0, NL_GALAXY_DAY_VISIBILITY, env.dayFactor);
 
   return stars*(1.0-env.rainFactor);
 }

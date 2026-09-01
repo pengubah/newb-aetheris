@@ -82,33 +82,6 @@ vec3 nlGlow(sampler2D tex, vec2 uv, float shimmer) {
   return glow * NL_GLOW_TEX;
 }
 
-vec3 nlEntityEyeGlow(vec3 color, sampler2D tex, vec2 uv) {
-  float mx = max(color.r, max(color.g, color.b));
-  float mn = min(color.r, min(color.g, color.b));
-  float sat = mx - mn;
-
-  float bright = smoothstep(0.32, 0.78, mx);
-  float colored = smoothstep(0.12, 0.42, sat);
-  float mask = bright * colored;
-
-  vec3 eyeColor = color / max(mx, 0.001);
-
-  vec2 texel = 1.0 / vec2(textureSize(tex, 0));
-  vec3 n0 = texture2DLod(tex, uv + texel*vec2(-1.0, 0.0), 0.0).rgb;
-  vec3 n1 = texture2DLod(tex, uv + texel*vec2( 1.0, 0.0), 0.0).rgb;
-  vec3 n2 = texture2DLod(tex, uv + texel*vec2(0.0,-1.0), 0.0).rgb;
-  vec3 n3 = texture2DLod(tex, uv + texel*vec2(0.0, 1.0), 0.0).rgb;
-
-  float ng = 0.0;
-  ng += smoothstep(0.48, 0.88, max(n0.r,max(n0.g,n0.b))) * smoothstep(0.12,0.42,max(n0.r,max(n0.g,n0.b))-min(n0.r,min(n0.g,n0.b)));
-  ng += smoothstep(0.48, 0.88, max(n1.r,max(n1.g,n1.b))) * smoothstep(0.12,0.42,max(n1.r,max(n1.g,n1.b))-min(n1.r,min(n1.g,n1.b)));
-  ng += smoothstep(0.48, 0.88, max(n2.r,max(n2.g,n2.b))) * smoothstep(0.12,0.42,max(n2.r,max(n2.g,n2.b))-min(n2.r,min(n2.g,n2.b)));
-  ng += smoothstep(0.48, 0.88, max(n3.r,max(n3.g,n3.b))) * smoothstep(0.12,0.42,max(n3.r,max(n3.g,n3.b))-min(n3.r,min(n3.g,n3.b)));
-  ng *= 0.12;
-
-  return eyeColor * (mask + ng) * NL_ENTITY_EYE_GLOW;
-}
-
 #ifdef NL_GLOW_SHIMMER
 float nlGlowShimmer(vec3 cPos, float t) {
   float shimmer = sin(0.7*dot(cPos, vec3(1.0, 1.0, 1.0)) - NL_GLOW_SHIMMER_SPEED*t);

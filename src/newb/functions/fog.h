@@ -7,7 +7,7 @@ float nlRenderFogFade(float relativeDist, vec3 FOG_COLOR, vec2 FOG_CONTROL) {
 
     // misty effect
     float density = NL_MIST_DENSITY*(19.0 - 18.0*FOG_COLOR.g);
-    fade += (1.0-fade)*(0.32-0.32*exp(-relativeDist*relativeDist*density));
+    fade += (1.0-fade)*(0.3-0.3*exp(-relativeDist*relativeDist*density));
 
     return NL_FOG * fade;
   #else
@@ -26,25 +26,18 @@ float nlRenderGodRayIntensity(vec3 cPos, vec3 worldPos, float t, vec2 uv1, float
   vec3 nrmof = normalize(worldPos);
 
   float u = nrmof.z/length(nrmof.zy);
-  float diff = dot(offset,vec3(0.1,0.2,1.0)) + 0.035*t;
+  float diff = dot(offset,vec3(0.1,0.2,1.0)) + 0.07*t;
   float mask = nrmof.x*nrmof.x;
 
-  float vol = sin(7.5*u + 1.45*diff)*sin(3.2*u + 1.15*diff);
+  float vol = sin(7.0*u + 1.5*diff)*sin(3.0*u + diff);
   vol *= vol*mask*uv1.y*(1.0-mask*mask);
   vol *= relativeDist*relativeDist;
 
-  float dawnColor = clamp((FOG_COLOR.r - FOG_COLOR.b)*4.0, 0.0, 1.0);
-  float dawnWarm = clamp((FOG_COLOR.r + FOG_COLOR.g*0.35 - FOG_COLOR.b)*3.0, 0.0, 1.0);
+  // dawn/dusk mask
+  vol *= clamp(3.0*(FOG_COLOR.r-FOG_COLOR.b), 0.0, 1.0);
 
-  float dawn = max(dawnColor, dawnWarm);
-  dawn = dawn*dawn*(3.0 - 2.0*dawn);
-
-  vol *= dawn;
-
-  vol = smoothstep(0.0, 0.055, vol);
-  vol = vol*vol*(3.0 - 2.0*vol);
-
-  return vol*1.35;
+  vol = smoothstep(0.0, 0.1, vol);
+  return vol;
 }
 
 #endif

@@ -89,11 +89,41 @@ float movingNoise2D(vec2 pos, float t, float f) {
   return mix(n0*n0, n1*n1, f);
 }
 
-// Used by renderCloudsRounded() - LMI rounded cloud step displacement
-float hash(vec2 p) {
-  p = fract(p*vec2(123.45, 678.12));
-  p += dot(p, p + 50.0);
-  return fract(p.x*p.y);
+// The end
+float endHash21(vec2 p) {
+	p = fract(p*vec2(127.1, 311.7));
+	p += dot(p, p+34.5);
+	return fract(p.x*p.y);
+}
+
+float endNoise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	f = f*f*(3.0-2.0*f);
+	float a = endHash21(i);
+	float b = endHash21(i+vec2(1.0, 0.0));
+	float c = endHash21(i+vec2(0.0, 1.0));
+	float d = endHash21(i+vec2(1.0, 1.0));
+	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+float endFbm(vec2 p) {
+	float v = 0.0;
+	float a = 0.5;
+	v += endNoise(p)*a;
+	p = p*2.01+17.3;
+	a *= 0.5;
+	v += endNoise(p)*a;
+	p = p*2.02+31.7;
+	a *= 0.5;
+	v += endNoise(p)*a;
+	p = p*2.03+11.9;
+	a *= 0.5;
+	v += endNoise(p)*a;
+	p = p*2.01+43.1;
+	a *= 0.5;
+	v += endNoise(p)*a;
+	return v;
 }
 
 #endif

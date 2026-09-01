@@ -20,8 +20,8 @@ vec4 nlWater(
   float fractCposY, float camDist, highp float t
 ) {
 
-    vec2 bump = vec2(movingNoise2D(gPos.xz*0.72 + vec2(0.0,1.7) + gPos.yy*0.18, NL_WATER_WAVE_SPEED*t, 0.42), movingNoise2D(gPos.xz*0.56 + vec2(2.3,0.0) - gPos.yy*0.14, NL_WATER_WAVE_SPEED*t*0.82, 0.46));
-  
+  vec2 bump = vec2_splat(movingNoise2D(gPos.xz + gPos.yy, NL_WATER_WAVE_SPEED*t, 0.6));
+
   vec3 nrm;
   if (fractCposY > 0.0) { // top plane
     nrm.xz = bump*NL_WATER_BUMP;
@@ -58,11 +58,8 @@ vec4 nlWater(
   }
 
   #ifdef NL_WATER_REFL_MASK
-    // Keep the reflection continuous across the water surface.
-    // The previous sine-based mask could create a visible moving boundary.
-    float reflAngle = abs(viewDir.y);
-    float reflMask = smoothstep(0.0, 0.32, reflAngle);
-    waterRefl *= mix(0.82, 1.0, reflMask);
+    float mask = 0.05+0.05*sin(viewDir.x*12.0)*sin(viewDir.z*6.0);
+    waterRefl *= smoothstep(mask-0.2,mask+0.13,viewDir.y*viewDir.y);
   #endif
 
   cosR = abs(cosR);
@@ -72,21 +69,10 @@ vec4 nlWater(
   color.rgb *= 0.22*NL_WATER_TINT*(1.0-0.8*fresnel);
   color.a = mix(COLOR.a*NL_WATER_TRANSPARENCY, 1.0, opacity*opacity);
 
-    #ifdef NL_WATER_WAVE
-  if (camDist < 14.0) {
-    float time = NL_WATER_WAVE_SPEED*t;
-
-    float wave1 = sin(gPos.x*0.82 + gPos.z*0.46 + time*0.82);
-    float wave2 = sin(gPos.x*0.48 - gPos.z*0.91 + time*0.61);
-    float wave3 = sin(gPos.x*1.35 + gPos.z*1.12 - time*1.08);
-    float swell = wave1*0.50 + wave2*0.32 + wave3*0.18;
-    float ripple = sin(gPos.x*2.8 - gPos.z*2.1 + time*1.35);
-    swell += ripple*0.08;
-    float waveShape = smoothstep(-0.75,0.75,swell);
-    wPos.y -= waveShape*0.030*NL_WATER_BUMP;
-    wPos.y -= (bump.x+bump.y)*0.010*NL_WATER_BUMP;
-    
-  }
+  #ifdef NL_WATER_WAVE
+    if (camDist < 14.0) {
+      wPos.y -= 0.5*(bump.x+0.5)*NL_WATER_BUMP;
+    }
   #endif
 
   return vec4(waterRefl, fresnel);
