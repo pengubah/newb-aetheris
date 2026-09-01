@@ -40,7 +40,7 @@ void main() {
   env.sunDir = vec3(0.0,0.0,0.0);
   env.moonDir = vec3(0.0,0.0,0.0);
   env.fogCol = vec3(0.0,0.0,0.0);
-  env = calculateSunParams(env, TimeOfDay.x, 0.0);
+  env = calculateSunParams(env, TimeOfDay.x);
 
   nl_skycolor skycol = nlOverworldSkyColors(env);
   vec3 pos = a_position;
