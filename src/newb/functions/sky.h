@@ -159,12 +159,7 @@ vec4 renderBlackhole(vec3 viewdir,float t) {
     t *= NL_BH_SPEED;
     float r = 2.4;
     vec3 vr = viewdir;
-    float cr = cos(r);
-    float sr = sin(r);
-    vec2 rot;
-    rot.x = cr * vr.x - sr * vr.y;
-    rot.y = sr * vr.x + cr * vr.y;
-    vr.xy = rot;
+    vr.xy = vec2(vr.x * cos(r) - vr.y * sin(r),vr.x * sin(r) + vr.y * cos(r));
     vec3 viewd = vr - vec3(0.0,-1.0,0.0);
     float nl = sin(15.0 * viewd.x + t) * sin(15.0 * viewd.y - t) * sin(15.0 * viewd.z + t);
     float a = atan2(viewd.x,viewd.z);
