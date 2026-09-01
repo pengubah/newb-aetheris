@@ -50,9 +50,9 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   dawnFactor *= dawnFactor;
   dawnFactor *= dawnFactor;
   dawnFactor *= mix(1.0,dawnFactor*dawnFactor,nightFactor);
-  float dawnZenith = smoothstep(0.02,0.82,dawnFactor);
-  float dawnHorizon = smoothstep(0.0,0.72,dawnFactor);
-  float dawnEdge = smoothstep(0.0,0.48,dawnFactor);
+  float dawnZenith = smoothstep(0.02,0.88,dawnFactor);
+  float dawnHorizon = smoothstep(0.0,0.78,dawnFactor);
+  float dawnEdge = smoothstep(0.0,0.54,dawnFactor);
   s.zenith = mix(s.zenith,NL_DAWN_ZENITH_COL,dawnZenith);
   s.horizon = mix(s.horizon,NL_DAWN_HORIZON_COL,dawnHorizon);
   s.horizonEdge = mix(s.horizonEdge,NL_DAWN_EDGE_COL,dawnEdge);
