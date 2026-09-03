@@ -1,4 +1,4 @@
-$input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra
+$input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra, v_position
 
 #include <bgfx_shader.sh>
 #include <newb/main.sh>
@@ -6,6 +6,7 @@ $input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra
 SAMPLER2D_AUTOREG(s_MatTexture);
 SAMPLER2D_AUTOREG(s_SeasonsTexture);
 SAMPLER2D_AUTOREG(s_LightMapTexture);
+SAMPLER2D_AUTOREG(s_Caustics);
 
 void main() {
   #if defined(DEPTH_ONLY_OPAQUE) || defined(DEPTH_ONLY) || defined(INSTANCING)
@@ -16,11 +17,32 @@ void main() {
   vec4 diffuse = texture2D(s_MatTexture, v_texcoord0);
   vec4 color = v_color0;
 
-  #ifdef ALPHA_TEST
+
+    #ifdef ALPHA_TEST
     if (diffuse.a < 0.6) {
       discard;
     }
   #endif
+  
+  vec3 N;
+     N = normalize(cross(dFdx(v_position), dFdy(v_position)));
+
+bool blockUnderWater = (v_lightmapUV.y < 0.9 && abs((2.0 * v_position.y - 15.0) / 16.0 - v_lightmapUV.y) < 0.00002);
+
+if(env.underwater || blockUnderWater){
+    vec2 uv = v_position.xz * 0.15; 
+    uv += vec2(time * 0.02, time * 0.02); 
+    vec3 caustic = texture2D(s_Caustics, uv).rgb;
+
+    float ndotl = max(N.y, 0.0); 
+     caustic *= ndotl * 0.5;
+
+    vec3 watercol = vec3(0.0, 0.3, 0.5);
+    vec3 finalColor = watercol + caustic;
+
+    diffuse.rgb *= finalColor;
+    diffuse.rgb *= 2.7;
+}
 
   #if defined(SEASONS) && (defined(OPAQUE) || defined(ALPHA_TEST))
     diffuse.rgb *= mix(vec3(1.0,1.0,1.0), texture2D(s_SeasonsTexture, v_color1.xy).rgb * 2.0, v_color1.z);
