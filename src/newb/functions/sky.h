@@ -200,7 +200,7 @@ vec4 renderBlackhole(vec3 viewdir,float t) {
 
 vec3 renderEndSky(vec3 horizonCol,vec3 zenithCol,vec3 viewDir,float t) {
     float skyTime = t*1.5;
-    float a = atan(viewDir.x,viewDir.z);
+    float a = atan2(viewDir.x,viewDir.z);
     vec3 dir = normalize(viewDir);
     float grad = 0.5+0.5*dir.y;
     float horizon = 1.0-smoothstep(-0.25,0.8,dir.y);
