@@ -35,6 +35,7 @@ void main() {
   bool isRain = (UVOffsetAndScale.w > 3.8*UVOffsetAndScale.z) && Dimensions.x < 0.1;
   vec3 velocity = Velocity.xyz;
   vec2 dimensions = NL_WEATHER_PARTICLE_SIZE*Dimensions.xy;
+  dimensions.x *= 0.12;
 
   if (isRain) {
     velocity.x *= NL_WEATHER_RAIN_SLANT;
