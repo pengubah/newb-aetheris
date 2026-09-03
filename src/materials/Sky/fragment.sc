@@ -48,7 +48,7 @@ vec3 GetAurora(vec3 vDir, float time, float dither) {
         aurora += noise * currentM * mix(vec3(0.5, 0.6, 1.0), vec3(0.0, 4.5, 3.2), pow2(pow2(currentM)));
     }
 
-    aurora *= 1.2;
+    aurora *= 1.5;
     return aurora * visibility / float(sampleCount);
 }
 
