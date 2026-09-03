@@ -25,12 +25,12 @@ vec3 colorCorrection(vec3 col) {
   
     #elif NL_TONEMAP_TYPE == 5
     // ACES Filmic
-    const float a = 2.30;
-    const float b = 0.025;
-    const float c = 2.20;
-    const float d = 0.55;
+    const float a = 1.08;
+    const float b = 0.020;
+    const float c = 1.04;
+    const float d = 0.60;
     const float e = 0.14;
-    col *= 0.75;
+    col *= 0.82;
     col = clamp((col*(a*col + b)) / (col*(c*col + d) + e), 0.0, 1.0);
   
   #elif NL_TONEMAP_TYPE == 2
