@@ -22,6 +22,8 @@ void main() {
       discard;
     }
   #endif
+
+nl_environment env = nlDetectEnvironment(TimeOfDay.x,FogColor.rgb,FogAndDistanceControl.xyz);
   
   vec3 N;
      N = normalize(cross(dFdx(v_position), dFdy(v_position)));
