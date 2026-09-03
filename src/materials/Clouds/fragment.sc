@@ -8,38 +8,8 @@ $input v_color0
 #include <newb/main.sh>
 
 uniform vec4 CameraPosition;
-uniform vec4 ViewPositionAndTime;
 
 #define NL_CLOUD_PARAMS(x) NL_CLOUD2##x##THICKNESS, NL_CLOUD2##x##RAIN_THICKNESS, NL_CLOUD2##x##VELOCITY, NL_CLOUD2##x##SCALE, NL_CLOUD2##x##DENSITY, NL_CLOUD2##x##SHAPE
-
-float vanillaCloudRand(vec2 n) {
-  return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
-}
-
-vec4 vanillaClouds(vec2 uv, vec3 sky, float fade) {
-  float a = 0.0;
-  float isTime = ViewPositionAndTime.w * NL_CLOUD0_CLOUD_SPEED;
-  vec4 col;
-  uv *= NL_CLOUD0_SIZE;
-
-  for (int i = 0; i < NL_CLOUD0_STEPS; i++) {
-    uv /= 1.007;
-
-    float c = step(0.7,vanillaCloudRand(floor(uv + isTime)));
-
-    a = mix(a, 1.0, c);
-  }
-
-  vec2 b = vec2(step(0.7,vanillaCloudRand(floor(uv + isTime))));
-  vec3 ccol = NL_CLOUD0_SIDECOL;
-  ccol = mix(ccol, NL_CLOUD0_BOTTOMCOL, b.x);
-
-  col.rgb = sky;
-  col.rgb = mix(col.rgb, ccol, a * fade);
-  col.a = a * fade;
-
-  return col;
-}
 
 void main() {
   vec4 color = v_color0;
