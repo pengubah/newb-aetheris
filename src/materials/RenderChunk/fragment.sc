@@ -36,7 +36,7 @@ bool blockUnderWater = (v_lightmapUV.y < 0.9 && abs((2.0 * v_position.y - 15.0) 
 
 if(env.underwater || blockUnderWater){
     vec2 uv = v_position.xz * 0.15; 
-    uv += vec2(TimeOfDay * 0.02, TimeOfDay * 0.02); 
+    uv += vec2(TimeOfDay.x * 0.02, TimeOfDay.x * 0.02); 
     vec3 caustic = texture2D(s_caustic, uv).rgb;
 
     float ndotl = max(N.y, 0.0); 
