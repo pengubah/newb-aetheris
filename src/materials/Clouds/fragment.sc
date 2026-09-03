@@ -8,6 +8,7 @@ $input v_color0
 #include <newb/main.sh>
 
 uniform vec4 CameraPosition;
+uniform vec4 ViewPositionAndTime;
 
 #define NL_CLOUD_PARAMS(x) NL_CLOUD2##x##THICKNESS, NL_CLOUD2##x##RAIN_THICKNESS, NL_CLOUD2##x##VELOCITY, NL_CLOUD2##x##SCALE, NL_CLOUD2##x##DENSITY, NL_CLOUD2##x##SHAPE
 
