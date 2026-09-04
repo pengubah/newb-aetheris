@@ -70,11 +70,8 @@ void main() {
     nl_skycolor skycol = nlOverworldSkyColors(env);
 
     vec3 skyColor = nlRenderSky(skycol, env, -viewDir, v_underwaterRainTimeDay.z, true);
-    #ifdef NL_SHOOTING_STAR
-      skyColor += NL_SHOOTING_STAR*nlRenderShootingStar(viewDir, env.fogCol, v_underwaterRainTimeDay.z);
-    #endif
-    #ifdef NL_GALAXY_STARS
-      skyColor += NL_GALAXY_STARS*nlRenderGalaxy(viewDir, env.fogCol, env, v_underwaterRainTimeDay.z);
+    #ifdef NL_OVERWORLD_STARS
+      skyColor += NL_OVERWORLD_STARS * nlRenderOverworldStars(-viewDir, env);
     #endif
 
   float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
