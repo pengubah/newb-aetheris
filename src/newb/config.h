@@ -181,7 +181,7 @@
 //#define NL_CLOUD_AURORA_REFLECTION // [toggle] simple clouds/aurora reflection
 
 /* overworld star */
-#define NL_OVERWORLD_STAR 1.0   // [toggle] 0.0 invisible - 1.0 full
+#define NL_OVERWORLD_STARS 1.0   // [toggle] 0.0 invisible - 1.0 full
 
 /* Chunk loading slide in animation */
 #define NL_CHUNK_LOAD_ANIM 100.0 // [toggle] -600.0 fall from top ~ 600.0 rise from bottom
