@@ -94,7 +94,7 @@
 #define NL_BH_COL_LOW vec3(0.0,0.0,0.0)      // hole color
 #define NL_BH_COL_HIGH vec3(0.8,0.42,1.0)   // spiral ring color
 #define NL_BH_DIST 1.8                       // blackhole size: 5.0 tiny - 0.5 massive
-#define NL_BH_SPEED 0.9                      // spiral rotation speed
+#define NL_BH_SPEED 0.6                      // spiral rotation speed
 
 /* Rainbow */
 #define NL_RAINBOW           // [toggle] enable rainbow in sky
@@ -125,7 +125,7 @@
 
 /* Underwater */
 #define NL_UNDERWATER_BRIGHTNESS 1.0         // 0.0 dark ~ 3.0 bright
-#define NL_CAUSTIC_INTENSITY 2.0             // 0.5 weak ~ 5.0 bright
+//#define NL_CAUSTIC_INTENSITY 2.0             // 0.5 weak ~ 5.0 bright
 #define NL_UNDERWATER_WAVE 0.1               // [toggle] 0.02 subtle ~ 0.6 trippy
 #define NL_UNDERWATER_STREAKS 1.5            // [toggle] 0.8 subtle - 2.0 bright streaks from top
 #define NL_UNDERWATER_TINT vec3(0.0,0.21,0.46) // fog tint color when underwater
