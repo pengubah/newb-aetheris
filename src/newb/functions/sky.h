@@ -301,7 +301,7 @@ vec3 nlRenderSky(nl_skycolor skycol, nl_environment env, vec3 viewDir, float t, 
   return sky;
 }
 
-vec3 renderOverworldStars(vec3 viewDir, nl_environment env) {
+vec3 nlRenderOverworldStars(vec3 viewDir, nl_environment env) {
     vec3 dir = normalize(viewDir);
     vec3 cell = floor(dir * 260.0);
     vec3 rnd = hash33(cell);
