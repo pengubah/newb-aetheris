@@ -28,7 +28,7 @@
 */
 
 /* Color correction */
-#define NL_TONEMAP_TYPE 4              // 1:Exponential, 2:Reinhard, 3:Extended Reinhard, 4:ACES, 5:ACES Filmic
+#define NL_TONEMAP_TYPE 5              // 1:Exponential, 2:Reinhard, 3:Extended Reinhard, 4:ACES, 5:ACES Filmic
 #define NL_GAMMA 1.2                   // 0.3 low ~ 2.0 high
 #define NL_EXPOSURE 1.35               // [toggle] 0.5 dark ~ 3.0 bright
 #define NL_SATURATION 1.3              // [toggle] 0.0 grayscale ~ 4.0 super saturated
