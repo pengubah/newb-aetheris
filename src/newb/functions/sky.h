@@ -108,7 +108,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
   float df = mix(1.0,g2.x,dawnFactor*dawnFactor);
   float dawnBlend = smoothstep(0.0,1.0,dawnFactor);
-  float dawnGradient = mix(gradient2,pow(gradient2,0.72),dawnBlend);
+  float dawnGradient = mix(gradient2,pow(gradient2,0.6),dawnBlend);
   vec3 sky = mix(skyCol.horizon,skyCol.horizonEdge,gradient1*df*df);
   sky = mix(skyCol.zenith,sky,dawnGradient*df);
   float sunDot = max(dot(env.sunDir,viewDir),0.0);
@@ -179,11 +179,11 @@ vec4 renderBlackhole(vec3 viewdir,float t) {
     float df2 = sin(7.0 * a - 8.0 * d + 13.0 * pow(max(1.25 - d,0.0),3.0) - t * 1.35);
     df += 0.08 * df2;
     bh *= 1.0 + pow(df,4.0) * hole * max(1.0 - bh,0.0);
-    float spiralWave = 0.5 + 0.5 * sin(spiralPhase);
-    float spiralShape = pow(spiralWave,2.6);
+    float spiralWave = 0.4 + 0.35 * sin(spiralPhase);
+    float spiralShape = pow(spiralWave,2.0);
     float innerSpiral = smoothstep(0.18,0.62,d) * spiralShape;
     float innerBreakup = 0.72 + 0.28 * spiralShape;
-    float detail = 0.96 + 0.04 * sin(12.0 * a - 15.0 * d + t * 1.5);
+    float detail = 0.82 + 0.04 * sin(12.0 * a - 15.0 * d + t * 1.5);
     bh *= innerBreakup * detail;
     float edge = pow(max(1.0 - smoothstep(0.34,0.62,d),0.0),3.0);
     float halo = pow(max(1.0 - smoothstep(0.45,1.15,d),0.0),4.0);
