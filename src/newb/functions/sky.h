@@ -327,7 +327,7 @@ vec3 nlRenderOverworldStars(vec3 viewDir, nl_environment env) {
     }
 
     float brightness = mix(0.72, 1.20, rnd.y);
-    float star = starPoint * starChance * brightness * 2.0;
+    float star = starPoint * starChance * brightness * 0.8;
     star *= mix(1.0, 0.0, env.dayFactor);
     star *= 1.0 - env.rainFactor;
     
