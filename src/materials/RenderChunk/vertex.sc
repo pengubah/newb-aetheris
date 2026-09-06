@@ -115,7 +115,11 @@ void main() {
   relativeDist += RenderChunkFogAlpha.x;
 
   vec4 fogColor;
+  if (env.end) {
+  fogColor.rgb = nlRenderEndFog(skycol, viewDir);
+  } else {
   fogColor.rgb = nlRenderSky(skycol, env, viewDir, t, true);
+  }
   fogColor.a = nlRenderFogFade(relativeDist, FogColor.rgb, FogAndDistanceControl.xy);
   #if defined(NL_GODRAY) && defined(NL_FOG)
     float godray = min(NL_GODRAY * nlRenderGodRayIntensity(cPos, worldPos, t, uv1, relativeDist, FogColor.rgb), 1.0);
