@@ -48,7 +48,6 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
   dawnFactor = smoothstep(0.0,1.0,dawnFactor);
   dawnFactor *= dawnFactor;
-  dawnFactor *= dawnFactor;
   dawnFactor *= mix(1.0,dawnFactor*dawnFactor,nightFactor);
   float dawnZenith = smoothstep(0.02,0.85,dawnFactor);
   float dawnHorizon = smoothstep(0.0,0.75,dawnFactor);
@@ -118,16 +117,16 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   dawnAtmosphere = smoothstep(0.0,1.0,dawnAtmosphere);
   dawnAtmosphere *= dawnAtmosphere;
   dawnAtmosphere *= dawnAtmosphere;
-  float sunHalo = pow(sunDot,2.0);
+  float sunHalo = pow(sunDot,1.5);
   sunHalo *= sunHorizon;
   sunHalo *= sunLow;
   sunHalo *= dawnAtmosphere;
-  float sunGlow = pow(sunDot,8.0);
+  float sunGlow = pow(sunDot,6.0);
   sunGlow *= sunHorizon;
   sunGlow *= sunLow;
   sunGlow *= dawnAtmosphere;
   float horizonLight = sunHorizon*sunLow*dawnAtmosphere;
-  horizonLight *= smoothstep(0.0,0.75,sunDot);
+  horizonLight *= smoothstep(0.0,1.0,sunDot);
   sky += skyCol.horizonEdge*sunHalo*0.0;
   sky += skyCol.horizon*sunGlow*4.0;
   sky += skyCol.horizonEdge*horizonLight*0.65;
