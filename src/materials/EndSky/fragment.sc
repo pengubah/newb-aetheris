@@ -14,7 +14,16 @@ void main() {
   #ifndef INSTANCING
     vec4 diffuse = texture2D(s_SkyTexture, v_texcoord0);
 
-    vec3 color = renderEndSky(getEndHorizonCol(), getEndZenithCol(), normalize(v_posTime.xyz), v_posTime.w);
+    vec3 viewDir = normalize(v_posTime.xyz);
+
+    vec3 color = renderEndSky(getEndHorizonCol(), getEndZenithCol(), viewDir, v_posTime.w);
+
+    #ifdef NL_BLACKHOLE
+      vec4 bh = renderBlackhole(viewDir, v_posTime.w);
+      color *= bh.a;
+      color += bh.rgb;
+    #endif
+
     color += 2.8*diffuse.rgb; // stars
 
     color = colorCorrection(color);
