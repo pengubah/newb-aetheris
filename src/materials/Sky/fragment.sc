@@ -25,7 +25,7 @@ float cubicFollowNoise(vec2 p){
     return texture2D(s_noisevoxels, quantized).r;
 }
 
-vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
+vec3 GetAurora(vec3 viewDir, vec4(ViewPositionAndTime), float dither) {
     float VdotU = clamp(viewDir.y, 0.0, 1.0);
     float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.25));
     visibility *= 8.0 - VdotU * 0.9;
@@ -84,7 +84,7 @@ void main() {
     #endif
 
   float dither = fract(sin(dot(uv, vec2(12.9898,78.233))) * 43758.5453);
-    vec3 aurora = GetAurora(viewDir, vec4 ViewPositionAndTime, dither);
+    vec3 aurora = GetAurora(viewDir, vec4(ViewPositionAndTime) , dither);
 
     skyColor = colorCorrection(skyColor);
 
