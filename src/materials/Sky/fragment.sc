@@ -37,7 +37,7 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
 
     vec2 cameraPosM = vec2(ViewPositionAndTime * 0.0, 0.0);
 
-    const int sampleCount = 12;
+    const int sampleCount = 10;
     const int sampleCountP = sampleCount + 10;
 
     float ditherM = dither + 10.0;
