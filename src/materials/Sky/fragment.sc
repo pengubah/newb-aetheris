@@ -83,8 +83,9 @@ void main() {
       skyColor += NL_OVERWORLD_STARS * nlRenderOverworldStars(-viewDir, env);
     #endif
 
-  float dither = fract(sin(dot(uv, vec2(12.9898,78.233))) * 43758.5453);
-    vec3 aurora = GetAurora(viewDir, vec4 ViewPositionAndTime, dither);
+    float dither = fract(sin(dot(uv, vec2(12.9898,78.233))) * 43758.5453);
+    vec3 aurora = GetAurora(viewDir, ViewPositionAndTime, dither);
+    skyColor += aurora; 
 
     skyColor = colorCorrection(skyColor);
 
