@@ -9,6 +9,7 @@
   uniform vec4 TimeOfDay;
   uniform vec4 FogColor;
   uniform vec4 FogAndDistanceControl;
+  uniform vec4 ViewPositionAndTime;
 #endif
 
 SAMPLER2D_AUTOREG(s_noisevoxels);
@@ -24,17 +25,17 @@ float cubicFollowNoise(vec2 p){
     return texture2D(s_noisevoxels, quantized).r;
 }
 
-vec3 GetAurora(vec3 vDir, float time, float dither) {
-    float VdotU = clamp(vDir.y, 0.0, 1.0);
+vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
+    float VdotU = clamp(viewDir.y, 0.0, 1.0);
     float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.25));
     visibility *= 8.0 - VdotU * 0.9;
     if (visibility <= 1.0) return vec3(0.0, 0.0, 0.0);
 
     vec3 aurora = vec3(0.0, 0.0, 0.0);
-    vec3 wpos = vDir;
+    vec3 wpos = viewDir;
     wpos.xz /= max(wpos.y, 0.1);
 
-    vec2 cameraPosM = vec2(time * 0.0, 0.0);
+    vec2 cameraPosM = vec2(ViewPositionAndTime * 0.0, 0.0);
 
     const int sampleCount = 12;
     const int sampleCountP = sampleCount + 10;
@@ -51,8 +52,8 @@ vec3 GetAurora(vec3 vDir, float time, float dither) {
         float noise = cubicFollowNoise(planePos);
         noise = pow2(pow2(pow2(1.0 - 1.0 * abs(noise - 0.4))));
 
-        float anim1 = cubicFollowNoise(planePos * 0.5 + time * 0.00);
-        float anim2 = cubicFollowNoise(planePos * 0.8 - time * 0.00);
+        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime * 0.00);
+        float anim2 = cubicFollowNoise(planePos * 0.8 - ViewPositionAndTime * 0.00);
         noise *= mix(anim1, anim2, 0.5);
 
         aurora += noise * currentM * mix(vec3(0.65, 0.48, 1.35), vec3(0.0, 5.55, 1.85), pow2(pow2(currentM)));
@@ -83,7 +84,7 @@ void main() {
     #endif
 
   float dither = fract(sin(dot(uv, vec2(12.9898,78.233))) * 43758.5453);
-    vec3 aurora = GetAurora(vDir, time, dither);
+    vec3 aurora = GetAurora(viewDir, vec4 ViewPositionAndTime, dither);
 
     skyColor = colorCorrection(skyColor);
 
