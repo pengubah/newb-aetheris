@@ -40,7 +40,7 @@
 #define NL_SUNLIGHT_INTENSITY   2.85  // 1.0 weak ~ 5.0 bright
 #define NL_TORCHLIGHT_INTENSITY 1.2  // 0.5 weak ~ 3.0 bright
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
-#define NL_MIN_LIGHTING_BOOST   1.0  // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
+#define NL_MIN_LIGHTING_BOOST   0.80 // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
 #define NL_BLINKING_TORCH            // [toggle] flickering light
 //#define NL_CLOUD_SHADOW            // [toggle] cloud shadow (simple clouds only)
 
@@ -51,7 +51,7 @@
 /* Sun/moon light color */
 #define NL_DAWN_SUNLIGHT_COL   vec3(1.00,0.96,0.90)
 #define NL_NOON_SUNLIGHT_COL   vec3(0.85,0.90,1.00)
-#define NL_NIGHT_MOONLIGHT_COL vec3(0.035,0.14,0.20)
+#define NL_NIGHT_MOONLIGHT_COL vec3(0.020,0.085,0.13)
 
 /* Torch colors */
 #define NL_OVERWORLD_TORCH_COL   vec3(1.00,0.68,0.34)
