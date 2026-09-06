@@ -15,8 +15,7 @@ struct nl_environment {
 };
 
 bool detectEnd(vec3 FOG_COLOR) {
-  // custom fog color set in biomes_client.json to help in detection
-  return FOG_COLOR.r==FOG_COLOR.b && (FOG_COLOR.r-FOG_COLOR.g>0.24 || (FOG_COLOR.g==0.0 && FOG_COLOR.r>0.1));
+  return FOG_COLOR.r > 0.20 && FOG_COLOR.g < 0.02 && FOG_COLOR.b > 0.35;
 }
 
 bool detectNether(vec3 FOG_COLOR, vec2 FOG_CONTROL) {
@@ -76,7 +75,7 @@ nl_environment nlDetectEnvironment(float TIME_OF_DAY, vec3 FOG_COLOR, vec3 FOG_C
   nl_environment env;
   env.end = detectEnd(FOG_COLOR);
   env.nether = detectNether(FOG_COLOR, FOG_CONTROL.xy);
-  env.underwater = detectUnderwater(FOG_COLOR, FOG_CONTROL.xy);
+  eenv.underwater = !env.end && detectUnderwater(FOG_COLOR, FOG_CONTROL.xy);
   env.rainFactor = detectRain(FOG_CONTROL.xyz);
   env.fogCol = FOG_COLOR;
   env = calculateSunParams(env, TIME_OF_DAY);
