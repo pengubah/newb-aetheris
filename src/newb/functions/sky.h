@@ -258,7 +258,7 @@ vec3 renderEndSky(vec3 horizonCol,vec3 zenithCol,vec3 viewDir,float t) {
         starColor = vec3(0.55,0.9,1.0);
     }
     
-    float star = starPoint*starChance*twinkle;
+    float star = starPoint*starChance;
     star *= 1.0-cloudCore*0.18;
     sky += starColor*star*1.35;
     
