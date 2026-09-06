@@ -198,6 +198,40 @@ vec4 renderBlackhole(vec3 viewdir,float t) {
     return vec4(col,hole);
 }
 
+vec3 renderEndNebula(vec3 viewDir,float t) {
+    float skyTime = t*1.5;
+    vec3 dir = normalize(viewDir);
+
+    vec3 p = dir*2.65;
+    p += vec3(skyTime*0.045,0.0,0.0);
+
+    float warpA = noise3(p*0.58+vec3(5.2,13.1,8.7));
+    float warpB = noise3(p*0.58+vec3(17.4,4.6,11.8));
+
+    vec3 warped = p;
+    warped += vec3(warpA-0.5,warpB-0.5,warpA+warpB-1.0)*0.72;
+
+    float cloudLarge = fbm3(warped*0.72);
+    float cloudMedium = fbm3(warped*1.45+vec3(12.7,6.3,19.4));
+    float cloudDetail = noise3(warped*2.75+vec3(4.8,17.2,9.6));
+
+    float cloudShape = cloudLarge*0.62+cloudMedium*0.27+cloudDetail*0.11;
+    float cloudMass = smoothstep(0.31,0.56,cloudShape);
+    float cloudCore = smoothstep(0.53,0.72,cloudShape);
+
+    float filament = noise3(warped*2.15+vec3(21.3,7.1,14.8));
+    float gas = cloudMass*(0.78+0.22*filament);
+
+    vec3 deepPurple = vec3(0.025,0.004,0.065);
+    vec3 purpleGas = vec3(0.105,0.008,0.19);
+    vec3 warmPurple = vec3(0.19,0.013,0.26);
+
+    vec3 nebulaColor = mix(deepPurple,purpleGas,smoothstep(0.38,0.58,cloudShape));
+    nebulaColor = mix(nebulaColor,warmPurple,cloudCore);
+
+    return nebulaColor*(gas*1.3);
+}
+
 vec3 renderEndSky(vec3 horizonCol,vec3 zenithCol,vec3 viewDir,float t) {
     float skyTime = t*1.5;
     float a = atan2(viewDir.x,viewDir.z);
