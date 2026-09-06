@@ -128,7 +128,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   sunGlow *= dawnAtmosphere;
   float horizonLight = sunHorizon*sunLow*dawnAtmosphere;
   horizonLight *= smoothstep(0.0,0.75,sunDot);
-  sky += skyCol.horizonEdge*sunHalo*2.8;
+  sky += skyCol.horizonEdge*sunHalo*0.0;
   sky += skyCol.horizon*sunGlow*4.0;
   sky += skyCol.horizonEdge*horizonLight*0.65;
 
