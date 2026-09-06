@@ -30,7 +30,7 @@
 /* Color correction */
 #define NL_TONEMAP_TYPE 5              // 1:Exponential, 2:Reinhard, 3:Extended Reinhard, 4:ACES, 5:ACES Filmic
 #define NL_GAMMA 1.2                   // 0.3 low ~ 2.0 high
-#define NL_EXPOSURE 1.3               // [toggle] 0.5 dark ~ 3.0 bright
+#define NL_EXPOSURE 1.35               // [toggle] 0.5 dark ~ 3.0 bright
 #define NL_SATURATION 1.3              // [toggle] 0.0 grayscale ~ 4.0 super saturated
 #define NL_TINT                        // [toggle] enable light/dark tone tinting
 #define NL_TINT_LOW  vec3(1.0,1.0,1.0) // color tint for dark tone
@@ -40,7 +40,7 @@
 #define NL_SUNLIGHT_INTENSITY   2.85  // 1.0 weak ~ 5.0 bright
 #define NL_TORCHLIGHT_INTENSITY 1.2  // 0.5 weak ~ 3.0 bright
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
-#define NL_MIN_LIGHTING_BOOST   0.80 // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
+#define NL_MIN_LIGHTING_BOOST   0.88 // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
 #define NL_BLINKING_TORCH            // [toggle] flickering light
 //#define NL_CLOUD_SHADOW            // [toggle] cloud shadow (simple clouds only)
 
@@ -49,8 +49,8 @@
 #define NL_END_AMBIENT    vec3(1.00,0.78,0.88)
 
 /* Sun/moon light color */
-#define NL_DAWN_SUNLIGHT_COL   vec3(1.00,0.96,0.90)
-#define NL_NOON_SUNLIGHT_COL   vec3(0.85,0.90,1.00)
+#define NL_DAWN_SUNLIGHT_COL   vec3(1.00,0.98,0.98)
+#define NL_NOON_SUNLIGHT_COL   vec3(0.80,0.85,1.00)
 #define NL_NIGHT_MOONLIGHT_COL vec3(0.020,0.085,0.13)
 
 /* Torch colors */
