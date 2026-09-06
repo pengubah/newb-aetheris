@@ -225,42 +225,37 @@ vec4 nlEntityEdgeHighlightPreprocess(vec2 texcoord) {
 }
 
 vec4 nlLavaNoise(vec3 gPos, float t) {
-  float wt = NL_LAVA_NOISE_SPEED * t;
-
   vec2 p = gPos.xz;
 
-  // Large flowing magma pattern
-  float n0 = movingNoise2D(p * 0.28 + vec2(wt * 0.035, -wt * 0.020));
+  float wt = NL_LAVA_NOISE_SPEED * t;
 
-  // Medium breakup
-  float n1 = movingNoise2D(p * 0.62 + vec2(-wt * 0.050, wt * 0.032));
+  // Large flowing magma
+  float n0 = movingNoise2D(p * 0.30 + vec2(wt * 0.035, -wt * 0.020), wt * 0.45, 0.35);
+
+  // Medium magma breakup
+  float n1 = movingNoise2D(p * 0.68 + vec2(-wt * 0.050, wt * 0.032) + vec2(4.7, 1.9), wt * 0.70, 0.40);
 
   // Small hot details
-  float n2 = movingNoise2D(p * 1.25 + vec2(wt * 0.075, -wt * 0.055));
+  float n2 = movingNoise2D(p * 1.35 + vec2(wt * 0.075, -wt * 0.055) - vec2(2.3, 5.1), wt, 0.28);
 
-  // Combine the different lava scales
+  // Combine lava scales
   float n = n0 * 0.55 + n1 * 0.30 + n2 * 0.15;
 
-  // Increase the separation between hot and dark regions
-  float hot = smoothstep(0.43, 0.68, n);
+  // Stronger separation between dark and hot magma
+  n = smoothstep(0.18, 0.82, n);
 
-  // Extra hotspot variation
-  float detail = smoothstep(0.52, 0.78, n1 * 0.65 + n2 * 0.35);
+  float hot = smoothstep(0.42, 0.76, n);
+  float glow = smoothstep(0.28, 0.66, n);
 
-  hot = clamp(hot + detail * 0.18, 0.0, 1.0);
+  // Lava color
+  vec3 darkLava = vec3(0.30, 0.055, 0.008);
+  vec3 warmLava = vec3(0.95, 0.22, 0.015);
+  vec3 hotLava  = vec3(1.55, 0.72, 0.08);
 
-  // Lava color layers
-  vec3 darkLava = vec3(0.055, 0.008, 0.002);
-  vec3 warmLava = vec3(0.38, 0.025, 0.003);
-  vec3 hotLava  = vec3(1.0, 0.18, 0.015);
+  vec3 col = mix(darkLava, warmLava, glow);
+  col = mix(col, hotLava, hot);
 
-  vec3 lavaColor = mix(darkLava, warmLava, smoothstep(0.18, 0.52, n));
-  lavaColor = mix(lavaColor, hotLava, hot);
-
-  // Slightly stronger glow in the hottest areas
-  lavaColor *= 0.82 + hot * 0.75;
-
-  return vec4(lavaColor, n);
+  return vec4(col, n);
 }
 
 #endif
