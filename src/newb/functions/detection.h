@@ -79,7 +79,7 @@ nl_environment nlDetectEnvironment(float TIME_OF_DAY, vec3 FOG_COLOR, vec3 FOG_C
   nl_environment env;
   env.end = detectEnd(FOG_COLOR);
   env.nether = detectNether(FOG_COLOR, FOG_CONTROL.xy);
-  eenv.underwater = !env.end && detectUnderwater(FOG_COLOR, FOG_CONTROL.xy);
+  env.underwater = !env.end && detectUnderwater(FOG_COLOR, FOG_CONTROL.xy);
   env.rainFactor = detectRain(FOG_CONTROL.xyz);
   env.fogCol = FOG_COLOR;
   env = calculateSunParams(env, TIME_OF_DAY);
