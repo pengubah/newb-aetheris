@@ -21,11 +21,14 @@ vec4 nlWater(
 ) {
 
   float wt = NL_WATER_WAVE_SPEED * t;
-  float waveLarge = waterNoise(gPos.xz * 0.42 + gPos.yy, wt * 0.65);
-  float waveSmall = waterNoise(gPos.xz * 0.85 + vec2(17.3, 9.7) + gPos.yy, -wt * 0.42);
-  float wave = waveLarge * 0.72 + waveSmall * 0.28;
+  vec2 waterPos = gPos.xz + gPos.yy;
+  float waveLarge = waterNoise(waterPos * 0.32 + vec2(wt * 0.055, -wt * 0.025), wt * 0.32);
+  float waveMedium = waterNoise(waterPos * 0.68 + vec2(-wt * 0.075, wt * 0.045) + vec2(19.7, 7.3), -wt * 0.46);
+  float wave = waveLarge * 0.68 + waveMedium * 0.32;
   wave = wave * 2.0 - 1.0;
-  vec2 bump = vec2(wave * 0.85, wave * 0.65);
+  float waveX = waterNoise(waterPos * 0.52 + vec2(wt * 0.045, -wt * 0.035) + vec2(31.4, 11.8), wt * 0.38);
+  float waveZ = waterNoise(waterPos * 0.52 + vec2(-wt * 0.035, wt * 0.055) + vec2(8.6, 27.1), -wt * 0.34);
+  vec2 bump = vec2(waveX * 0.58 + wave * 0.42, waveZ * 0.58 + wave * 0.42);
 
   vec3 nrm;
   if (fractCposY > 0.0) { // top plane
