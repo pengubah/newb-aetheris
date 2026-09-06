@@ -257,10 +257,7 @@ vec3 renderEndSky(vec3 horizonCol,vec3 zenithCol,vec3 viewDir,float t) {
     if (rnd.x > 0.995) {
         starColor = vec3(0.55,0.9,1.0);
     }
-    float twinkle = 1.0;
-    if (rnd.y > 0.92) {
-        twinkle = 0.9+0.1*sin(skyTime*1.5+rnd.z*6.28318);
-    }
+    
     float star = starPoint*starChance*twinkle;
     star *= 1.0-cloudCore*0.18;
     sky += starColor*star*1.35;
@@ -299,39 +296,6 @@ vec3 nlRenderSky(nl_skycolor skycol, nl_environment env, vec3 viewDir, float t, 
   }
 
   return sky;
-}
-
-vec3 nlRenderOverworldStars(vec3 viewDir, nl_environment env) {
-    vec3 dir = normalize(viewDir);
-    vec3 cell = floor(dir * 260.0);
-    vec3 rnd = hash33(cell);
-    vec3 local = fract(dir * 260.0);
-    vec3 starPos = 0.15 + rnd * 0.70;
-    float dist = length(local - starPos);
-    float starChance = step(0.25, rnd.x);
-    float starPoint = 1.0 - smoothstep(0.040, 0.040 * 1.45, dist);
-
-    float colorId = floor(rnd.z * 6.0);
-    vec3 starColor = vec3(1.0, 1.0, 1.0);
-
-    if (colorId < 1.0) {
-        starColor = vec3(1.0, 0.0, 1.0);
-    } else if (colorId < 2.0) {
-        starColor = vec3(0.0, 1.0, 0.0);
-    } else if (colorId < 3.0) {
-        starColor = vec3(0.0, 1.0, 1.0);
-    } else if (colorId < 4.0) {
-        starColor = vec3(1.0, 1.0, 0.0);
-    } else if (colorId < 5.0) {
-        starColor = vec3(1.0, 1.0, 1.0);
-    }
-
-    float brightness = mix(0.72, 1.20, rnd.y);
-    float star = starPoint * starChance * brightness * 0.8;
-    star *= mix(1.0, 0.0, env.dayFactor);
-    star *= 1.0 - env.rainFactor;
-    
-    return starColor * star * NL_OVERWORLD_STARS;
 }
 
 #endif
