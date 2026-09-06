@@ -39,7 +39,7 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
     const int sampleCount = 10;
     const int sampleCountP = sampleCount + 10;
 
-    float ditherM = dither + 10.0;
+    float ditherM = dither + 9.0;
 
     for (int i = 0; i < sampleCount; i++) {
         float current = pow2((float(i) + ditherM) / float(sampleCountP));
@@ -51,14 +51,14 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
         float noise = cubicFollowNoise(planePos);
         noise = pow2(pow2(pow2(1.0 - 1.0 * abs(noise - 0.4))));
 
-        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w* 0.01);
-        float anim2 = cubicFollowNoise(planePos * 0.8 - ViewPositionAndTime.w* 0.009);
+        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w* 0.002);
+        float anim2 = cubicFollowNoise(planePos * 0.8 - ViewPositionAndTime.w* 0.002);
         noise *= mix(anim1, anim2, 0.5);
 
         aurora += noise * currentM * mix(vec3(0.65, 0.48, 1.35), vec3(0.0, 5.55, 1.85), pow2(pow2(currentM)));
     }
 
-    aurora *= 0.8;
+    aurora *= 0.5;
     return aurora * visibility / float(sampleCount);
 }
 
