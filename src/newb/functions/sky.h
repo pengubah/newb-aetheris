@@ -298,4 +298,13 @@ vec3 nlRenderSky(nl_skycolor skycol, nl_environment env, vec3 viewDir, float t, 
   return sky;
 }
 
+vec3 nlRenderEndFog(nl_skycolor skycol, vec3 viewDir) {
+  viewDir.y = -viewDir.y;
+
+  vec3 dir = normalize(viewDir);
+  float grad = 0.5 + 0.5*dir.y;
+
+  return mix(skycol.zenith, skycol.horizon, pow(1.0 - grad, 1.35));
+}
+
 #endif
