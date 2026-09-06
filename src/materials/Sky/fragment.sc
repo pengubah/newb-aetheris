@@ -45,7 +45,7 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
         float current = pow2((float(i) + ditherM) / float(sampleCountP));
         float currentM = 1.0 - current;
 
-        vec2 planePos = wpos.xz * (0.9 + current) * 10.0 + cameraPosM;
+        vec2 planePos = wpos.xz * (0.9 + current) * 8.0 + cameraPosM;
         planePos *= 0.003;
 
         float noise = cubicFollowNoise(planePos);
