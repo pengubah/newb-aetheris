@@ -75,6 +75,8 @@ void main() {
     env.fogCol = FogColor.rgb;
     env = calculateSunParams(env, TimeOfDay.x);
 
+    float mask = (1.0-1.0*env.rainFactor)*max(1.0-3.0*max(v_fogColor.b, v_fogColor.g), 0.0);
+
     nl_skycolor skycol = nlOverworldSkyColors(env);
 
     vec3 skyColor = nlRenderSky(skycol, env, -viewDir, v_underwaterRainTimeDay.z, true);
@@ -83,7 +85,7 @@ void main() {
     #endif
 
     float dither = fract(sin(dot(viewDir.xz, vec2(12.9898,78.233))) * 43758.5453);
-    vec3 aurora = GetAurora(viewDir, ViewPositionAndTime, dither);
+    vec3 aurora = GetAurora(viewDir, ViewPositionAndTime, dither)*mask;
     skyColor += aurora; 
 
     skyColor = colorCorrection(skyColor);
