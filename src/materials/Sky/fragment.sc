@@ -20,8 +20,7 @@ float clamp01(float x){return clamp(x,0.0,1.0);}
 float sqrt1(float x){return sqrt(max(x,0.0));}
 
 float cubicFollowNoise(vec2 p){
-    vec2 cell = vec2(1.0 / 128.0);
-    vec2 quantized = floor(p / cell) * cell + cell * 2.0;
+    vec2 quantized = (floor(p * 128.0) + 2.0) / 128.0;
     return texture2D(s_noisevoxels, quantized).r;
 }
 
@@ -35,7 +34,7 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
     vec3 wpos = viewDir;
     wpos.xz /= max(wpos.y, 0.1);
 
-    vec2 cameraPosM = vec2(ViewPositionAndTime.w* 0.0, 0.0);
+    vec2 cameraPosM = vec2(ViewPositionAndTime.w* 0.4, 0.0);
 
     const int sampleCount = 10;
     const int sampleCountP = sampleCount + 10;
@@ -52,8 +51,8 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
         float noise = cubicFollowNoise(planePos);
         noise = pow2(pow2(pow2(1.0 - 1.0 * abs(noise - 0.4))));
 
-        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w* 0.00);
-        float anim2 = cubicFollowNoise(planePos * 0.8 - ViewPositionAndTime.w* 0.00);
+        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w* 0.01);
+        float anim2 = cubicFollowNoise(planePos * 0.8 - ViewPositionAndTime.w* 0.009);
         noise *= mix(anim1, anim2, 0.5);
 
         aurora += noise * currentM * mix(vec3(0.65, 0.48, 1.35), vec3(0.0, 5.55, 1.85), pow2(pow2(currentM)));
@@ -83,7 +82,7 @@ void main() {
       skyColor += NL_OVERWORLD_STARS * nlRenderOverworldStars(-viewDir, env);
     #endif
 
-    float dither = fract(sin(dot(uv, vec2(12.9898,78.233))) * 43758.5453);
+    float dither = fract(sin(dot(viewDir.xz, vec2(12.9898,78.233))) * 43758.5453);
     vec3 aurora = GetAurora(viewDir, ViewPositionAndTime, dither);
     skyColor += aurora; 
 
