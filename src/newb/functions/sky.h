@@ -235,6 +235,11 @@ vec3 renderEndSky(vec3 horizonCol,vec3 zenithCol,vec3 viewDir,float t) {
 
     float nebulaStrength = gas*1.3;
 
+    #ifdef NL_END_NEBULA
+      sky += nebulaColor*nebulaStrength;
+      sky += vec3(0.055,0.003,0.095)*cloudCore*0.48;
+    #endif
+
     vec3 starCell = floor(dir*185.0);
     vec3 rnd = hash33(starCell);
 
