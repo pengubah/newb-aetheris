@@ -30,7 +30,7 @@
 /* Color correction */
 #define NL_TONEMAP_TYPE 5              // 1:Exponential, 2:Reinhard, 3:Extended Reinhard, 4:ACES, 5:ACES Filmic
 #define NL_GAMMA 1.2                   // 0.3 low ~ 2.0 high
-#define NL_EXPOSURE 1.35               // [toggle] 0.5 dark ~ 3.0 bright
+#define NL_EXPOSURE 1.3               // [toggle] 0.5 dark ~ 3.0 bright
 #define NL_SATURATION 1.3              // [toggle] 0.0 grayscale ~ 4.0 super saturated
 #define NL_TINT                        // [toggle] enable light/dark tone tinting
 #define NL_TINT_LOW  vec3(1.0,1.0,1.0) // color tint for dark tone
@@ -50,7 +50,7 @@
 
 /* Sun/moon light color */
 #define NL_DAWN_SUNLIGHT_COL   vec3(1.00,0.96,0.90)
-#define NL_NOON_SUNLIGHT_COL   vec3(0.88,0.94,1.00)
+#define NL_NOON_SUNLIGHT_COL   vec3(0.85,0.90,1.00)
 #define NL_NIGHT_MOONLIGHT_COL vec3(0.035,0.14,0.20)
 
 /* Torch colors */
@@ -61,9 +61,9 @@
 
 /* Fog */
 #define NL_FOG 1.0                // [toggle] 0.1 subtle ~ 1.0 blend with sky completely
-#define NL_MIST_DENSITY 0.5       // 0.0 no mist ~ 1.0 misty
-#define NL_RAIN_MIST_OPACITY 0.25 // [toggle] 0.04 very subtle ~ 0.5 thick rain mist blow
-#define NL_CLOUDY_FOG 0.2         // [toggle] 0.0 subtle - 0.8 dense fog clouds
+#define NL_MIST_DENSITY 0.6       // 0.0 no mist ~ 1.0 misty
+#define NL_RAIN_MIST_OPACITY 0.35 // [toggle] 0.04 very subtle ~ 0.5 thick rain mist blow
+#define NL_CLOUDY_FOG 0.25         // [toggle] 0.0 subtle - 0.8 dense fog clouds
 
 /* Sky */
 #define NL_SKY_VOID_FACTOR     0.5
@@ -124,7 +124,7 @@
 #define NL_WATER_TINT vec3(0.0,0.05,0.2)
 
 /* Underwater */
-#define NL_UNDERWATER_BRIGHTNESS 1.0         // 0.0 dark ~ 3.0 bright
+#define NL_UNDERWATER_BRIGHTNESS 1.15         // 0.0 dark ~ 3.0 bright
 //#define NL_CAUSTIC_INTENSITY 2.0             // 0.5 weak ~ 5.0 bright
 #define NL_UNDERWATER_WAVE 0.1               // [toggle] 0.02 subtle ~ 0.6 trippy
 #define NL_UNDERWATER_STREAKS 1.5            // [toggle] 0.8 subtle - 2.0 bright streaks from top
@@ -165,7 +165,7 @@
 #define NL_CLOUD2_LAYER2_VELOCITY 0.8           // 0.0 static ~ 4.0 very fast
 
 /* Realistic cloud settings */
-#define NL_CLOUD3_SCALE vec2(0.03, 0.03) // 0.003 large ~ 1.0 tiny
+#define NL_CLOUD3_SCALE vec2(0.028, 0.028) // 0.003 large ~ 1.0 tiny
 #define NL_CLOUD3_SPEED 0.005            // 0.0 static ~ 4.0 fast moving
 #define NL_CLOUD3_SHADOW 0.9             // 0.1 subtle ~ 1.0 dark
 #define NL_CLOUD3_SHADOW_OFFSET 0.3      // 0.05 minimal ~ 1.0 large
@@ -181,7 +181,7 @@
 //#define NL_CLOUD_AURORA_REFLECTION // [toggle] simple clouds/aurora reflection
 
 /* overworld star */
-#define NL_OVERWORLD_STARS 1.0   // [toggle] 0.0 invisible - 1.0 full
+//#define NL_OVERWORLD_STARS 1.0   // [toggle] 0.0 invisible - 1.0 full
 
 /* Chunk loading slide in animation */
 #define NL_CHUNK_LOAD_ANIM 100.0 // [toggle] -600.0 fall from top ~ 600.0 rise from bottom
