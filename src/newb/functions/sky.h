@@ -261,12 +261,6 @@ vec3 renderEndSky(vec3 horizonCol,vec3 zenithCol,vec3 viewDir,float t) {
     float star = starPoint*starChance;
     star *= 1.0-cloudCore*0.18;
     sky += starColor*star*1.35;
-    
-    #ifdef NL_BLACKHOLE
-      vec4 bh = renderBlackhole(viewDir,t);
-      sky *= bh.a;
-      sky += bh.rgb;
-    #endif
 
     return sky;
 }
