@@ -11,44 +11,54 @@
   uniform vec4 FogAndDistanceControl;
 #endif
 
-SAMPLER2D_AUTOREG(s_NoiseTex);
+SAMPLER2D_AUTOREG(s_noisevoxels);
 
-float pow2(float x) { return x * x; }
-float pow1_5(float x) { return pow(x, 1.5); }
-float clamp01(float x) { return clamp(x, 0.0, 1.0); }
-float sqrt1(float x) { return sqrt(max(x, 0.0)); }
+float pow2(float x){return x*x;}
+float pow1_5(float x){return pow(x,1.5);}
+float clamp01(float x){return clamp(x,0.0,1.0);}
+float sqrt1(float x){return sqrt(max(x,0.0));}
+
+float cubicFollowNoise(vec2 p){
+    vec2 cell = vec2(1.0 / 128.0);
+    vec2 quantized = floor(p / cell) * cell + cell * 2.0;
+    return texture2D(s_noisevoxels, quantized).r;
+}
 
 vec3 GetAurora(vec3 vDir, float time, float dither) {
     float VdotU = clamp(vDir.y, 0.0, 1.0);
-    float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.225));
-    visibility *= 4.0 - VdotU * 0.9;
-    if (visibility <= 1.0) return vec3(0.0,0.0,0.0);
+    float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.25));
+    visibility *= 8.0 - VdotU * 0.9;
+    if (visibility <= 1.0) return vec3(0.0, 0.0, 0.0);
 
-    vec3 aurora = vec3(0.0,0.0,0.0);
+    vec3 aurora = vec3(0.0, 0.0, 0.0);
     vec3 wpos = vDir;
     wpos.xz /= max(wpos.y, 0.1);
-    vec2 cameraPosM = vec2(0.0,0.0);
-    cameraPosM.x += time * 0.8;
+
+    vec2 cameraPosM = vec2(time * 0.0, 0.0);
 
     const int sampleCount = 12;
     const int sampleCountP = sampleCount + 10;
 
     float ditherM = dither + 10.0;
-    float auroraAnimate = time * 0.0;
 
     for (int i = 0; i < sampleCount; i++) {
         float current = pow2((float(i) + ditherM) / float(sampleCountP));
-        vec2 planePos = wpos.xz * (0.8 + current) * 10.0 + cameraPosM;
-        planePos *= 0.0007;
-        float noise = texture2D(s_NoiseTex, planePos).r;
-        noise = pow2(pow2(pow2(pow2(1.0- 0.8* abs(noise - 0.5)))));
-        noise *= texture2D(s_NoiseTex, planePos * 8.0 + auroraAnimate).b;
-        noise *= texture2D(s_NoiseTex, planePos * 1.0 - auroraAnimate).g;
         float currentM = 1.0 - current;
-        aurora += noise * currentM * mix(vec3(0.5, 0.6, 1.0), vec3(0.0, 4.5, 3.2), pow2(pow2(currentM)));
+
+        vec2 planePos = wpos.xz * (0.9 + current) * 10.0 + cameraPosM;
+        planePos *= 0.003;
+
+        float noise = cubicFollowNoise(planePos);
+        noise = pow2(pow2(pow2(1.0 - 1.0 * abs(noise - 0.4))));
+
+        float anim1 = cubicFollowNoise(planePos * 0.5 + time * 0.00);
+        float anim2 = cubicFollowNoise(planePos * 0.8 - time * 0.00);
+        noise *= mix(anim1, anim2, 0.5);
+
+        aurora += noise * currentM * mix(vec3(0.65, 0.48, 1.35), vec3(0.0, 5.55, 1.85), pow2(pow2(currentM)));
     }
 
-    aurora *= 1.5;
+    aurora *= 0.8;
     return aurora * visibility / float(sampleCount);
 }
 
@@ -65,8 +75,6 @@ void main() {
     env.fogCol = FogColor.rgb;
     env = calculateSunParams(env, TimeOfDay.x);
 
-    float mask = (1.0-1.0*env.rainFactor)*max(1.0 - 3.0*max(v_fogColor.b, v_fogColor.g), 0.0);
-
     nl_skycolor skycol = nlOverworldSkyColors(env);
 
     vec3 skyColor = nlRenderSky(skycol, env, -viewDir, v_underwaterRainTimeDay.z, true);
@@ -74,10 +82,9 @@ void main() {
       skyColor += NL_OVERWORLD_STARS * nlRenderOverworldStars(-viewDir, env);
     #endif
 
-  float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
-  vec3 aurora = GetAurora(viewDir, v_underwaterRainTimeDay.z, dither) * mask;
+  float dither = fract(sin(dot(uv, vec2(12.9898,78.233))) * 43758.5453);
+    vec3 aurora = GetAurora(vDir, time, dither);
 
-  skyColor += aurora;
     skyColor = colorCorrection(skyColor);
 
     gl_FragColor = vec4(skyColor, 1.0);
