@@ -18,6 +18,8 @@ void main() {
 
     vec3 color = renderEndSky(getEndHorizonCol(), getEndZenithCol(), viewDir, v_posTime.w);
 
+    color += renderEndNebula(viewDir, v_posTime.w);
+
     #ifdef NL_BLACKHOLE
       vec4 bh = renderBlackhole(viewDir, v_posTime.w);
       color *= bh.a;
