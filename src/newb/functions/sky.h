@@ -140,7 +140,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
     source *= source;
     source *= source;
     float dawnSource = source*dawnAtmosphere;
-    sky *= 1.0+15.0*source*(1.0-env.rainFactor);
+    sky *= 1.0+17.0*source*(1.0-env.rainFactor);
     sky += skyCol.horizonEdge*dawnSource*1.8;
 }
 
@@ -261,7 +261,6 @@ vec3 renderEndSky(vec3 horizonCol,vec3 zenithCol,vec3 viewDir,float t) {
     }
     
     float star = starPoint*starChance;
-    star *= 1.0-cloudCore*0.18;
     sky += starColor*star*1.35;
 
     return sky;
