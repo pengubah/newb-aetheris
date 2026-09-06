@@ -33,7 +33,9 @@ nl_environment env = nlDetectEnvironment(TimeOfDay.x,FogColor.rgb,FogAndDistance
   vec3 N;
      N = normalize(cross(dFdx(v_position), dFdy(v_position)));
 
-bool blockUnderWater = (v_lightmapUV.y < 0.9 && abs((2.0 * v_position.y - 15.0) / 16.0 - v_lightmapUV.y) < 0.00002);
+bool blockUnderWater = !env.end &&
+  v_lightmapUV.y < 0.9 &&
+  abs((2.0 * v_position.y - 15.0) / 16.0 - v_lightmapUV.y) < 0.00002;
 
 if(env.underwater || blockUnderWater){
     vec2 uv = v_position.xz * 0.15; 
