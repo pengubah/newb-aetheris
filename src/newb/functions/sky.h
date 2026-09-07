@@ -37,11 +37,6 @@ nl_skycolor nlEndSkyColors(nl_environment env) {
   return s;
 }
 
-float nlDawnFactor(float dayFactor) {
-  float dawn = 1.0-smoothstep(0.0,0.72,abs(dayFactor));
-  return dawn*dawn;
-}
-
 nl_skycolor nlOverworldSkyColors(nl_environment env) {
   nl_skycolor s;
   float f = 1.0 + 2.0*(1.0-max(-env.dayFactor, 0.0));
@@ -50,7 +45,9 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   s.horizon = mix(NL_DAY_HORIZON_COL, NL_NIGHT_HORIZON_COL*f, nightFactor);
   s.horizonEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL*f, nightFactor);
 
-  float dawnFactor = nlDawnFactor(env.dayFactor);
+  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
+  dawnFactor *= dawnFactor*dawnFactor;
+  dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnFactor);
   s.horizon = mix(s.horizon, NL_DAWN_HORIZON_COL, dawnFactor);
   s.horizonEdge = mix(s.horizonEdge, NL_DAWN_EDGE_COL, dawnFactor);
@@ -103,17 +100,10 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   gradient1 = mix(gradient1*gradient1, 1.0, mg8);
   gradient2 = mix(gradient2, 1.0, mg8);
 
-  float dawnFactor = nlDawnFactor(env.dayFactor);
-  float dawnSpread = pow(clamp(gradient2,0.0,1.0),0.68);
-  dawnSpread = mix(gradient2,dawnSpread,0.82*dawnFactor);
-  float sunBlend = smoothstep(0.0,1.0,1.0-g.x);
-  float df = mix(1.0,g2.x,dawnFactor*sunBlend);
-  vec3 sky = mix(skyCol.horizon,skyCol.horizonEdge,gradient1*df*df);
-  sky = mix(skyCol.zenith,sky,dawnSpread*df);
-  float dawnHalo = pow(max(1.0-g.x,0.0),2.0)*dawnFactor;
-  dawnHalo *= 0.18+0.82*dawnSpread;
-  dawnHalo *= 1.0-env.rainFactor;
-  sky += skyCol.horizon*dawnHalo*0.34;
+  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
+  float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
+  vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*df*df);
+  sky = mix(skyCol.zenith, sky, gradient2*df);
   
   sky *= 0.5+0.5*gradient2;
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
