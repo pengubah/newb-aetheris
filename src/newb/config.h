@@ -92,7 +92,7 @@
 /* blackhole at the end */
 #define NL_BLACKHOLE                         // [toggle] enable blackhole in endsky
 #define NL_BH_COL_LOW vec3(0.0,0.0,0.0)      // hole color
-#define NL_BH_COL_HIGH vec3(0.62,0.30,0.82)   // spiral ring color
+#define NL_BH_COL_HIGH vec3(0.42,0.40,0.62)   // spiral ring color
 #define NL_BH_DIST 1.8                       // blackhole size: 5.0 tiny - 0.5 massive
 #define NL_BH_SPEED 0.6                      // spiral rotation speed
 
@@ -108,7 +108,7 @@
 #define NL_GLOW_LEAK 0.6          // [toggle] 0.08 subtle ~ 1.0 100% brightness of NL_GLOW_TEX
 
 /* Waving */
-#define NL_PLANTS_WAVE 0.06    // [toggle] 0.02 gentle ~ 0.4 violent
+#define NL_PLANTS_WAVE 0.05    // [toggle] 0.02 gentle ~ 0.4 violent
 #define NL_LANTERN_WAVE 0.16   // [toggle] 0.05 subtle ~ 0.4 large swing
 #define NL_WAVE_SPEED 2.8      // 0.5 slow wave ~ 5.0 very fast wave
 //#define NL_EXTRA_PLANTS_WAVE // [toggle] !dont use! wave using texture coords (1.21.0 vanilla 2048x1024)
@@ -124,7 +124,7 @@
 #define NL_WATER_TINT vec3(0.0,0.05,0.2)
 
 /* Underwater */
-#define NL_UNDERWATER_BRIGHTNESS 1.15         // 0.0 dark ~ 3.0 bright
+#define NL_UNDERWATER_BRIGHTNESS 1.3         // 0.0 dark ~ 3.0 bright
 //#define NL_CAUSTIC_INTENSITY 2.0             // 0.5 weak ~ 5.0 bright
 #define NL_UNDERWATER_WAVE 0.1               // [toggle] 0.02 subtle ~ 0.6 trippy
 #define NL_UNDERWATER_STREAKS 1.5            // [toggle] 0.8 subtle - 2.0 bright streaks from top
@@ -190,8 +190,8 @@
 #define NL_MOON_PATH_YAW   17.0    //
 #define NL_SUN_PATH_TILT   31.0    //
 #define NL_MOON_PATH_TILT -28.0    //
-#define NL_SUN_TILT        45.0    // 0.0 no tilt ~ 90.0 tilt of 90 degrees
-#define NL_MOON_TILT       45.0    // 0.0 no tilt ~ 90.0 tilt of 90 degrees
+#define NL_SUN_TILT        0.0    // 0.0 no tilt ~ 90.0 tilt of 90 degrees
+#define NL_MOON_TILT       0.0    // 0.0 no tilt ~ 90.0 tilt of 90 degrees
 
 /* Fake godrays during sunrise/sunset */
 #define NL_GODRAY 0.8 // [toggle] 0.1 subtle ~ 0.8 strong
