@@ -6,8 +6,11 @@ float nlRenderFogFade(float relativeDist, vec3 FOG_COLOR, vec2 FOG_CONTROL) {
     float fade = smoothstep(FOG_CONTROL.x, FOG_CONTROL.y, relativeDist);
 
     // misty effect
-    float density = NL_MIST_DENSITY*(19.0 - 18.0*FOG_COLOR.g);
-    fade += (1.0-fade)*(0.3-0.3*exp(-relativeDist*relativeDist*density));
+    float dawnHaze = clamp(3.0*(FOG_COLOR.r-FOG_COLOR.b),0.0,1.0);
+    float density = NL_MIST_DENSITY*(19.0-18.0*FOG_COLOR.g)*(1.0+0.65*dawnHaze);
+    float haze = 0.3-0.3*exp(-relativeDist*relativeDist*density);
+    fade += (1.0-fade)*haze;
+    fade += (1.0-fade)*haze*0.28*dawnHaze;
 
     return NL_FOG * fade;
   #else
