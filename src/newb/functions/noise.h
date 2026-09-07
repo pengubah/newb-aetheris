@@ -136,18 +136,14 @@ float fbm3(vec3 p) {
 }
 
 // Lightweight directional water wave noise
-float waterWaveNoise(vec2 p) {
-  vec2 i = floor(p);
-  vec2 f = fract(p);
-  f = f*f*(3.0-2.0*f);
-  vec2 h = vec2(127.1,311.7);
-  float a = fract(sin(dot(i,h))*43758.5453);
-  float b = fract(sin(dot(i+vec2(1.0,0.0),h))*43758.5453);
-  float c = fract(sin(dot(i+vec2(0.0,1.0),h))*43758.5453);
-  float d = fract(sin(dot(i+vec2(1.0,1.0),h))*43758.5453);
-  float x = mix(a,b,f.x);
-  float y = mix(c,d,f.x);
-  return mix(x,y,f.y);
+float waterRealisticNoise(vec2 p,float t) {
+    vec2 flow=vec2(0.72,0.42)*t*0.025;
+    vec2 q=p*0.055+flow;
+    float warp=waterValueNoise(q*0.72+vec2(13.7,7.2));
+    q+=vec2(warp-0.5)*1.8;
+    float n1=waterValueNoise(q);
+    float n2=waterValueNoise(q*2.15+vec2(19.4,31.7));
+    return n1*0.72+n2*0.28;
 }
 
 #endif
