@@ -35,7 +35,7 @@ vec4 nlWater(
   float slopeX=dir1.x*slope1*0.62*0.20+dir2.x*slope2*0.25*0.43;
   float slopeZ=dir1.y*slope1*0.62*0.20+dir2.y*slope2*0.25*0.43;
   vec2 bump=vec2(slopeX,slopeZ);
-  bump+=vec2(noiseShape*0.035);
+  bump+=vec2(noiseShape*0.035, noiseShape*0.035);
   bump=clamp(bump,-0.28,0.28);
   
   vec3 nrm;
