@@ -45,8 +45,10 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   s.horizon = mix(NL_DAY_HORIZON_COL, NL_NIGHT_HORIZON_COL*f, nightFactor);
   s.horizonEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL*f, nightFactor);
 
-  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
-  dawnFactor *= dawnFactor*dawnFactor;
+  // Dawn/sunset window
+  // Keep the effect concentrated around the horizon hours.
+  float dawnFactor = 1.0 - smoothstep(0.0, 0.58, abs(env.dayFactor));
+  dawnFactor *= dawnFactor;
   dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnFactor);
   s.horizon = mix(s.horizon, NL_DAWN_HORIZON_COL, dawnFactor);
@@ -100,10 +102,23 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   gradient1 = mix(gradient1*gradient1, 1.0, mg8);
   gradient2 = mix(gradient2, 1.0, mg8);
 
-  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
-  float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
+  float dawnFactor = 1.0 - smoothstep(0.0, 0.58, abs(env.dayFactor));
+  dawnFactor *= dawnFactor;
   vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*df*df);
   sky = mix(skyCol.zenith, sky, gradient2*df);
+
+  float sunDot = max(dot(normalize(env.sunDir), normalize(viewDir)), 0.0);
+  // Wide atmospheric glow
+  float sunGlow = pow(sunDot, 5.0);
+  // Bright inner glow
+  float sunBloom = pow(sunDot, 18.0);
+  // Fade the effect outside sunrise/sunset
+  float dawnGlow = dawnFactor;
+  // Rain suppresses atmospheric glow
+  dawnGlow *= 1.0 - 0.75*env.rainFactor;
+  // Warm sunrise color
+  vec3 dawnGlowCol = vec3(1.0, 0.22, 0.015);
+  sky += dawnGlowCol * (1.45*sunGlow + 2.2*sunBloom) * dawnGlow;
   
   sky *= 0.5+0.5*gradient2;
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
