@@ -23,11 +23,10 @@ vec4 nlWater(
   float wt=NL_WATER_WAVE_SPEED*t;
   vec2 waterPos=gPos.xz;
   float waveNoise=waterRealisticNoise(waterPos,wt);
-  float waveDetail=waterRealisticNoise(waterPos*1.7+vec2(37.2,11.8),wt*1.35);
-  float wave=waveNoise*0.12+(waveDetail-0.5)*0.035;
-  vec2 bump=vec2(waveNoise-0.5);
-  bump*=0.16;
-  bump+=(waveDetail-0.5)*0.045;
+  float waveX=waterRealisticNoise(waterPos+vec2(0.37,0.0),wt);
+  float waveZ=waterRealisticNoise(waterPos+vec2(0.0,0.37),wt);
+  float wave=waveNoise*0.14;
+  vec2 bump=vec2(waveX-waveNoise,waveZ-waveNoise)*0.42;
   bump=clamp(bump,-0.20,0.20);
 
   vec3 nrm;
