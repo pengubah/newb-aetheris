@@ -24,19 +24,19 @@ vec4 nlWater(
   vec2 waterPos=gPos.xz;
   vec2 dir1=normalize(vec2(0.82,0.57));
   vec2 dir2=normalize(vec2(-0.46,0.89));
-  float p1=dot(waterPos,dir1)*0.20-wt*0.045;
-  float p2=dot(waterPos,dir2)*0.43+wt*0.032;
-  float w1=sin(p1+0.30*sin(p1*0.45));
-  float w2=sin(p2+0.20*sin(p2*0.60));
-  float noiseShape=waterRealisticNoise(waterPos*0.16,wt*0.018)*2.0-1.0;
-  float wave=w1*0.62+w2*0.25+noiseShape*0.13;
-  float slope1=cos(p1+0.30*sin(p1*0.45))*(1.0+0.135*cos(p1*0.45));
-  float slope2=cos(p2+0.20*sin(p2*0.60))*(1.0+0.12*cos(p2*0.60));
-  float slopeX=dir1.x*slope1*0.62*0.20+dir2.x*slope2*0.25*0.43;
-  float slopeZ=dir1.y*slope1*0.62*0.20+dir2.y*slope2*0.25*0.43;
+  float p1=dot(waterPos,dir1)*0.16-wt*0.032;
+  float p2=dot(waterPos,dir2)*0.31+wt*0.021;
+  float w1=sin(p1+sin(p1*0.45)*0.18);
+  float w2=sin(p2+sin(p2*0.60)*0.12);
+  float noiseShape=waterCalmNoise(waterPos*0.095,wt*0.006);
+  float wave=w1*0.68+w2*0.22+(noiseShape-0.5)*0.10;
+  float slope1=cos(p1+sin(p1*0.45)*0.18);
+  float slope2=cos(p2+sin(p2*0.60)*0.12);
+  float slopeX=dir1.x*slope1*0.16*0.68+dir2.x*slope2*0.31*0.22;
+  float slopeZ=dir1.y*slope1*0.16*0.68+dir2.y*slope2*0.31*0.22;
   vec2 bump=vec2(slopeX,slopeZ);
-  bump+=vec2(noiseShape*0.035, noiseShape*0.035);
-  bump=clamp(bump,-0.28,0.28);
+  bump+=(noiseShape-0.5)*0.025;
+  bump=clamp(bump,-0.18,0.18);
   
   vec3 nrm;
   if (fractCposY > 0.0) { // top plane
@@ -87,7 +87,7 @@ vec4 nlWater(
 
   #ifdef NL_WATER_WAVE
     if (camDist < 16.0) {
-      wPos.y += wave*NL_WATER_BUMP;
+      wPos.y += wave*NL_WATER_BUMP*0.35;
     }
   #endif
 
