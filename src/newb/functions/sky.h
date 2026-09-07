@@ -37,14 +37,6 @@ nl_skycolor nlEndSkyColors(nl_environment env) {
   return s;
 }
 
-float nlDawnShape(float dayFactor) {
-  float x = 1.0 - abs(dayFactor);
-  x = clamp(x, 0.0, 1.0);
-  x = smoothstep(0.0, 1.0, x);
-  x *= x;
-  return x;
-}
-
 nl_skycolor nlOverworldSkyColors(nl_environment env) {
   nl_skycolor s;
   float f = 1.0 + 2.0*(1.0-max(-env.dayFactor, 0.0));
@@ -53,7 +45,9 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   s.horizon = mix(NL_DAY_HORIZON_COL, NL_NIGHT_HORIZON_COL*f, nightFactor);
   s.horizonEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL*f, nightFactor);
 
-  float dawnFactor = nlDawnShape(env.dayFactor);
+  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
+  dawnFactor *= dawnFactor*dawnFactor;
+  dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnFactor);
   s.horizon = mix(s.horizon, NL_DAWN_HORIZON_COL, dawnFactor);
   s.horizonEdge = mix(s.horizonEdge, NL_DAWN_EDGE_COL, dawnFactor);
@@ -73,17 +67,6 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   }
 
   return s;
-}
-
-float nlDawnSkyGradient(vec3 viewDir, vec3 sunDir, float dawn) {
-  float horizon = 1.0 - smoothstep(0.02, 0.92, abs(viewDir.y));
-  float sunFacing = max(dot(viewDir, sunDir), 0.0);
-  float sunSpread = smoothstep(-0.15, 0.55, sunFacing);
-  float verticalSpread = smoothstep(0.05, 0.85, horizon);
-  float dawnGradient = 0.22 + 0.78 * verticalSpread;
-  dawnGradient *= 0.45 + 0.55 * sunSpread;
-  dawnGradient *= dawn;
-  return clamp(dawnGradient, 0.0, 1.0);
 }
 
 nl_skycolor nlSkyColors(nl_environment env) {
@@ -117,24 +100,12 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   gradient1 = mix(gradient1*gradient1, 1.0, mg8);
   gradient2 = mix(gradient2, 1.0, mg8);
 
-  float dawnFactor = nlDawnShape(env.dayFactor);
-  float dawnSkyGradient = nlDawnSkyGradient(viewDir, env.sunDir, dawnFactor);
+  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
   float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
-  float dawnBlend = mix(df, 0.42 + 0.58*df, dawnSkyGradient);
-  vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*dawnBlend*dawnBlend);
-  sky = mix(skyCol.zenith, sky, gradient2*dawnBlend);
+  vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*df*df);
+  sky = mix(skyCol.zenith, sky, gradient2*df);
   
   sky *= 0.5+0.5*gradient2;
-  float dawnSun = nlDawnShape(env.dayFactor);
-  float sunView = max(dot(viewDir, env.sunDir), 0.0);
-  float sunHaloOuter = smoothstep(0.0, 0.75, sunView);
-  float sunHaloInner = smoothstep(0.20, 0.90, sunView);
-  sunHaloOuter *= sunHaloOuter;
-  sunHaloInner *= sunHaloInner;
-  sunHaloOuter *= dawnSun;
-  sunHaloInner *= dawnSun;
-  sky += NL_DAWN_HORIZON_COL*(0.055*sunHaloOuter);
-  sky += NL_DAWN_EDGE_COL*(0.035*sunHaloInner);
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
 
   if (!isSkyPlane) {
