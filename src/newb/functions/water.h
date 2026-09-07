@@ -23,20 +23,25 @@ vec4 nlWater(
   float wt=NL_WATER_WAVE_SPEED*t;
   vec2 waterPos=gPos.xz;
   vec2 dir1=normalize(vec2(0.82,0.57));
-  vec2 dir2=normalize(vec2(-0.46,0.89));
-  float p1=dot(waterPos,dir1)*0.16-wt*0.032;
-  float p2=dot(waterPos,dir2)*0.31+wt*0.021;
-  float w1=sin(p1+sin(p1*0.45)*0.18);
-  float w2=sin(p2+sin(p2*0.60)*0.12);
-  float noiseShape=waterCalmNoise(waterPos*0.095,wt*0.006);
-  float wave=w1*0.68+w2*0.22+(noiseShape-0.5)*0.10;
-  float slope1=cos(p1+sin(p1*0.45)*0.18);
-  float slope2=cos(p2+sin(p2*0.60)*0.12);
-  float slopeX=dir1.x*slope1*0.16*0.68+dir2.x*slope2*0.31*0.22;
-  float slopeZ=dir1.y*slope1*0.16*0.68+dir2.y*slope2*0.31*0.22;
+  vec2 dir2=normalize(vec2(-0.48,0.88));
+  vec2 dir3=normalize(vec2(0.34,0.94));
+  float p1=dot(waterPos,dir1)*0.135-wt*0.032;
+  float p2=dot(waterPos,dir2)*0.235+wt*0.021;
+  float p3=dot(waterPos,dir3)*0.075-wt*0.014;
+  ffloa s1=sin(p1+0.24*sin(p1*0.42));
+  float s2=sin(p2+0.16*sin(p2*0.57));
+  float s3=sin(p3+0.12*sin(p3*0.48));
+  float n1=waterRealisticNoise(waterPos*0.105,wt*0.016)*2.0-1.0;
+  float n2=waterRealisticNoise(waterPos*0.245,-wt*0.011)*2.0-1.0;
+  float wave=s1*0.62+s2*0.22+s3*0.10+n1*0.045+n2*0.015;
+  float slope1=cos(p1+0.24*sin(p1*0.42))*(1.0+0.1008*cos(p1*0.42));
+  float slope2=cos(p2+0.16*sin(p2*0.57))*(1.0+0.0912*cos(p2*0.57));
+  float slope3=cos(p3+0.12*sin(p3*0.48))*(1.0+0.0576*cos(p3*0.48));
+  float slopeX=dir1.x*slope1*0.62*0.135+dir2.x*slope2*0.22*0.235+dir3.x*slope3*0.10*0.075;
+  float slopeZ=dir1.y*slope1*0.62*0.135+dir2.y*slope2*0.22*0.235+dir3.y*slope3*0.10*0.075;
   vec2 bump=vec2(slopeX,slopeZ);
-  bump+=(noiseShape-0.5)*0.025;
-  bump=clamp(bump,-0.18,0.18);
+  bump+=vec2(n1*0.018+n2*0.008,n1*0.018+n2*0.008);
+  bump=clamp(bump,-0.22,0.22);
   
   vec3 nrm;
   if (fractCposY > 0.0) { // top plane
@@ -86,8 +91,9 @@ vec4 nlWater(
   color.a = mix(COLOR.a*NL_WATER_TRANSPARENCY, 1.0, opacity*opacity);
 
   #ifdef NL_WATER_WAVE
-    if (camDist < 16.0) {
-      wPos.y += wave*NL_WATER_BUMP*0.35;
+    if (camDist < 18.0) {
+      float waveFade=1.0-smoothstep(7.0,18.0,camDist);
+      wPos.y+=wave*NL_WATER_BUMP*0.82*waveFade;
     }
   #endif
 
