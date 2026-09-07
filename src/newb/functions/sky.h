@@ -78,6 +78,28 @@ nl_skycolor nlSkyColors(nl_environment env) {
   return nlOverworldSkyColors(env);
 }
 
+float nlDawnStrength(nl_environment env) {
+  float dawn = 1.0-smoothstep(0.0,0.58,abs(env.dayFactor));
+  dawn *= dawn;
+  dawn *= mix(1.0,dawn*dawn,step(env.dayFactor,0.0));
+  return dawn;
+}
+
+vec3 nlDawnAtmosphere(vec3 sky,nl_skycolor skyCol,nl_environment env,vec3 viewDir) {
+  float dawn = nlDawnStrength(env);
+  float horizon = 1.0-smoothstep(0.0,0.48,abs(viewDir.y));
+  float upper = smoothstep(0.18,0.82,viewDir.y);
+  float sunDot = max(dot(normalize(env.sunDir),normalize(viewDir)),0.0);
+  float sunWide = pow(sunDot,2.2);
+  float sunCore = pow(sunDot,8.0);
+  float haze = horizon*(0.35+0.65*sunWide)*dawn;
+  float glow = (0.75*sunWide+0.45*sunCore)*dawn;
+  vec3 horizonLight = mix(skyCol.horizonEdge,skyCol.horizon,0.5+0.5*upper);
+  vec3 sunLight = mix(horizonLight,skyCol.horizon,0.35);
+  sky = mix(sky,sunLight,haze*0.32);
+  sky += skyCol.horizon*glow*0.42;
+  return sky;
+}
 
 vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bool isSkyPlane) {
   float avy = abs(viewDir.y);
@@ -107,19 +129,15 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
   vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*df*df);
   sky = mix(skyCol.zenith, sky, gradient2*df);
+  sky = nlDawnAtmosphere(sky,skyCol,env,viewDir);
 
   float sunDot = max(dot(normalize(env.sunDir), normalize(viewDir)), 0.0);
-  // Wide atmospheric glow
-  float sunGlow = pow(sunDot, 5.0);
-  // Bright inner glow
-  float sunBloom = pow(sunDot, 18.0);
-  // Fade the effect outside sunrise/sunset
+  float sunGlow = pow(sunDot, 3.2);
+  float sunBloom = pow(sunDot, 11.0);
   float dawnGlow = dawnFactor;
-  // Rain suppresses atmospheric glow
   dawnGlow *= 1.0 - 0.75*env.rainFactor;
-  // Warm sunrise color
   vec3 dawnGlowCol = NL_DAWN_HORIZON_COL;
-  sky += dawnGlowCol * (1.45*sunGlow + 2.2*sunBloom) * dawnGlow;
+  sky += dawnGlowCol * (0.82*sunGlow + 1.35*sunBloom) * dawnGlow;
   
   sky *= 0.5+0.5*gradient2;
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
