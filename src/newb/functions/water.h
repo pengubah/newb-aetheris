@@ -28,7 +28,7 @@ vec4 nlWater(
   float p1=dot(waterPos,dir1)*0.135-wt*0.032;
   float p2=dot(waterPos,dir2)*0.235+wt*0.021;
   float p3=dot(waterPos,dir3)*0.075-wt*0.014;
-  ffloa s1=sin(p1+0.24*sin(p1*0.42));
+  float s1=sin(p1+0.24*sin(p1*0.42));
   float s2=sin(p2+0.16*sin(p2*0.57));
   float s3=sin(p3+0.12*sin(p3*0.48));
   float n1=waterRealisticNoise(waterPos*0.105,wt*0.016)*2.0-1.0;
