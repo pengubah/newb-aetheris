@@ -91,7 +91,7 @@ if(env.underwater || blockUnderWater){
     vec2 offset = (d - bpy) * viewdir.xz / viewdir.y;
     vec2 watpos = v_cpos.xz + offset;
 
-    float fade = clamp((d - bpy) / abs(vdir.y), 0.0, 1.0);
+    float fade = clamp((d - bpy) / abs(viewdir.y), 0.0, 1.0);
     fade = 1.0 - fade;
 
     float t = 0.3 * ViewPositionAndTime.w;
