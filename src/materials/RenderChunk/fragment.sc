@@ -87,7 +87,7 @@ if(env.underwater || blockUnderWater){
     vec3 viewdir = normalize(-v_wpos);
 
     // Proyección de rayos 3D
-    vec2 offset = (d - bpy) * vdir.xz / vdir.y;
+    vec2 offset = (d - bpy) * viewdir.xz / viewdir.y;
     vec2 watpos = v_cpos.xz + offset;
 
     float fade = clamp((d - bpy) / abs(vdir.y), 0.0, 1.0);
