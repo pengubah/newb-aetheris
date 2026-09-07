@@ -136,23 +136,18 @@ float fbm3(vec3 p) {
 }
 
 // Lightweight directional water wave noise
-float waterNoise(vec2 p, float t) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-
-    f = f*f*(3.0-2.0*f);
-
-    vec2 o = vec2(sin(t*0.37), cos(t*0.29));
-
-    float a = fract(sin(dot(i + o, vec2(127.1, 311.7))) * 43758.5453);
-    float b = fract(sin(dot(i + vec2(1.0, 0.0) + o, vec2(127.1, 311.7))) * 43758.5453);
-    float c = fract(sin(dot(i + vec2(0.0, 1.0) + o, vec2(127.1, 311.7))) * 43758.5453);
-    float d = fract(sin(dot(i + vec2(1.0, 1.0) + o, vec2(127.1, 311.7))) * 43758.5453);
-
-    float n0 = mix(a, b, f.x);
-    float n1 = mix(c, d, f.x);
-
-    return mix(n0, n1, f.y);
+float waterWaveNoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f*f*(3.0-2.0*f);
+  vec2 h = vec2(127.1,311.7);
+  float a = fract(sin(dot(i,h))*43758.5453);
+  float b = fract(sin(dot(i+vec2(1.0,0.0),h))*43758.5453);
+  float c = fract(sin(dot(i+vec2(0.0,1.0),h))*43758.5453);
+  float d = fract(sin(dot(i+vec2(1.0,1.0),h))*43758.5453);
+  float x = mix(a,b,f.x);
+  float y = mix(c,d,f.x);
+  return mix(x,y,f.y);
 }
 
 #endif
