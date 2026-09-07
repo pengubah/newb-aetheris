@@ -97,7 +97,9 @@ vec3 nlDawnAtmosphere(vec3 sky,nl_skycolor skyCol,nl_environment env,vec3 viewDi
   vec3 horizonLight = mix(skyCol.horizonEdge,skyCol.horizon,0.5+0.5*upper);
   vec3 sunLight = mix(horizonLight,skyCol.horizon,0.35);
   sky = mix(sky,sunLight,haze*0.32);
-  sky += skyCol.horizon*glow*0.42;
+  sky+=skyCol.horizon*glow*(0.42+NL_GODRAY*0.38);
+  float godray=pow(max(sunDot,0.0),2.6)*dawn*NL_GODRAY;
+  sky+=skyCol.horizon*godray*0.12;
   return sky;
 }
 
