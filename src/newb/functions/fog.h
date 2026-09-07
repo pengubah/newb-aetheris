@@ -34,7 +34,8 @@ float nlRenderGodRayIntensity(vec3 cPos, vec3 worldPos, float t, vec2 uv1, float
   vol *= relativeDist*relativeDist;
 
   // dawn/dusk mask
-  vol *= clamp(3.0*(FOG_COLOR.r-FOG_COLOR.b), 0.0, 1.0);
+  float dawnMask = smoothstep(0.0,0.65,max(FOG_COLOR.r-FOG_COLOR.b,0.0));
+  vol *= dawnMask;
 
   vol = smoothstep(0.0, 0.1, vol);
   return vol;

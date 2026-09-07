@@ -38,10 +38,8 @@ nl_skycolor nlEndSkyColors(nl_environment env) {
 }
 
 float nlDawnFactor(float dayFactor) {
-  float dawn = 1.0-abs(dayFactor);
-  dawn = smoothstep(0.0,1.0,dawn);
-  dawn *= mix(1.0,dawn*dawn,step(dayFactor,0.0));
-  return dawn;
+  float dawn = 1.0-smoothstep(0.0,0.72,abs(dayFactor));
+  return dawn*dawn;
 }
 
 nl_skycolor nlOverworldSkyColors(nl_environment env) {
@@ -53,9 +51,9 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   s.horizonEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL*f, nightFactor);
 
   float dawnFactor = nlDawnFactor(env.dayFactor);
-  s.zenith = mix(s.zenith,NL_DAWN_ZENITH_COL,dawnFactor);
-  s.horizon = mix(s.horizon,NL_DAWN_HORIZON_COL,dawnFactor);
-  s.horizonEdge = mix(s.horizonEdge,NL_DAWN_EDGE_COL,dawnFactor);
+  s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnFactor);
+  s.horizon = mix(s.horizon, NL_DAWN_HORIZON_COL, dawnFactor);
+  s.horizonEdge = mix(s.horizonEdge, NL_DAWN_EDGE_COL, dawnFactor);
 
   float zh = dot(s.zenith, vec3_splat(0.33));
   float hh = dot(s.horizon, vec3_splat(0.33));
@@ -106,14 +104,16 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   gradient2 = mix(gradient2, 1.0, mg8);
 
   float dawnFactor = nlDawnFactor(env.dayFactor);
-  float dawnView = smoothstep(0.0,1.0,g2.x);
-  float dawnSpread = mix(1.0,dawnView,0.55*dawnFactor);
-  float df = mix(1.0,dawnSpread,dawnFactor);
+  float dawnSpread = pow(clamp(gradient2,0.0,1.0),0.68);
+  dawnSpread = mix(gradient2,dawnSpread,0.82*dawnFactor);
+  float sunBlend = smoothstep(0.0,1.0,1.0-g.x);
+  float df = mix(1.0,g2.x,dawnFactor*sunBlend);
   vec3 sky = mix(skyCol.horizon,skyCol.horizonEdge,gradient1*df*df);
-  sky = mix(skyCol.zenith,sky,gradient2*df);
-  float dawnGlow = pow(1.0-g.x,3.0)*dawnFactor;
-  dawnGlow *= 0.35+0.65*gradient2;
-  sky += skyCol.horizon*dawnGlow;
+  sky = mix(skyCol.zenith,sky,dawnSpread*df);
+  float dawnHalo = pow(max(1.0-g.x,0.0),2.0)*dawnFactor;
+  dawnHalo *= 0.18+0.82*dawnSpread;
+  dawnHalo *= 1.0-env.rainFactor;
+  sky += skyCol.horizon*dawnHalo*0.34;
   
   sky *= 0.5+0.5*gradient2;
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
