@@ -37,6 +37,13 @@ nl_skycolor nlEndSkyColors(nl_environment env) {
   return s;
 }
 
+float nlDawnFactor(float dayFactor) {
+  float dawn = 1.0-abs(dayFactor);
+  dawn = smoothstep(0.0,1.0,dawn);
+  dawn *= mix(1.0,dawn*dawn,step(dayFactor,0.0));
+  return dawn;
+}
+
 nl_skycolor nlOverworldSkyColors(nl_environment env) {
   nl_skycolor s;
   float f = 1.0 + 2.0*(1.0-max(-env.dayFactor, 0.0));
@@ -45,12 +52,10 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   s.horizon = mix(NL_DAY_HORIZON_COL, NL_NIGHT_HORIZON_COL*f, nightFactor);
   s.horizonEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL*f, nightFactor);
 
-  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
-  dawnFactor *= dawnFactor*dawnFactor;
-  dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
-  s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnFactor);
-  s.horizon = mix(s.horizon, NL_DAWN_HORIZON_COL, dawnFactor);
-  s.horizonEdge = mix(s.horizonEdge, NL_DAWN_EDGE_COL, dawnFactor);
+  float dawnFactor = nlDawnFactor(env.dayFactor);
+  s.zenith = mix(s.zenith,NL_DAWN_ZENITH_COL,dawnFactor);
+  s.horizon = mix(s.horizon,NL_DAWN_HORIZON_COL,dawnFactor);
+  s.horizonEdge = mix(s.horizonEdge,NL_DAWN_EDGE_COL,dawnFactor);
 
   float zh = dot(s.zenith, vec3_splat(0.33));
   float hh = dot(s.horizon, vec3_splat(0.33));
@@ -100,10 +105,15 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   gradient1 = mix(gradient1*gradient1, 1.0, mg8);
   gradient2 = mix(gradient2, 1.0, mg8);
 
-  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
-  float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
-  vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*df*df);
-  sky = mix(skyCol.zenith, sky, gradient2*df);
+  float dawnFactor = nlDawnFactor(env.dayFactor);
+  float dawnView = smoothstep(0.0,1.0,g2.x);
+  float dawnSpread = mix(1.0,dawnView,0.55*dawnFactor);
+  float df = mix(1.0,dawnSpread,dawnFactor);
+  vec3 sky = mix(skyCol.horizon,skyCol.horizonEdge,gradient1*df*df);
+  sky = mix(skyCol.zenith,sky,gradient2*df);
+  float dawnGlow = pow(1.0-g.x,3.0)*dawnFactor;
+  dawnGlow *= 0.35+0.65*gradient2;
+  sky += skyCol.horizon*dawnGlow;
   
   sky *= 0.5+0.5*gradient2;
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
