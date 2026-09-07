@@ -47,7 +47,7 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
 
   // Dawn/sunset window
   // Keep the effect concentrated around the horizon hours.
-  float dawnFactor = 1.0 - smoothstep(0.0, 0.58, abs(env.dayFactor));
+  float dawnFactor = 1.0 - smoothstep(0.0, 0.90, abs(env.dayFactor));
   dawnFactor *= dawnFactor;
   dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnFactor);
@@ -126,7 +126,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   gradient1 = mix(gradient1*gradient1, 1.0, mg8);
   gradient2 = mix(gradient2, 1.0, mg8);
 
-  float dawnFactor = 1.0 - smoothstep(0.0, 0.58, abs(env.dayFactor));
+  float dawnFactor = 1.0 - smoothstep(0.0, 0.90, abs(env.dayFactor));
   dawnFactor *= dawnFactor;
   float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
   vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*df*df);
