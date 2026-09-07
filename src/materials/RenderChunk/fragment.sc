@@ -12,6 +12,7 @@ uniform vec4 TimeOfDay;
 uniform vec4 FogColor;
 uniform vec4 FogAndDistanceControl;
 uniform vec4 ViewPositionAndTime;
+uniform vec4 CameraPosition;
 
 void main() {
   #if defined(DEPTH_ONLY_OPAQUE) || defined(DEPTH_ONLY) || defined(INSTANCING)
