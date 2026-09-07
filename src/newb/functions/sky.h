@@ -37,6 +37,14 @@ nl_skycolor nlEndSkyColors(nl_environment env) {
   return s;
 }
 
+float nlDawnShape(float dayFactor) {
+  float x = 1.0 - abs(dayFactor);
+  x = clamp(x, 0.0, 1.0);
+  x = smoothstep(0.0, 1.0, x);
+  x *= x;
+  return x;
+}
+
 nl_skycolor nlOverworldSkyColors(nl_environment env) {
   nl_skycolor s;
   float f = 1.0 + 2.0*(1.0-max(-env.dayFactor, 0.0));
@@ -65,15 +73,6 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   }
 
   return s;
-}
-
-float nlDawnShape(float dayFactor) {
-  float x = 1.0 - abs(dayFactor);
-  x = clamp(x, 0.0, 1.0);
-  x = smoothstep(0.0, 1.0, x);
-  x *= x;
-  x *= 3.0 - 2.0 * x;
-  return x;
 }
 
 float nlDawnSkyGradient(vec3 viewDir, vec3 sunDir, float dawn) {
@@ -118,34 +117,31 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   gradient1 = mix(gradient1*gradient1, 1.0, mg8);
   gradient2 = mix(gradient2, 1.0, mg8);
 
-  float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
   float dawnFactor = nlDawnShape(env.dayFactor);
   float dawnSkyGradient = nlDawnSkyGradient(viewDir, env.sunDir, dawnFactor);
-  float df = mix(1.0, g2.x, dawnFactor * dawnFactor);
-  float dawnBlend = mix(df, 0.38 + 0.62 * df, dawnSkyGradient);
-  vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1 * dawnBlend * dawnBlend);
-  sky = mix(skyCol.zenith, sky, gradient2 * dawnBlend);
-
+  float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
+  float dawnBlend = mix(df, 0.42 + 0.58*df, dawnSkyGradient);
+  vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, gradient1*dawnBlend*dawnBlend);
+  sky = mix(skyCol.zenith, sky, gradient2*dawnBlend);
+  
   sky *= 0.5+0.5*gradient2;
   float dawnSun = nlDawnShape(env.dayFactor);
   float sunView = max(dot(viewDir, env.sunDir), 0.0);
-  float sunHaloOuter = smoothstep(-0.10, 0.72, sunView);
-  float sunHaloInner = smoothstep(0.18, 0.92, sunView);
+  float sunHaloOuter = smoothstep(0.0, 0.75, sunView);
+  float sunHaloInner = smoothstep(0.20, 0.90, sunView);
   sunHaloOuter *= sunHaloOuter;
   sunHaloInner *= sunHaloInner;
   sunHaloOuter *= dawnSun;
   sunHaloInner *= dawnSun;
-  sky += NL_DAWN_HORIZON_COL * (0.075 * sunHaloOuter);
-  sky += NL_DAWN_EDGE_COL * (0.055 * sunHaloInner);
+  sky += NL_DAWN_HORIZON_COL*(0.055*sunHaloOuter);
+  sky += NL_DAWN_EDGE_COL*(0.035*sunHaloInner);
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
 
   if (!isSkyPlane) {
     float source = max(0.0,(mg8-0.22)/0.78);
     source *= source;
     source *= source;
-    float dawnSource = source*dawnAtmosphere;
     sky *= 1.0+17.0*source*(1.0-env.rainFactor);
-    sky += skyCol.horizonEdge*dawnSource*1.8;
 }
 
   #ifdef NL_RAINBOW
