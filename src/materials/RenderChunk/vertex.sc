@@ -193,6 +193,7 @@ void main() {
   v_fog = fogColor;
   v_position = gPos;
   v_cpos = a_position.xyz;
+  v_wpos = worldPos;
 
   #else
 
