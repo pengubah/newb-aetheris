@@ -1,4 +1,4 @@
-$input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_position, v_extra, 
+$input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_position, v_extra, v_wpos, v_cpos
 
 #include <bgfx_shader.sh>
 #include <newb/main.sh>
@@ -71,6 +71,41 @@ if(env.underwater || blockUnderWater){
 
   diffuse.rgb *= color.rgb;
   diffuse.rgb += glow;
+
+  //Water Foam Detection
+  float wcPos = v_wpos.y + CameraPosition.y;
+  float dy_w = abs(dFdy(v_wpos.y));
+
+  bool isOneBlockUnderwater = ((wcPos <= 62.89 && wcPos > 62.0) || (wcPos <= -60.11 && wcPos > -61.0)) 
+    && v_extra.b < 0.9 
+    && !(dy_w < 0.0002) 
+    && step(0.85, v_lightmapUV.y) * step(v_lightmapUV.y, 0.927) == 1.0; 
+
+  if (isOneBlockUnderwater) {
+    float d = 0.865;
+    float bpy = fract(v_cpos.y);
+    vec3 viewdir = normalize(-v_wpos);
+
+    // Proyección de rayos 3D
+    vec2 offset = (d - bpy) * vdir.xz / vdir.y;
+    vec2 watpos = v_cpos.xz + offset;
+
+    float fade = clamp((d - bpy) / abs(vdir.y), 0.0, 1.0);
+    fade = 1.0 - fade;
+
+    float t = 0.3 * ViewPositionAndTime.w;
+    vec2 st = watpos;
+    float n = sin(st.x + 3.0*sin(0.5*st.y) + t) * sin(st.y + 3.0*sin(0.5*st.x) - t);
+    n = 0.5 + 0.5 * sin(st.x + 2.0*n + 0.2*t) * sin(st.y - 4.0*n + 0.1*t);
+    fade = pow(fade, 1.0 + 4.0 * n);
+
+    // Textura procedural de espuma
+    float foam = fract(238.084 * sin(dot(floor(16.0 * watpos), vec2(1.32, 141.3))));
+    foam *= fade;
+    foam = mix(foam, 1.0, fade * fade * fade);
+
+    diffuse.rgb = mix(diffuse.rgb, vec3(1.0, 1.0, 1.3)*3.0, foam);
+  }
 
   if (v_extra.b > 0.9) {
     diffuse.rgb += v_refl.rgb*v_refl.a;
