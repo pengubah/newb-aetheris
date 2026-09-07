@@ -87,7 +87,7 @@ float nlDawnStrength(nl_environment env) {
 
 vec3 nlDawnAtmosphere(vec3 sky,nl_skycolor skyCol,nl_environment env,vec3 viewDir) {
   float dawn = nlDawnStrength(env);
-  float horizon = 1.0-smoothstep(0.0,0.48,abs(viewDir.y));
+  float horizon = 1.0-smoothstep(0.0,0.68,abs(viewDir.y));
   float upper = smoothstep(0.18,0.82,viewDir.y);
   float sunDot = max(dot(normalize(env.sunDir),normalize(viewDir)),0.0);
   float sunWide = pow(sunDot,2.2);
