@@ -9,8 +9,8 @@
 
 vec3 sunLightTint(float dayFactor, float rain) {
   float nightFactor = step(dayFactor, 0.0);
-  float dawnFactor = 1.0-dayFactor*dayFactor;
-  dawnFactor *= dawnFactor*dawnFactor;
+  float dawnFactor = 1.0 - smoothstep(0.0, 0.58, abs(dayFactor));
+  dawnFactor *= dawnFactor;
   dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   vec3 tint = mix(NL_NOON_SUNLIGHT_COL, NL_NIGHT_MOONLIGHT_COL, nightFactor);
   tint = mix(tint, NL_DAWN_SUNLIGHT_COL, dawnFactor);
@@ -91,7 +91,8 @@ vec3 nlLighting(
     #endif
 
     // direct light from top
-    light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation)*sunLightTint(env.dayFactor, env.rainFactor);
+    float dawnBoost = mix(1.0, 1.22, dawnFactor);
+    light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation*dawnBoost)*sunLightTint(env.dayFactor, env.rainFactor);
 
     // sky ambient
     lum = luminance(light);
