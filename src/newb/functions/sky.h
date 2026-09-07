@@ -118,7 +118,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   // Rain suppresses atmospheric glow
   dawnGlow *= 1.0 - 0.75*env.rainFactor;
   // Warm sunrise color
-  vec3 dawnGlowCol = vec3(1.0, 0.22, 0.015);
+  vec3 dawnGlowCol = NL_DAWN_HORIZON_COL;
   sky += dawnGlowCol * (1.45*sunGlow + 2.2*sunBloom) * dawnGlow;
   
   sky *= 0.5+0.5*gradient2;
