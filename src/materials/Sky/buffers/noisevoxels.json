@@ -11,6 +11,7 @@
   "always_one": 1,
   "texture_path": "textures/newb/noisevoxels",
    "sampler_state": {
+    "filter": "Bilinear",
     "wrapping": "Repeat"
   },
   "custom_type_info": {}
