@@ -12,6 +12,7 @@
 #endif
 
 uniform vec4 ViewPositionAndTime;
+uniform vec4 cameraPosition;
 
 SAMPLER2D_AUTOREG(s_NoiseTex);
 
@@ -25,7 +26,6 @@ float rainFactor = 0.0;
 float maxBlindnessDarkness = 0.0;
 float moonPhase = 0.0;
 float inSnowy = 1.0;
-vec3 cameraPosition = vec3(0.0,0.0,0.0);
 
 vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
     float syncedTime = ViewPositionAndTime.w;
