@@ -20,28 +20,12 @@ vec4 nlWater(
   float fractCposY, float camDist, highp float t
 ) {
 
-  float wt=NL_WATER_WAVE_SPEED*t;
-  vec2 waterPos=gPos.xz;
-  vec2 dir1=normalize(vec2(0.82,0.57));
-  vec2 dir2=normalize(vec2(-0.48,0.88));
-  vec2 dir3=normalize(vec2(0.34,0.94));
-  float p1=dot(waterPos,dir1)*0.135-wt*0.032;
-  float p2=dot(waterPos,dir2)*0.235+wt*0.021;
-  float p3=dot(waterPos,dir3)*0.075-wt*0.014;
-  float s1=sin(p1+0.24*sin(p1*0.42));
-  float s2=sin(p2+0.16*sin(p2*0.57));
-  float s3=sin(p3+0.12*sin(p3*0.48));
-  float n1=waterRealisticNoise(waterPos*0.105,wt*0.016)*2.0-1.0;
-  float n2=waterRealisticNoise(waterPos*0.245,-wt*0.011)*2.0-1.0;
-  float wave=s1*0.62+s2*0.22+s3*0.10+n1*0.045+n2*0.015;
-  float slope1=cos(p1+0.24*sin(p1*0.42))*(1.0+0.1008*cos(p1*0.42));
-  float slope2=cos(p2+0.16*sin(p2*0.57))*(1.0+0.0912*cos(p2*0.57));
-  float slope3=cos(p3+0.12*sin(p3*0.48))*(1.0+0.0576*cos(p3*0.48));
-  float slopeX=dir1.x*slope1*0.62*0.135+dir2.x*slope2*0.22*0.235+dir3.x*slope3*0.10*0.075;
-  float slopeZ=dir1.y*slope1*0.62*0.135+dir2.y*slope2*0.22*0.235+dir3.y*slope3*0.10*0.075;
-  vec2 bump=vec2(slopeX,slopeZ);
-  bump+=vec2(n1*0.018+n2*0.008,n1*0.018+n2*0.008);
-  bump=clamp(bump,-0.22,0.22);
+  float waveTime = NL_WATER_WAVE_SPEED * t;
+  float largeWave = movingNoise2D(gPos.xz * 0.32 + vec2(waveTime * 0.55, waveTime * 0.20), 0.0, 0.55);
+  float mediumWave = movingNoise2D(gPos.xz * 0.72 + vec2(-waveTime * 0.38, waveTime * 0.62), 0.0, 0.65);
+  float fineWave = movingNoise2D(gPos.xz * 1.45 + vec2(waveTime * 0.85, -waveTime * 0.45), 0.0, 0.70);
+  float wave = largeWave * 0.58 + mediumWave * 0.30 + fineWave * 0.12;
+  vec2 bump = vec2(wave, mediumWave * 0.72 + largeWave * 0.28);
   
   vec3 nrm;
   if (fractCposY > 0.0) { // top plane
@@ -92,8 +76,7 @@ vec4 nlWater(
 
   #ifdef NL_WATER_WAVE
     if (camDist < 18.0) {
-      float waveFade=1.0-smoothstep(7.0,18.0,camDist);
-      wPos.y+=wave*NL_WATER_BUMP*0.82*waveFade;
+      wPos.y -= 0.5*(bump.x+0.5)*NL_WATER_BUMP;
     }
   #endif
 
