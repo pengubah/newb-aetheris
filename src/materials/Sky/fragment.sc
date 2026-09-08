@@ -61,7 +61,7 @@ vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
         float auroraAnimate = frameTimeCounter * 0.001;
 
         // Bucle dinámico usando AURORA_LAYERS
-        for (int i = 0; i < AURORA_LAYERS; i++) {
+        for (int i = 0; i < 20; i++) {
             float current = pow2((float(i) + ditherM) / float(sampleCountP));
 
             vec2 planePos = wpos.xz * (0.8 + current) * 12.0 + cameraPositionM;
