@@ -118,9 +118,11 @@ void main() {
 
     vec3 skyColor = nlRenderSky(skycol, env, -viewDir, v_underwaterRainTimeDay.z, true);
 
-    float dither = fract(sin(dot(viewDir.xy, vec2(12.9898, 78.233))) * 43758.5453);
-    vec3 auroraColor = GetAuroraBorealis(viewDir, VdotU, dither);
-    skyColor += auroraColor; 
+    #ifdef AURORA_COMPLEMENTARY
+        float dither = fract(sin(dot(viewDir.xy, vec2(12.9898, 78.233))) * 43758.5453);
+        vec3 auroraColor = GetAuroraBorealis(viewDir, VdotU, dither);
+        skyColor += auroraColor; 
+    #endif
 
     skyColor = colorCorrection(skyColor);
 
