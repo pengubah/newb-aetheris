@@ -118,7 +118,7 @@ void main() {
 
     float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
     float VdotU = clamp(viewDir.y, 0.0, 1.0);
-    vec3 auroraColor = GetAuroraBorealis(viewdir, VdotU, dither);
+    vec3 auroraColor = GetAuroraBorealis(viewDir, VdotU, dither);
     skyColor += auroraColor; 
 
     skyColor = colorCorrection(skyColor);
