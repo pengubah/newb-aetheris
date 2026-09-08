@@ -40,13 +40,13 @@
 #define NL_SUNLIGHT_INTENSITY   2.9  // 1.0 weak ~ 5.0 bright
 #define NL_TORCHLIGHT_INTENSITY 1.2  // 0.5 weak ~ 3.0 bright
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
-#define NL_MIN_LIGHTING_BOOST   0.82 // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
+#define NL_MIN_LIGHTING_BOOST   0.92 // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
 #define NL_BLINKING_TORCH            // [toggle] flickering light
 //#define NL_CLOUD_SHADOW            // [toggle] cloud shadow (simple clouds only)
 
 /* Ambient light for nether/end */
 #define NL_NETHER_AMBIENT vec3(3.0,2.16,1.89)
-#define NL_END_AMBIENT    vec3(1.00,0.78,0.95)
+#define NL_END_AMBIENT    vec3(1.00,0.7,0.95)
 
 /* Sun/moon light color */
 #define NL_DAWN_SUNLIGHT_COL   vec3(1.00,0.98,0.98)
@@ -61,9 +61,9 @@
 
 /* Fog */
 #define NL_FOG 1.0                // [toggle] 0.1 subtle ~ 1.0 blend with sky completely
-#define NL_MIST_DENSITY 0.6       // 0.0 no mist ~ 1.0 misty
+#define NL_MIST_DENSITY 0.65       // 0.0 no mist ~ 1.0 misty
 #define NL_RAIN_MIST_OPACITY 0.35 // [toggle] 0.04 very subtle ~ 0.5 thick rain mist blow
-#define NL_CLOUDY_FOG 0.25         // [toggle] 0.0 subtle - 0.8 dense fog clouds
+#define NL_CLOUDY_FOG 0.18         // [toggle] 0.0 subtle - 0.8 dense fog clouds
 
 /* Sky */
 #define NL_SKY_VOID_FACTOR     0.5
@@ -92,7 +92,7 @@
 /* blackhole at the end */
 #define NL_BLACKHOLE                         // [toggle] enable blackhole in endsky
 #define NL_BH_COL_LOW vec3(0.0,0.0,0.0)      // hole color
-#define NL_BH_COL_HIGH vec3(0.40,0.22,0.68)   // spiral ring color
+#define NL_BH_COL_HIGH vec3(0.42,0.32,0.68)   // spiral ring color
 #define NL_BH_DIST 1.8                       // blackhole size: 5.0 tiny - 0.5 massive
 #define NL_BH_SPEED 0.6                      // spiral rotation speed
 
@@ -116,18 +116,18 @@
 
 /* Water */
 #define NL_WATER_TRANSPARENCY 0.9 // 0.0 transparent ~ 1.0 normal
-#define NL_WATER_BUMP 0.2         // 0.001 plain ~ 0.2 bumpy water
-#define NL_WATER_WAVE_SPEED  0.3  // 0.2 calm ~ 2.0 turbulent
+#define NL_WATER_BUMP 0.22         // 0.001 plain ~ 0.2 bumpy water
+#define NL_WATER_WAVE_SPEED  0.15  // 0.2 calm ~ 2.0 turbulent
 #define NL_WATER_TEX_OPACITY 0.0  // 0.0 plain water ~ 1.0 vanilla water texture
 #define NL_WATER_WAVE             // [toggle] wave effect
 //#define NL_WATER_REFL_MASK      // [toggle] fake water reflection mask
 #define NL_WATER_TINT vec3(0.0,0.1,0.22)
 
 /* Underwater */
-#define NL_UNDERWATER_BRIGHTNESS 1.3         // 0.0 dark ~ 3.0 bright
+#define NL_UNDERWATER_BRIGHTNESS 1.5         // 0.0 dark ~ 3.0 bright
 //#define NL_CAUSTIC_INTENSITY 2.0             // 0.5 weak ~ 5.0 bright
 #define NL_UNDERWATER_WAVE 0.1               // [toggle] 0.02 subtle ~ 0.6 trippy
-#define NL_UNDERWATER_STREAKS 1.5            // [toggle] 0.8 subtle - 2.0 bright streaks from top
+#define NL_UNDERWATER_STREAKS 1.2            // [toggle] 0.8 subtle - 2.0 bright streaks from top
 #define NL_UNDERWATER_TINT vec3(0.0,0.21,0.46) // fog tint color when underwater
 
 /* Cloud type */
@@ -193,7 +193,7 @@
 #define NL_MOON_TILT       0.0    // 0.0 no tilt ~ 90.0 tilt of 90 degrees
 
 /* Fake godrays during sunrise/sunset */
-#define NL_GODRAY 0.95 // [toggle] 0.1 subtle ~ 0.8 strong
+#define NL_GODRAY 1.0 // [toggle] 0.1 subtle ~ 0.8 strong
 
 /* Sky reflection */
 //#define NL_GROUND_REFL 0.4       // [toggle] 0.2 slightly reflective ~ 1.0 fully reflect sky
@@ -211,7 +211,7 @@
 
 /* Lava effects */
 #define NL_LAVA_NOISE            // [toggle] darken lava in certain regions
-#define NL_LAVA_NOISE_BUMP 0.16   // [toggle] 0.1 subtle ~ 0.8 massive waves
+#define NL_LAVA_NOISE_BUMP 0.2   // [toggle] 0.1 subtle ~ 0.8 massive waves
 #define NL_LAVA_NOISE_SPEED 0.18  // 0.0 still ~ 0.8 fast
 
 #endif
