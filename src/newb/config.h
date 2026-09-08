@@ -99,7 +99,7 @@
 /* Rainbow */
 #define NL_RAINBOW           // [toggle] enable rainbow in sky
 #define NL_RAINBOW_CLEAR 0.0 // 0.3 subtle ~ 1.0 bright during clear weather
-#define NL_RAINBOW_RAIN  0.4 // 0.3 subtle ~ 1.0 bright during rain weather
+#define NL_RAINBOW_RAIN  0.5 // 0.3 subtle ~ 1.0 bright during rain weather
 
 /* Ore glow intensity */
 #define NL_GLOW_TEX 2.3           // 0.4 weak ~ 8.0 bright
@@ -110,14 +110,14 @@
 /* Waving */
 #define NL_PLANTS_WAVE 0.05    // [toggle] 0.02 gentle ~ 0.4 violent
 #define NL_LANTERN_WAVE 0.16   // [toggle] 0.05 subtle ~ 0.4 large swing
-#define NL_WAVE_SPEED 2.6      // 0.5 slow wave ~ 5.0 very fast wave
+#define NL_WAVE_SPEED 2.65      // 0.5 slow wave ~ 5.0 very fast wave
 //#define NL_EXTRA_PLANTS_WAVE // [toggle] !dont use! wave using texture coords (1.21.0 vanilla 2048x1024)
 #define NL_WAVE_RANGE 16.0     // 6.0 upto 6 blocks ~ 32.0 upto 32 blocks away (slower)
 
 /* Water */
 #define NL_WATER_TRANSPARENCY 0.9 // 0.0 transparent ~ 1.0 normal
 #define NL_WATER_BUMP 0.2         // 0.001 plain ~ 0.2 bumpy water
-#define NL_WATER_WAVE_SPEED  0.35  // 0.2 calm ~ 2.0 turbulent
+#define NL_WATER_WAVE_SPEED  0.3  // 0.2 calm ~ 2.0 turbulent
 #define NL_WATER_TEX_OPACITY 0.0  // 0.0 plain water ~ 1.0 vanilla water texture
 #define NL_WATER_WAVE             // [toggle] wave effect
 //#define NL_WATER_REFL_MASK      // [toggle] fake water reflection mask
@@ -214,15 +214,4 @@
 #define NL_LAVA_NOISE_BUMP 0.16   // [toggle] 0.1 subtle ~ 0.8 massive waves
 #define NL_LAVA_NOISE_SPEED 0.18  // 0.0 still ~ 0.8 fast
 
-/*
-  NEWB SHADER SUBPACK CONFIG
-  This part contains custom configuration options for each subpack.
-
-  If a value is already defined,
-  then you must undefine it before modifying:
-  eg: #undef OPTION_NAME
-
-  Subpack names and flags are inside `pack_config.toml`.
-  Build tool will enable corresponding flags when compiling.
-*/
 #endif
