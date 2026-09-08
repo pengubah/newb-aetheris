@@ -10,12 +10,11 @@
   uniform vec4 FogColor;
   uniform vec4 FogAndDistanceControl;
   uniform vec4 ViewPositionAndTime;
-  uniform vec4 cameraPosition
+  uniform vec4 cameraPosition;
 #endif
 
 SAMPLER2D_AUTOREG(s_NoiseTex);
 
-float pow2(float x){return x*x;}
 float pow2(float x) { return x * x; }
 float pow1_5(float x) { return x * sqrt(x); }
 float clamp01(float x) { return clamp(x, 0.0, 1.0); }
@@ -27,14 +26,12 @@ float rainFactor = 0.0;
 float maxBlindnessDarkness = 0.0;
 float moonPhase = 0.0;
 float inSnowy = 1.0;
-vec3 cameraPosition = vec3(0.0,0.0,0.0);
 
 // --- FUNCIÓN DE AURORA BOREAL ---
 vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
-    float syncedTime = ViewPositionAndTime;
-    float frameTimeCounter = ViewPositionAndTime;
-    mat3 gbufferModelViewInverse = mat3(1.0);
-
+    float syncedTime = ViewPositionAndTime.w;
+    float frameTimeCounter = ViewPositionAndTime.w;
+  
     float visibility = sqrt1(clamp01(VdotU * 1.5 - 0.225)) - sunVisibility - rainFactor - maxBlindnessDarkness;
     visibility *= 1.0 - VdotU * 0.9;
 
@@ -51,7 +48,7 @@ vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
     if (visibility > 0.0) {
         vec3 aurora = vec3(0.0,0.0,0.0);
 
-        vec3 wpos = gbufferModelViewInverse * viewPos;
+        vec3 wpos = viewPos;
         wpos.xz /= max(0.0001, wpos.y);
         vec2 cameraPositionM = cameraPosition.xz * 0.0075;
         cameraPositionM.x += syncedTime * 0.04;
@@ -70,18 +67,18 @@ vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
             #if AURORA_STYLE == 1
                 planePos = floor(planePos) * 0.0007;
 
-                float n = texture2D(NoiseTex, planePos).b;
+                float n = texture2D(s_NoiseTex, planePos).b;
                 n = pow2(pow2(pow2(pow2(1.0 - 2.0 * abs(n - 0.5)))));
 
-                n *= pow1_5(texture2D(NoiseTex, planePos * 100.0 + auroraAnimate).b);
+                n *= pow1_5(texture2D(s_NoiseTex, planePos * 100.0 + auroraAnimate).b);
             #else
                 planePos *= 0.00007;
 
-                float n = texture2D(NoiseTex, planePos).r;
+                float n = texture2D(s_NoiseTex, planePos).r;
                 n = pow2(pow2(pow2(pow2(1.0 - 2.0 * abs(n - 0.5)))));
 
-                n *= texture2D(NoiseTex, planePos * 3.0 + auroraAnimate).b;
-                n *= texture2D(NoiseTex, planePos * 5.0 - auroraAnimate).b;
+                n *= texture2D(s_NoiseTex, planePos * 3.0 + auroraAnimate).b;
+                n *= texture2D(s_NoiseTex, planePos * 5.0 - auroraAnimate).b;
             #endif
 
             float currentM = 1.0 - current;
@@ -105,6 +102,7 @@ vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
 void main() {
   #ifndef INSTANCING
     vec3 viewDir = normalize(v_worldPos);
+    float VdotU = clamp(viewDir.y, 0.0, 1.0);
 
     nl_environment env;
     env.end = false;
@@ -121,7 +119,7 @@ void main() {
 
     float dither = fract(sin(dot(viewDir.xy, vec2(12.9898, 78.233))) * 43758.5453);
     vec3 auroraColor = GetAuroraBorealis(viewDir, VdotU, dither);
-    skyColor += aurora; 
+    skyColor += auroraColor; 
 
     skyColor = colorCorrection(skyColor);
 
