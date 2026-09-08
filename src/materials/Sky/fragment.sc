@@ -98,7 +98,7 @@ vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
 
 void main() {
   #ifndef INSTANCING
-    vec3 viewDir = normalize(v_worldPos - CameraPosition.xyz);
+    vec3 viewDir = normalize(v_worldPos - cameraPosition.xyz);
 
     nl_environment env;
     env.end = false;
