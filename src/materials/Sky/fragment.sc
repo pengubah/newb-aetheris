@@ -28,7 +28,6 @@ float inSnowy = 1.0;
 vec3 cameraPosition = vec3(0.0,0.0,0.0);
 
 vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
-    float VdotU = clamp(viewdir.y, 0.0, 1.0);
     float syncedTime = ViewPositionAndTime.w;
     float frameTimeCounter = ViewPositionAndTime.w;
     mat3 gbufferModelViewInverse = mat3(1.0);
@@ -116,6 +115,7 @@ void main() {
     vec3 skyColor = nlRenderSky(skycol, env, -viewDir, v_underwaterRainTimeDay.z, true);
 
     float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    float VdotU = clamp(viewDir.y, 0.0, 1.0);
     vec3 auroraColor = GetAuroraBorealis(viewdir, VdotU, dither);
     skyColor += auroraColor; 
 
