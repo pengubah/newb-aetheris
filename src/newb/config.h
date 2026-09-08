@@ -30,7 +30,7 @@
 /* Color correction */
 #define NL_TONEMAP_TYPE 4              // 1:Exponential, 2:Reinhard, 3:Extended Reinhard, 4:ACES, 5:ACES Filmic
 #define NL_GAMMA 1.2                   // 0.3 low ~ 2.0 high
-#define NL_EXPOSURE 1.35               // [toggle] 0.5 dark ~ 3.0 bright
+#define NL_EXPOSURE 1.36               // [toggle] 0.5 dark ~ 3.0 bright
 #define NL_SATURATION 1.3              // [toggle] 0.0 grayscale ~ 4.0 super saturated
 #define NL_TINT                        // [toggle] enable light/dark tone tinting
 #define NL_TINT_LOW  vec3(1.0,1.0,1.0) // color tint for dark tone
@@ -116,12 +116,12 @@
 
 /* Water */
 #define NL_WATER_TRANSPARENCY 0.9 // 0.0 transparent ~ 1.0 normal
-#define NL_WATER_BUMP 0.15         // 0.001 plain ~ 0.2 bumpy water
-#define NL_WATER_WAVE_SPEED  0.7  // 0.2 calm ~ 2.0 turbulent
+#define NL_WATER_BUMP 0.2         // 0.001 plain ~ 0.2 bumpy water
+#define NL_WATER_WAVE_SPEED  0.35  // 0.2 calm ~ 2.0 turbulent
 #define NL_WATER_TEX_OPACITY 0.0  // 0.0 plain water ~ 1.0 vanilla water texture
 #define NL_WATER_WAVE             // [toggle] wave effect
 //#define NL_WATER_REFL_MASK      // [toggle] fake water reflection mask
-#define NL_WATER_TINT vec3(0.0,0.05,0.2)
+#define NL_WATER_TINT vec3(0.0,0.1,0.22)
 
 /* Underwater */
 #define NL_UNDERWATER_BRIGHTNESS 1.3         // 0.0 dark ~ 3.0 bright
@@ -193,7 +193,7 @@
 #define NL_MOON_TILT       0.0    // 0.0 no tilt ~ 90.0 tilt of 90 degrees
 
 /* Fake godrays during sunrise/sunset */
-#define NL_GODRAY 0.8 // [toggle] 0.1 subtle ~ 0.8 strong
+#define NL_GODRAY 0.95 // [toggle] 0.1 subtle ~ 0.8 strong
 
 /* Sky reflection */
 //#define NL_GROUND_REFL 0.4       // [toggle] 0.2 slightly reflective ~ 1.0 fully reflect sky
