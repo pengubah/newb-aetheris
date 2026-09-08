@@ -1,5 +1,5 @@
 {
-  "name": "NoiseTex",
+  "name": "noisevoxels",
   "reg1": 10,
   "reg2": 10,
   "type": "texture2D",
@@ -9,9 +9,8 @@
   "default_texture": "",
   "unordered_access": false,
   "always_one": 1,
-  "texture_path": "textures/newb/NoiseTex",
+  "texture_path": "textures/newb/noisevoxels",
    "sampler_state": {
-    "filter": "Bilinear",
     "wrapping": "Repeat"
   },
   "custom_type_info": {}
