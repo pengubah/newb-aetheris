@@ -30,9 +30,6 @@ vec3 cameraPosition = vec3(0.0,0.0,0.0);
 vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
     float syncedTime = ViewPositionAndTime.w;
     float frameTimeCounter = ViewPositionAndTime.w;
-    mat3 gbufferModelViewInverse = mat3(1.0,0.0,0.0,
-                                        0.0,1.0,0.0,
-                                        0.0,0.0,1.0);
 
     float visibility = sqrt1(clamp01(VdotU * 1.5 - 0.225)) - sunVisibility - rainFactor - maxBlindnessDarkness;
     visibility *= 1.0 - VdotU * 0.9;
@@ -50,7 +47,7 @@ vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
     if (visibility > 0.0) {
         vec3 aurora = vec3(0.0,0.0,0.0);
 
-        vec3 wpos = gbufferModelViewInverse * viewPos;
+        vec3 wpos = viewPos;
         wpos.xz /= max(0.0001, wpos.y);
         vec2 cameraPositionM = cameraPosition.xz * 0.0075;
         cameraPositionM.x += syncedTime * 0.04;
