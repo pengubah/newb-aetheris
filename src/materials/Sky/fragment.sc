@@ -35,7 +35,7 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
     vec3 wpos = viewDir;
     wpos.xz /= max(wpos.y, 0.1);
 
-    vec2 cameraPosM = vec2(ViewPositionAndTime.w * 0.019, 0.0);
+    vec2 cameraPosM = vec2(ViewPositionAndTime.w * 0.025, 0.0);
 
     const int sampleCount = 15;
     const int sampleCountP = sampleCount + 10;
@@ -46,20 +46,20 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
         float current = pow2((float(i) + ditherM) / float(sampleCountP));
         float currentM = 1.0 - current;
 
-        vec2 planePos = wpos.xz * (0.9 + current) * 4.0 + cameraPosM;
-        planePos *= 0.015;
+        vec2 planePos = wpos.xz * (0.4 + current) * 4.0 + cameraPosM;
+        planePos *= 0.017;
 
         float noise = cubicFollowNoise(planePos);
         noise = pow2(pow2(pow2(1.0 - 1.0 * abs(noise - 0.4))));
 
-        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w * 0.005);
-        float anim2 = cubicFollowNoise(planePos * 0.5 - ViewPositionAndTime.w * 0.005);
+        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w * 0.0055);
+        float anim2 = cubicFollowNoise(planePos * 0.5 - ViewPositionAndTime.w * 0.0055);
         noise *= mix(anim1, anim2, 0.5);
 
-        aurora += noise * currentM * mix(vec3(0.50, 0.48, 1.55), vec3(0.0, 5.00, 1.95), pow2(pow2(currentM)));
+        aurora += noise * currentM * mix(vec3(0.3,0.5,1.65), vec3(0.0,4.5,2.0), pow2(pow2(currentM)));
     }
 
-    aurora *= 0.5;
+    aurora *= 0.6;
     return aurora * visibility / float(sampleCount);
 }
 
