@@ -54,7 +54,7 @@ vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
         vec2 cameraPositionM = cameraPosition.xz * 0.0075;
         cameraPositionM.x += syncedTime * 0.04;
 
-        int sampleCount = AURORA_LAYERS;
+        int sampleCount = 20;
         int sampleCountP = sampleCount + 10;
 
         float ditherM = dither + 5.0;
@@ -83,7 +83,7 @@ vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
             #endif
 
             float currentM = 1.0 - current;
-            aurora += n * currentM * mix(AURORA_COLOR_1, AURORA_COLOR_2, pow2(pow2(currentM)));
+            aurora += n * currentM * mix(vec3(7.0, 3.5, 17.0), vec3(5.0, 15.0, 17.0), pow2(pow2(currentM)));
         }
 
         #if AURORA_STYLE == 1
@@ -92,7 +92,7 @@ vec3 GetAuroraBorealis(vec3 viewPos, float VdotU, float dither) {
             aurora *= 1.8;
         #endif
 
-        aurora *= AURORA_BRIGHTNESS;
+        aurora *= 1.5;
 
         return aurora * visibility / float(sampleCount);
     }
@@ -118,11 +118,9 @@ void main() {
 
     vec3 skyColor = nlRenderSky(skycol, env, -viewDir, v_underwaterRainTimeDay.z, true);
 
-    #ifdef AURORA_COMPLEMENTARY
-        float dither = fract(sin(dot(viewDir.xy, vec2(12.9898, 78.233))) * 43758.5453);
-        vec3 auroraColor = GetAuroraBorealis(viewDir, VdotU, dither);
-        skyColor += auroraColor; 
-    #endif
+    float dither = fract(sin(dot(viewDir.xy, vec2(12.9898, 78.233))) * 43758.5453);
+     vec3 auroraColor = GetAuroraBorealis(viewDir, VdotU, dither);
+    skyColor += auroraColor; 
 
     skyColor = colorCorrection(skyColor);
 
