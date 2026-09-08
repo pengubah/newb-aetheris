@@ -18,7 +18,7 @@ float nlRenderFogFade(float relativeDist, vec3 FOG_COLOR, vec2 FOG_CONTROL) {
   #endif
 }
 
-float nlRenderGodRayIntensity(vec3 cPos, vec3 worldPos, float t, vec2 uv1, float relativeDist, vec3 FOG_COLOR) {
+float nlRenderGodRayIntensity(vec3 cPos, vec3 worldPos, float t, vec2 uv1, float relativeDist, vec3 FOG_COLOR, float dayFactor) {
   // offset wPos (only works upto 16 blocks)
   vec3 offset = cPos - 16.0*fract(worldPos*0.0625);
   offset = abs(2.0*fract(offset*0.0625)-1.0);
@@ -38,6 +38,9 @@ float nlRenderGodRayIntensity(vec3 cPos, vec3 worldPos, float t, vec2 uv1, float
 
   // dawn/dusk mask
   vol *= clamp(3.0*(FOG_COLOR.r-FOG_COLOR.b), 0.0, 1.0);
+
+  // day musk
+  vol *= max(clamp(3.0*(FOG_COLOR.r-FOG_COLOR.b),0.0,1.0),smoothstep(0.08,0.35,dayFactor));
 
   vol = smoothstep(0.0, 0.1, vol);
   return vol;
