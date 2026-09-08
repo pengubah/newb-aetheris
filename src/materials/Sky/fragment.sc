@@ -15,7 +15,6 @@ uniform vec4 ViewPositionAndTime;
 
 SAMPLER2D_AUTOREG(s_noisevoxels);
 
-float pow2(float x) { return x * x; }
 float pow2(float x){return x*x;}
 float pow1_5(float x){return pow(x,1.5);}
 float clamp01(float x){return clamp(x,0.0,1.0);}
