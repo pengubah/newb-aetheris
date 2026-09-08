@@ -122,7 +122,7 @@ void main() {
   }
   fogColor.a = nlRenderFogFade(relativeDist, FogColor.rgb, FogAndDistanceControl.xy);
   #if defined(NL_GODRAY) && defined(NL_FOG)
-    fogColor.a=mix(fogColor.a,1.0,min(NL_GODRAY*nlRenderGodRayIntensity(cPos,worldPos,t,uv1,relativeDist,FogColor.rgb,env.dayFactor),1.0));
+    fogColor.a=mix(fogColor.a,1.0,min(NL_GODRAY*nlRenderGodRayIntensity(cPos,worldPos,t,uv1,relativeDist,FogColor.rgb,env.dayFactor,env.sunDir),1.0));
   #endif
 
   if (env.nether) {
