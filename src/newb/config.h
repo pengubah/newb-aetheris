@@ -28,7 +28,7 @@
 */
 
 /* Color correction */
-#define NL_TONEMAP_TYPE 5              // 1:Exponential, 2:Reinhard, 3:Extended Reinhard, 4:ACES, 5:ACES Filmic
+#define NL_TONEMAP_TYPE 4              // 1:Exponential, 2:Reinhard, 3:Extended Reinhard, 4:ACES, 5:ACES Filmic
 #define NL_GAMMA 1.2                   // 0.3 low ~ 2.0 high
 #define NL_EXPOSURE 1.35               // [toggle] 0.5 dark ~ 3.0 bright
 #define NL_SATURATION 1.3              // [toggle] 0.0 grayscale ~ 4.0 super saturated
@@ -79,9 +79,9 @@
 #define NL_DAWN_HORIZON_COL  vec3(1.00,0.45,0.00)*1.5
 #define NL_DAWN_EDGE_COL     vec3(1.00,0.45,0.00)*1.5
 
-#define NL_NIGHT_ZENITH_COL   vec3(0.006,0.025,0.055)
-#define NL_NIGHT_HORIZON_COL  vec3(0.018,0.055,0.09)
-#define NL_NIGHT_EDGE_COL     vec3(0.035,0.075,0.105)
+#define NL_NIGHT_ZENITH_COL   vec3(0.006,0.022,0.035)
+#define NL_NIGHT_HORIZON_COL  vec3(0.018,0.055,0.070)
+#define NL_NIGHT_EDGE_COL     vec3(0.028,0.070,0.085)
 
 #define NL_RAIN_ZENITH_COL   vec3(0.25,0.25,0.25)*1.1
 #define NL_RAIN_HORIZON_COL  vec3(0.45,0.45,0.45)*1.1
