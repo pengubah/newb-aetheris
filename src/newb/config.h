@@ -180,6 +180,7 @@
 //#define NL_CLOUD_AURORA_REFLECTION // [toggle] simple clouds/aurora reflection
 
 /* Aurora Complementary */
+#define AURORA_COMPLEMENTARY  // [toggle]
 #define AURORA_COLOR_1 vec3(7.0, 3.5, 17.0)  // Color base / inferior
 #define AURORA_COLOR_2 vec3(5.0, 15.0, 17.0) // Color secundario / superior
 #define AURORA_BRIGHTNESS 1.5  
