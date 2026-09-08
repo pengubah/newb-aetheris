@@ -23,6 +23,15 @@ You can compile the shader from source and distribute the result under your own 
 Contact (Discord Server): https://discord.gg/newb-community-844591537430069279
 ''' # %a = authors
 credits = '''
+Based on Newb Shader by Devendrn.
+Special thanks to the Newb community, especially:
+SetBr0ken
+JesusMiguel Gamer
+REXYTMC
+Alee
+Indeed
+And everyone else who has contributed to the Newb community through their work, ideas, feedback, and inspiration.
+Newb Aetheris builds upon the foundation of Newb Shader and continues it in its own direction.
 '''
 
 # subpacks are arranged in left to right order
