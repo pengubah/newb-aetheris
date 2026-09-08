@@ -11,8 +11,7 @@
   uniform vec4 FogAndDistanceControl;
 #endif
 
-  uniform vec4 ViewPositionAndTime;
-  uniform vec4 cameraPosition;
+uniform vec4 ViewPositionAndTime;
 
 SAMPLER2D_AUTOREG(s_noisevoxels);
 
@@ -28,17 +27,17 @@ float cubicFollowNoise(vec2 p){
     return texture2D(s_noisevoxels, quantized).r;
 }
 
-vec3 GetAurora(vec3 vDir, float time, float dither) {
-    float VdotU = clamp(vDir.y, 0.0, 1.0);
+vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
+    float VdotU = clamp(viewDir.y, 0.0, 1.0);
     float visibility = sqrt1(clamp01(VdotU * 4.0 - 0.25));
     visibility *= 8.0 - VdotU * 0.9;
     if (visibility <= 1.0) return vec3(0.0, 0.0, 0.0);
 
     vec3 aurora = vec3(0.0, 0.0, 0.0);
-    vec3 wpos = vDir;
+    vec3 wpos = viewDir;
     wpos.xz /= max(wpos.y, 0.1);
 
-    vec2 cameraPosM = vec2(time * 0.019, 0.0);
+    vec2 cameraPosM = vec2(ViewPositionAndTime.w * 0.019, 0.0);
 
     const int sampleCount = 15;
     const int sampleCountP = sampleCount + 10;
@@ -55,8 +54,8 @@ vec3 GetAurora(vec3 vDir, float time, float dither) {
         float noise = cubicFollowNoise(planePos);
         noise = pow2(pow2(pow2(1.0 - 1.0 * abs(noise - 0.4))));
 
-        float anim1 = cubicFollowNoise(planePos * 0.5 + time * 0.005);
-        float anim2 = cubicFollowNoise(planePos * 0.5 - time * 0.005);
+        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w * 0.005);
+        float anim2 = cubicFollowNoise(planePos * 0.5 - ViewPositionAndTime.w * 0.005);
         noise *= mix(anim1, anim2, 0.5);
 
         aurora += noise * currentM * mix(vec3(0.50, 0.48, 1.55), vec3(0.0, 5.00, 1.95), pow2(pow2(currentM)));
@@ -69,7 +68,6 @@ vec3 GetAurora(vec3 vDir, float time, float dither) {
 void main() {
   #ifndef INSTANCING
     vec3 viewDir = normalize(v_worldPos);
-    float VdotU = clamp(viewDir.y, 0.0, 1.0);
 
     nl_environment env;
     env.end = false;
@@ -87,7 +85,7 @@ void main() {
     vec3 skyColor = nlRenderSky(skycol, env, -viewDir, v_underwaterRainTimeDay.z, true);
 
     float dither = fract(sin(dot(viewDir.xy, vec2(12.9898,78.233))) * 43758.5453);
-    vec3 aurora = GetAurora(viewDir, time, dither);
+    vec3 aurora = GetAurora(viewDir, ViewPositionAndTime, dither) * mask;
     skyColor += aurora; 
 
     skyColor = colorCorrection(skyColor);
