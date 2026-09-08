@@ -9,9 +9,10 @@
   uniform vec4 TimeOfDay;
   uniform vec4 FogColor;
   uniform vec4 FogAndDistanceControl;
+#endif
+
   uniform vec4 ViewPositionAndTime;
   uniform vec4 cameraPosition;
-#endif
 
 SAMPLER2D_AUTOREG(s_NoiseTex);
 
