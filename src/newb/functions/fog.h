@@ -28,8 +28,6 @@ float nlRenderGodRayIntensity(vec3 cPos, vec3 worldPos, float t, vec2 uv1, float
   //vec3 ofPos = wPos+offset;
   vec3 nrmof = normalize(worldPos);
 
-  float sunView = smoothstep(0.92,1.0,dot(normalize(viewDir),normalize(sunDir)));
-
   float u = nrmof.z/length(nrmof.zy);
   float diff = dot(offset,vec3(0.1,0.2,1.0)) + 0.07*t;
   float mask = nrmof.x*nrmof.x;
