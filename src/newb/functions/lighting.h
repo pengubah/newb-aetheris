@@ -11,7 +11,7 @@ vec3 sunLightTint(float dayFactor, float rain) {
   float nightFactor = step(dayFactor, 0.0);
   float dawnFactor = 1.0 - smoothstep(0.0, 0.58, abs(dayFactor));
   dawnFactor *= dawnFactor;
-  dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
+  dawnFactor *= mix(1.0, dawnFactor, nightFactor);
   vec3 tint = mix(NL_NOON_SUNLIGHT_COL, NL_NIGHT_MOONLIGHT_COL, nightFactor);
   tint = mix(tint, NL_DAWN_SUNLIGHT_COL, dawnFactor);
   tint = mix(tint, vec3_splat(dot(tint, vec3_splat(0.33))), rain);
@@ -58,7 +58,7 @@ vec3 nlLighting(
     float nightFactor = step(env.dayFactor, 0.0);
     float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
     dawnFactor *= dawnFactor;
-    dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
+    dawnFactor *= mix(1.0, dawnFactor, nightFactor);
     float nightIntensity = 1.0-(0.5+0.5*env.dayFactor);
     nightIntensity *= nightIntensity;
 
@@ -77,7 +77,7 @@ vec3 nlLighting(
       vec2 projectionOffset = cloudRelativeHeight*mainLightDir.xz/mainLightDir.y;
       vec2 projectedPos = gPos.xz + projectionOffset;
       float cloudFade = smoothstep(1.0, 0.5, length(0.002*(wPos.xz + projectionOffset)));
-      cloudFade *= (1.0-dawnFactor*dawnFactor)*clamp(-0.12*(cloudRelativeHeight-7.0), 0.0, 1.0);
+      cloudFade *= (1.0-dawnFactor)*clamp(-0.12*(cloudRelativeHeight-7.0), 0.0, 1.0);
       float cmask;
       #if NL_CLOUD_TYPE == 1
         // shadow cast by simple clouds
@@ -155,7 +155,7 @@ vec3 nlEntityLighting(nl_skycolor skycol, nl_environment env, vec3 pos, vec4 nor
     float nightFactor = step(env.dayFactor, 0.0);
     float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
     dawnFactor *= dawnFactor;
-    dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
+    dawnFactor *= mix(1.0, dawnFactor, nightFactor);
     float nightIntensity = 1.0-(0.5+0.5*env.dayFactor);
     nightIntensity *= nightIntensity;
 
