@@ -20,7 +20,7 @@ float pow1_5(float x){return pow(x,1.5);}
 float clamp01(float x){return clamp(x,0.0,1.0);}
 float sqrt1(float x){return sqrt(max(x,0.0));}
 
-float cubicFollowNoise(vec2 p);
+float cubicFollowNoise(vec2 p) {
     vec2 quantized = (floor(p * 129.0) + 1.4) / 129.0;
     return texture2D(s_noisevoxels, quantized).r;
 }
