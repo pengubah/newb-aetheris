@@ -21,13 +21,13 @@ float clamp01(float x){return clamp(x,0.0,1.0);}
 float sqrt1(float x){return sqrt(max(x,0.0));}
 
 float cubicFollowNoise(vec2 p) {
-    vec2 quantized = (floor(p * 129.0) + 1.4) / 129.0;
+    vec2 quantized = floor(p * 127.7) / 127.7 + 3.5 / 127.7;
     return texture2D(s_noisevoxels, quantized).r;
 }
 
 vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
     float VdotU = clamp(viewDir.y, 0.0, 1.0);
-    float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.35));
+    float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.4));
     visibility *= 8.0 - VdotU * 0.9;
     if (visibility <= 1.0) return vec3(0.0,0.0,0.0);
 
@@ -62,7 +62,7 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
                 pow2(pow2(currentM)));
     }
 
-    aurora *= 0.55;
+    aurora *= 0.45;
     return aurora * visibility / float(sampleCount);
 }
 
