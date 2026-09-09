@@ -9,9 +9,9 @@
 
 vec3 sunLightTint(float dayFactor, float rain) {
   float nightFactor = step(dayFactor, 0.0);
-  float dawnFactor = 1.0 - smoothstep(0.0, 0.58, abs(dayFactor));
+  float dawnFactor = 1.0 - smoothstep(0.0, 1.0, abs(dayFactor));
   dawnFactor *= dawnFactor;
-  dawnFactor *= mix(1.0, dawnFactor, nightFactor);
+  dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   vec3 tint = mix(NL_NOON_SUNLIGHT_COL, NL_NIGHT_MOONLIGHT_COL, nightFactor);
   tint = mix(tint, NL_DAWN_SUNLIGHT_COL, dawnFactor);
   tint = mix(tint, vec3_splat(dot(tint, vec3_splat(0.33))), rain);
@@ -58,7 +58,7 @@ vec3 nlLighting(
     float nightFactor = step(env.dayFactor, 0.0);
     float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
     dawnFactor *= dawnFactor;
-    dawnFactor *= mix(1.0, dawnFactor, nightFactor);
+    dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
     float nightIntensity = 1.0-(0.5+0.5*env.dayFactor);
     nightIntensity *= nightIntensity;
 
@@ -69,7 +69,7 @@ vec3 nlLighting(
     // shadow cast by sun light
     float shadow = step(0.93, uv1.y);
     shadow = max(shadow, (1.0 - NL_SHADOW_INTENSITY + (0.6*NL_SHADOW_INTENSITY*nightIntensity))*lit.y);
-    shadow *= shade > 0.8 ? 1.0 : 0.55;
+    shadow *= shade > 0.8 ? 1.0 : 0.5;
     #if defined(NL_CLOUD_SHADOW) && (NL_CLOUD_TYPE == 1 || NL_CLOUD_TYPE == 2)
       vec3 mainLightDir = env.sunDir.y > 0.0 ? env.sunDir : env.moonDir;
       vec3 gPos = wPos + CAMERA_POS;
@@ -155,7 +155,7 @@ vec3 nlEntityLighting(nl_skycolor skycol, nl_environment env, vec3 pos, vec4 nor
     float nightFactor = step(env.dayFactor, 0.0);
     float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
     dawnFactor *= dawnFactor;
-    dawnFactor *= mix(1.0, dawnFactor, nightFactor);
+    dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
     float nightIntensity = 1.0-(0.5+0.5*env.dayFactor);
     nightIntensity *= nightIntensity;
 
