@@ -49,7 +49,7 @@ nl_skycolor nlOverworldSkyColors(nl_environment env) {
   // Keep the effect concentrated around the horizon hours.
   float dawnFactor = 1.0 - smoothstep(0.0, 1.0, abs(env.dayFactor));
   dawnFactor *= dawnFactor;
-  dawnFactor *= mix(1.0, dawnFactor, nightFactor);
+  dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   s.zenith = mix(s.zenith, NL_DAWN_ZENITH_COL, dawnFactor);
   s.horizon = mix(s.horizon, NL_DAWN_HORIZON_COL, dawnFactor);
   s.horizonEdge = mix(s.horizonEdge, NL_DAWN_EDGE_COL, dawnFactor);
@@ -87,7 +87,7 @@ float nlDawnStrength(nl_environment env) {
 
 vec3 nlDawnAtmosphere(vec3 sky,nl_skycolor skyCol,nl_environment env,vec3 viewDir) {
   float dawn = nlDawnStrength(env);
-  float horizon = 1.0-smoothstep(0.0,0.68,abs(viewDir.y));
+  float horizon = 1.0-smoothstep(0.0,0.76,abs(viewDir.y));
   float upper = smoothstep(0.18,0.82,viewDir.y);
   float sunDot = max(dot(normalize(env.sunDir),normalize(viewDir)),0.0);
   float sunWide = pow(sunDot,2.2);
@@ -132,8 +132,8 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   sky = nlDawnAtmosphere(sky,skyCol,env,viewDir);
 
   float sunDot = max(dot(normalize(env.sunDir), normalize(viewDir)), 0.0);
-  float sunGlow = pow(sunDot, 3.2);
-  float sunBloom = pow(sunDot, 11.0);
+  float sunGlow = pow(sunDot, 4.2);
+  float sunBloom = pow(sunDot, 8.0);
   float dawnGlow = dawnFactor;
   dawnGlow *= 1.0 - 0.75*env.rainFactor;
   vec3 dawnGlowCol = NL_DAWN_HORIZON_COL;
