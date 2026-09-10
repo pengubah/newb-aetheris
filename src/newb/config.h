@@ -40,8 +40,8 @@
 #define NL_SUNLIGHT_INTENSITY   2.85  // 1.0 weak ~ 5.0 bright
 #define NL_TORCHLIGHT_INTENSITY 1.2  // 0.5 weak ~ 3.0 bright
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
-#define NL_MIN_LIGHTING_BOOST   1.0  // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
-#define NL_BLINKING_TORCH            // [toggle] flickering light
+#define NL_MIN_LIGHTING_BOOST   0.85 // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
+//#define NL_BLINKING_TORCH            // [toggle] flickering light
 //#define NL_CLOUD_SHADOW            // [toggle] cloud shadow (simple clouds only)
 
 /* Ambient light for nether/end */
@@ -51,7 +51,7 @@
 /* Sun/moon light color */
 #define NL_DAWN_SUNLIGHT_COL   vec3(1.00,0.98,0.98)
 #define NL_NOON_SUNLIGHT_COL   vec3(0.75,0.8,1.00)
-#define NL_NIGHT_MOONLIGHT_COL vec3(0.008,0.030,0.050)
+#define NL_NIGHT_MOONLIGHT_COL vec3(0.002,0.008,0.018)
 
 /* Torch colors */
 #define NL_OVERWORLD_TORCH_COL   vec3(1.00,0.68,0.34)
@@ -79,9 +79,9 @@
 #define NL_DAWN_HORIZON_COL  vec3(1.00,0.68,0.12)*1.5
 #define NL_DAWN_EDGE_COL     vec3(0.72,0.55,0.18)*1.5
 
-#define NL_NIGHT_ZENITH_COL   vec3(0.004,0.018,0.040)
-#define NL_NIGHT_HORIZON_COL  vec3(0.010,0.115,0.155)
-#define NL_NIGHT_EDGE_COL     vec3(0.020,0.175,0.205)
+#define NL_NIGHT_ZENITH_COL   vec3(0.003,0.006,0.020)
+#define NL_NIGHT_HORIZON_COL  vec3(0.008,0.022,0.050)
+#define NL_NIGHT_EDGE_COL     vec3(0.012,0.035,0.070)
 
 #define NL_RAIN_ZENITH_COL   vec3(0.25,0.25,0.25)*1.1
 #define NL_RAIN_HORIZON_COL  vec3(0.45,0.45,0.45)*1.1
@@ -117,7 +117,7 @@
 /* Water */
 #define NL_WATER_TRANSPARENCY 0.9 // 0.0 transparent ~ 1.0 normal
 #define NL_WATER_BUMP 0.22         // 0.001 plain ~ 0.2 bumpy water
-#define NL_WATER_WAVE_SPEED  0.15  // 0.2 calm ~ 2.0 turbulent
+#define NL_WATER_WAVE_SPEED  0.2  // 0.2 calm ~ 2.0 turbulent
 #define NL_WATER_TEX_OPACITY 0.0  // 0.0 plain water ~ 1.0 vanilla water texture
 #define NL_WATER_WAVE             // [toggle] wave effect
 //#define NL_WATER_REFL_MASK      // [toggle] fake water reflection mask
@@ -165,7 +165,7 @@
 #define NL_CLOUD2_LAYER2_VELOCITY 0.8           // 0.0 static ~ 4.0 very fast
 
 /* Realistic cloud settings */
-#define NL_CLOUD3_SCALE vec2(0.028, 0.028) // 0.003 large ~ 1.0 tiny
+#define NL_CLOUD3_SCALE vec2(0.029, 0.029) // 0.003 large ~ 1.0 tiny
 #define NL_CLOUD3_SPEED 0.005            // 0.0 static ~ 4.0 fast moving
 #define NL_CLOUD3_SHADOW 0.9             // 0.1 subtle ~ 1.0 dark
 #define NL_CLOUD3_SHADOW_OFFSET 0.3      // 0.05 minimal ~ 1.0 large
@@ -201,8 +201,8 @@
 #define NL_GROUND_RAIN_PUDDLES 0.8 // 0.0 no puddles ~ 1.0 puddles
 
 /* Entity (Actor, ItemInHand) */
-#define NL_ENTITY_BRIGHTNESS     0.65 // 0.1 dark ~ 1.6 bright
-#define NL_ENTITY_EDGE_HIGHLIGHT 0.5 // [toggle] 0.0 no highlight ~ 1.6 bright highlight
+#define NL_ENTITY_BRIGHTNESS     0.1   // 0.1 dark ~ 1.6 bright
+//#define NL_ENTITY_EDGE_HIGHLIGHT 0.5 // [toggle] 0.0 no highlight ~ 1.6 bright highlight
 
 /* Weather particles */
 #define NL_WEATHER_SPECK 1.0         // [toggle] 0.0 vanilla texture ~ 1.0 soft speck
