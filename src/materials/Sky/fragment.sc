@@ -26,7 +26,7 @@ float cubicFollowNoise(vec2 p){
     return texture2D(s_noisevoxels, quantized).r;
 }
 
-vec3 GetAurora(vec3 viewDir, float time, float dither) {
+vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
     float VdotU = clamp(viewDir.y, 0.0, 1.0);
     float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.35));
     visibility *= 8.0 - VdotU * 0.9;
@@ -36,7 +36,7 @@ vec3 GetAurora(vec3 viewDir, float time, float dither) {
     vec3 wpos = viewDir;
     wpos.xz /= max(wpos.y, 0.1);
 
-    vec2 cameraPosM = vec2(time * 0.0, 0.0);
+    vec2 cameraPosM = vec2(ViewPositionAndTime.w * 0.0, 0.0);
 
     const int sampleCount = 20;
     const int sampleCountP = sampleCount + 10;
@@ -53,8 +53,8 @@ vec3 GetAurora(vec3 viewDir, float time, float dither) {
         float noise = cubicFollowNoise(planePos);
         noise = pow2(pow2(1.0 - 1.0 * abs(noise - 0.15)));
 
-        float anim1 = cubicFollowNoise(planePos * 0.5 + time * 0.0055);
-        float anim2 = cubicFollowNoise(planePos * 0.5 - time * 0.0055);
+        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w * 0.0055);
+        float anim2 = cubicFollowNoise(planePos * 0.5 - ViewPositionAndTime.w * 0.0055);
         noise *= mix(anim1, anim2, 1.0);
 
         aurora += noise * currentM *
