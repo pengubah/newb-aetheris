@@ -21,11 +21,12 @@ vec4 nlWater(
 ) {
 
   float waveTime = NL_WATER_WAVE_SPEED * t;
-  float largeWave = movingNoise2D(gPos.xz * 0.32 + vec2(waveTime * 0.55, waveTime * 0.20), 0.0, 0.55);
-  float mediumWave = movingNoise2D(gPos.xz * 0.72 + vec2(-waveTime * 0.38, waveTime * 0.62), 0.0, 0.65);
-  float fineWave = movingNoise2D(gPos.xz * 1.45 + vec2(waveTime * 0.85, -waveTime * 0.45), 0.0, 0.70);
-  float wave = largeWave * 0.58 + mediumWave * 0.30 + fineWave * 0.12;
-  vec2 bump = vec2(wave, mediumWave * 0.72 + largeWave * 0.28);
+  float waveA = movingNoise2D(gPos.xz * 0.24 + vec2(waveTime * 0.42, waveTime * 0.16), 0.0, 0.55);
+  float waveB = movingNoise2D(gPos.xz * 0.46 + vec2(-waveTime * 0.28, waveTime * 0.34), 0.0, 0.60);
+  float waveC = movingNoise2D(gPos.xz * 0.92 + vec2(waveTime * 0.65, -waveTime * 0.48), 0.0, 0.68);
+  float waveD = movingNoise2D(gPos.xz * 1.85 + vec2(-waveTime * 0.90, waveTime * 0.72), 0.0, 0.72);
+  float wave = waveA * 0.46 + waveB * 0.27 + waveC * 0.19 + waveD * 0.08;
+  vec2 bump = vec2(wave, waveA * 0.42 + waveB * 0.34 + waveC * 0.18 + waveD * 0.06);
   
   vec3 nrm;
   if (fractCposY > 0.0) { // top plane
@@ -76,7 +77,8 @@ vec4 nlWater(
 
   #ifdef NL_WATER_WAVE
     if (camDist < 18.0) {
-      wPos.y -= 0.5*(bump.x+0.5)*NL_WATER_BUMP;
+      float surfaceWave = bump.x * NL_WATER_BUMP;
+      wPos.y -= surfaceWave;
     }
   #endif
 
