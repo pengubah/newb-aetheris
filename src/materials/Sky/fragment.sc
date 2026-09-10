@@ -52,13 +52,13 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
         float noise = cubicFollowNoise(planePos);
         noise = pow2(pow2(1.0 - 1.0 * abs(noise - 0.15)));
 
-        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w * 0.0055);
-        float anim2 = cubicFollowNoise(planePos * 0.5 - ViewPositionAndTime.w * 0.0055);
+        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w * 0.005);
+        float anim2 = cubicFollowNoise(planePos * 0.5 - ViewPositionAndTime.w * 0.005);
         noise *= mix(anim1, anim2, 1.0);
 
         aurora += noise * currentM *
-            mix(vec3(0.65, 0.48, 1.8),
-                vec3(0.0, 2.8, 2.0),
+            mix(vec3(0.6, 0.38, 1.45),
+                vec3(0.0, 3.0, 2.55),
                 pow2(pow2(currentM)));
     }
 
