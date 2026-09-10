@@ -71,9 +71,9 @@
 #define NL_SKY_RAIN_MIX_FACTOR 1.0
 
 /* Sky colors - zenith=top, horizon=bottom */
-#define NL_DAY_ZENITH_COL    vec3(0.075,0.55,1.50)
-#define NL_DAY_HORIZON_COL   vec3(0.18,0.80,1.50)
-#define NL_DAY_EDGE_COL      vec3(0.525,1.05,1.50)
+#define NL_DAY_ZENITH_COL    vec3(0.075,0.42,1.00)
+#define NL_DAY_HORIZON_COL   vec3(0.16,0.62,1.05)
+#define NL_DAY_EDGE_COL      vec3(0.30,0.78,1.12)
 
 #define NL_DAWN_ZENITH_COL   vec3(0.32,0.27,0.40)
 #define NL_DAWN_HORIZON_COL  vec3(1.00,0.68,0.12)*1.5
