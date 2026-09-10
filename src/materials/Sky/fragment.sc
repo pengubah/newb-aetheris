@@ -21,8 +21,7 @@ float clamp01(float x){return clamp(x,0.0,1.0);}
 float sqrt1(float x){return sqrt(max(x,0.0));}
 
 float cubicFollowNoise(vec2 p){
-    vec2 cell = vec2(1.0 / 1000.0);
-    vec2 quantized = floor(p / cell) * cell + cell * cell * 3.0;
+    vec2 quantized = floor(p * 1000.0) / 1000.0 + 0.000003;
     return texture2D(s_noisevoxels, quantized).r;
 }
 
