@@ -91,7 +91,7 @@ vec3 nlLighting(
     #endif
 
     // direct light from top
-    float dawnBoost = mix(1.0, 1.22, dawnFactor);
+    float dawnBoost = mix(1.0, 1.5, dawnFactor);
     light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation*dawnBoost)*sunLightTint(env.dayFactor, env.rainFactor);
 
     // sky ambient
