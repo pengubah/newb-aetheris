@@ -20,14 +20,15 @@ float pow1_5(float x){return pow(x,1.5);}
 float clamp01(float x){return clamp(x,0.0,1.0);}
 float sqrt1(float x){return sqrt(max(x,0.0));}
 
-float cubicFollowNoise(vec2 p) {
-    vec2 quantized = floor(p * 127.7) / 127.7 + 3.5 / 127.7;
+float cubicFollowNoise(vec2 p){
+    vec2 cell = vec2(1.0 / 1000.0);
+    vec2 quantized = floor(p / cell) * cell + cell * cell * 3.0;
     return texture2D(s_noisevoxels, quantized).r;
 }
 
-vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
+vec3 GetAurora(vec3 viewDir, float time, float dither) {
     float VdotU = clamp(viewDir.y, 0.0, 1.0);
-    float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.4));
+    float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.35));
     visibility *= 8.0 - VdotU * 0.9;
     if (visibility <= 1.0) return vec3(0.0,0.0,0.0);
 
@@ -35,9 +36,9 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
     vec3 wpos = viewDir;
     wpos.xz /= max(wpos.y, 0.1);
 
-    vec2 cameraPosM = vec2(ViewPositionAndTime.w * 0.0, 0.0);
+    vec2 cameraPosM = vec2(time * 0.0, 0.0);
 
-    const int sampleCount = 25;
+    const int sampleCount = 20;
     const int sampleCountP = sampleCount + 10;
 
     float ditherM = dither + 10.0;
@@ -46,26 +47,25 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
         float current = pow2((float(i) + ditherM) / float(sampleCountP));
         float currentM = 1.0 - current;
 
-        vec2 planePos = wpos.xz * (0.9 + current) * 3.0 + cameraPosM;
+        vec2 planePos = wpos.xz * (0.9 + current) * 2.5 + cameraPosM;
         planePos *= 0.02;
 
         float noise = cubicFollowNoise(planePos);
-        noise = pow2(pow2(pow2(1.0 - 1.0 * abs(noise - 0.4))));
+        noise = pow2(pow2(1.0 - 1.0 * abs(noise - 0.15)));
 
-        float anim1 = cubicFollowNoise(planePos * 0.5 + ViewPositionAndTime.w * 0.0035);
-        float anim2 = cubicFollowNoise(planePos * 0.8 - ViewPositionAndTime.w * 0.0035);
-        noise *= mix(anim1, anim2, 0.5);
+        float anim1 = cubicFollowNoise(planePos * 0.5 + time * 0.0055);
+        float anim2 = cubicFollowNoise(planePos * 0.5 - time * 0.0055);
+        noise *= mix(anim1, anim2, 1.0);
 
         aurora += noise * currentM *
             mix(vec3(0.65, 0.48, 1.8),
-                vec3(0.0, 2.9, 1.95),
+                vec3(0.0, 2.8, 2.0),
                 pow2(pow2(currentM)));
     }
 
-    aurora *= 0.45;
+    aurora *= 0.4;
     return aurora * visibility / float(sampleCount);
 }
-
 
 void main() {
   #ifndef INSTANCING
