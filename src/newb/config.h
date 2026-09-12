@@ -40,7 +40,7 @@
 #define NL_SUNLIGHT_INTENSITY   2.85  // 1.0 weak ~ 5.0 bright
 #define NL_TORCHLIGHT_INTENSITY 1.2  // 0.5 weak ~ 3.0 bright
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
-#define NL_MIN_LIGHTING_BOOST   0.75 // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
+#define NL_MIN_LIGHTING_BOOST   0.8 // 1.0 minimal lighting boost for dark areas ~ 3.0 brighter dark areas
 //#define NL_BLINKING_TORCH            // [toggle] flickering light
 //#define NL_CLOUD_SHADOW            // [toggle] cloud shadow (simple clouds only)
 
@@ -79,9 +79,9 @@
 #define NL_DAWN_HORIZON_COL  vec3(1.00,0.68,0.12)*1.5
 #define NL_DAWN_EDGE_COL     vec3(0.72,0.55,0.18)*1.5
 
-#define NL_NIGHT_ZENITH_COL   vec3(0.025,0.090,0.135)
-#define NL_NIGHT_HORIZON_COL  vec3(0.018,0.115,0.155)
-#define NL_NIGHT_EDGE_COL     vec3(0.025,0.145,0.180)
+#define NL_NIGHT_ZENITH_COL   vec3(0.025,0.080,0.140)
+#define NL_NIGHT_HORIZON_COL  vec3(0.020,0.105,0.155)
+#define NL_NIGHT_EDGE_COL     vec3(0.025,0.130,0.180)
 
 #define NL_RAIN_ZENITH_COL   vec3(0.25,0.25,0.25)*1.1
 #define NL_RAIN_HORIZON_COL  vec3(0.45,0.45,0.45)*1.1
