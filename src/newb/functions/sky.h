@@ -87,17 +87,17 @@ float nlDawnStrength(nl_environment env) {
 
 vec3 nlDawnAtmosphere(vec3 sky,nl_skycolor skyCol,nl_environment env,vec3 viewDir) {
   float dawn = nlDawnStrength(env);
-  float horizon = 1.0-smoothstep(0.0,0.76,abs(viewDir.y));
-  float upper = smoothstep(0.18,0.82,viewDir.y);
+  float horizon = 1.0-smoothstep(0.0,0.86,abs(viewDir.y));
+  float upper = smoothstep(0.12,0.78,viewDir.y);
   float sunDot = max(dot(normalize(env.sunDir),normalize(viewDir)),0.0);
   float sunWide = pow(sunDot,2.2);
   float sunCore = pow(sunDot,8.0);
-  float haze = horizon*(0.35+0.65*sunWide)*dawn;
-  float glow = (0.75*sunWide+0.45*sunCore)*dawn;
+  float haze = horizon*(0.38+0.62*sunWide)*dawn;
+  float glow = (0.72*sunWide+0.42*sunCore)*dawn;
   vec3 horizonLight = mix(skyCol.horizonEdge,skyCol.horizon,0.5+0.5*upper);
   vec3 sunLight = mix(horizonLight,skyCol.horizon,0.35);
   sky = mix(sky,sunLight,haze*0.32);
-  sky+=skyCol.horizon*glow*0.42;
+  sky+=skyCol.horizon*glow*0.5;
   return sky;
 }
 
