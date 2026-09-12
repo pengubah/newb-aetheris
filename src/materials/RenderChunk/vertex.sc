@@ -183,10 +183,6 @@ void main() {
     }
   #endif
 
-  }
-   color.rgb= lava.rgb;
-  #endif
-
   v_extra = vec4(shade, worldPos.y, water, shimmer);
   v_refl = refl;
   v_texcoord0 = uv0;
