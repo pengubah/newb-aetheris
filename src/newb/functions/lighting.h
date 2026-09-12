@@ -63,7 +63,7 @@ vec3 nlLighting(
     nightIntensity *= nightIntensity;
 
     float sunLightAttenuation = clamp(0.5*(((2.0*step(TIME_OF_DAY, 0.5)-1.0)*(wPos.x*cos(NL_SUN_PATH_YAW)+wPos.y*sin(NL_SUN_PATH_YAW))/renderdistance) + 1.0), 0.0, 1.0);
-    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnFactor*dawnFactor);
+    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnFactor*dawnFactor*0.82);
     sunLightAttenuation *= 1.0-0.4*env.rainFactor;
 
     // shadow cast by sun light
@@ -91,7 +91,7 @@ vec3 nlLighting(
     #endif
 
     // direct light from top
-    float dawnBoost = mix(1.0, 1.5, dawnFactor);
+    float dawnBoost = mix(1.0, 1.65, dawnFactor);
     light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation*dawnBoost)*sunLightTint(env.dayFactor, env.rainFactor);
 
     // sky ambient
