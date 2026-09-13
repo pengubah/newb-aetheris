@@ -135,7 +135,7 @@ vec4 renderClouds(vec2 p, float t, float rain, vec3 horizonCol, vec3 zenithCol, 
 
   vec4 col;
   col.a = a + c*(1.0-a);
-  col.rgb = (horizonCol + horizonCol.ggg)*0.5;
+  col.rgb = (horizonCol + horizonCol.ggg)*0.85;
   col.rgb = mix(col.rgb, 0.5*(zenithCol + zenithCol.ggg), shadow*mix(b, d, c));
   col.rgb *= 1.0-0.7*rain;
 
