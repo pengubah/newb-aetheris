@@ -81,7 +81,7 @@ nl_skycolor nlSkyColors(nl_environment env) {
 float nlDawnStrength(nl_environment env) {
   float dawn = 1.0-smoothstep(0.0,1.0,abs(env.dayFactor));
   dawn *= dawn;
-  dawn *= mix(1.0,dawn,step(env.dayFactor,0.0));
+  dawn *= mix(1.0,dawn,smoothstep(0.0,-0.20,env.dayFactor));
   return dawn;
 }
 
