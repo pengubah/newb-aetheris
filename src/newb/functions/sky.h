@@ -120,7 +120,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   float vh4 = vh2*vh2;
 
   float gradient1 = vh4*vh4;
-  float gradient2 = 0.8*gradient1 + 1.0*vh2;
+  float gradient2 = 0.0*gradient1 + 0.0*vh2;
   gradient1 *= gradient1;
   gradient1 = mix(gradient1*gradient1, 1.0, mg8);
   gradient2 = mix(gradient2, 1.0, mg8);
@@ -141,7 +141,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   vec3 dawnGlowCol = NL_DAWN_HORIZON_COL;
   sky += dawnGlowCol * (0.82*sunGlow + 1.35*sunBloom) * dawnGlow;
   
-  sky *= 0.5+0.5*gradient2;
+  sky *= 1.2+1.2*gradient2;
   sky *= (1.0 + (2.0*mg8 + 7.0*mg8*mg8)*mask)*mix(1.0, mask, NL_SKY_VOID_DARKNESS);
 
   if (!isSkyPlane) {
