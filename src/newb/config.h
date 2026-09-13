@@ -49,9 +49,9 @@
 #define NL_END_AMBIENT    vec3(1.00,0.7,0.95)
 
 /* Sun/moon light color */
-#define NL_DAWN_SUNLIGHT_COL   vec3(1.00,0.98,0.98)
-#define NL_NOON_SUNLIGHT_COL   vec3(0.75,0.8,1.00)
-#define NL_NIGHT_MOONLIGHT_COL vec3(0.01,0.03,0.09)
+#define NL_DAWN_SUNLIGHT_COL   vec3(1.0,0.98,0.98)
+#define NL_NOON_SUNLIGHT_COL   vec3(0.7,0.8,1.0)
+#define NL_NIGHT_MOONLIGHT_COL vec3(0.001,0.003,0.009)
 
 /* Torch colors */
 #define NL_OVERWORLD_TORCH_COL   vec3(1.00,0.80,0.60)
@@ -79,9 +79,9 @@
 #define NL_DAWN_HORIZON_COL  vec3(1.00,0.68,0.12)*1.5
 #define NL_DAWN_EDGE_COL     vec3(0.72,0.55,0.18)*1.5
 
-#define NL_NIGHT_ZENITH_COL   vec3(0.0395,0.102,0.145)
-#define NL_NIGHT_HORIZON_COL  vec3(0.0585,0.151,0.188)
-#define NL_NIGHT_EDGE_COL     vec3(0.080,0.208,0.255)
+#define NL_NIGHT_ZENITH_COL   vec3(0.048,0.124,0.176)
+#define NL_NIGHT_HORIZON_COL  vec3(0.067,0.174,0.216)
+#define NL_NIGHT_EDGE_COL     vec3(0.097,0.251,0.307)
 
 #define NL_RAIN_ZENITH_COL   vec3(0.25,0.25,0.25)*1.1
 #define NL_RAIN_HORIZON_COL  vec3(0.45,0.45,0.45)*1.1
@@ -110,13 +110,13 @@
 /* Waving */
 #define NL_PLANTS_WAVE 0.05    // [toggle] 0.02 gentle ~ 0.4 violent
 #define NL_LANTERN_WAVE 0.16   // [toggle] 0.05 subtle ~ 0.4 large swing
-#define NL_WAVE_SPEED 2.65      // 0.5 slow wave ~ 5.0 very fast wave
+#define NL_WAVE_SPEED 2.6      // 0.5 slow wave ~ 5.0 very fast wave
 //#define NL_EXTRA_PLANTS_WAVE // [toggle] !dont use! wave using texture coords (1.21.0 vanilla 2048x1024)
 #define NL_WAVE_RANGE 16.0     // 6.0 upto 6 blocks ~ 32.0 upto 32 blocks away (slower)
 
 /* Water */
 #define NL_WATER_TRANSPARENCY 0.9 // 0.0 transparent ~ 1.0 normal
-#define NL_WATER_BUMP 0.22         // 0.001 plain ~ 0.2 bumpy water
+#define NL_WATER_BUMP 0.2         // 0.001 plain ~ 0.2 bumpy water
 #define NL_WATER_WAVE_SPEED  0.2  // 0.2 calm ~ 2.0 turbulent
 #define NL_WATER_TEX_OPACITY 0.0  // 0.0 plain water ~ 1.0 vanilla water texture
 #define NL_WATER_WAVE             // [toggle] wave effect
@@ -184,7 +184,7 @@
 
 /* Sun/Moon */
 #define NL_SUN_SIZE  3.2           // 0.3 tiny ~ 4.0 massive
-#define NL_MOON_SIZE 2.7           // 0.3 tiny ~ 4.0 massive
+#define NL_MOON_SIZE 2.2           // 0.3 tiny ~ 4.0 massive
 #define NL_SUN_PATH_YAW    15.0    //
 #define NL_MOON_PATH_YAW   17.0    //
 #define NL_SUN_PATH_TILT   31.0    //
