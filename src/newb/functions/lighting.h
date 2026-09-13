@@ -10,6 +10,7 @@
 vec3 sunLightTint(float dayFactor, float rain) {
   float nightFactor = step(dayFactor, 0.0);
   float dawnFactor = 1.0 - smoothstep(0.0, 1.0, abs(dayFactor));
+  dawnFactor = dawnFactor*dawnFactor;
   dawnFactor *= dawnFactor;
   dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   vec3 tint = mix(NL_NOON_SUNLIGHT_COL, NL_NIGHT_MOONLIGHT_COL, nightFactor);
@@ -223,40 +224,6 @@ float nlEntityEdgeHighlight(vec4 edgemap) {
 vec4 nlEntityEdgeHighlightPreprocess(vec2 texcoord) {
   vec4 edgeMap = fract(vec4(texcoord*128.0, texcoord*256.0));
   return 2.0*step(edgeMap, vec4_splat(0.5)) - 1.0;
-}
-
-vec4 nlLavaNoise(vec3 gPos, float t) {
-  vec2 p = gPos.xz;
-
-  float wt = NL_LAVA_NOISE_SPEED * t;
-
-  // Large flowing magma
-  float n0 = movingNoise2D(p * 0.30 + vec2(wt * 0.035, -wt * 0.020), wt * 0.45, 0.35);
-
-  // Medium magma breakup
-  float n1 = movingNoise2D(p * 0.68 + vec2(-wt * 0.050, wt * 0.032) + vec2(4.7, 1.9), wt * 0.70, 0.40);
-
-  // Small hot details
-  float n2 = movingNoise2D(p * 1.35 + vec2(wt * 0.075, -wt * 0.055) - vec2(2.3, 5.1), wt, 0.28);
-
-  // Combine lava scales
-  float n = n0 * 0.55 + n1 * 0.30 + n2 * 0.15;
-
-  // Stronger separation between dark and hot magma
-  n = smoothstep(0.18, 0.82, n);
-
-  float hot = smoothstep(0.42, 0.76, n);
-  float glow = smoothstep(0.28, 0.66, n);
-
-  // Lava color
-  vec3 darkLava = vec3(0.30, 0.055, 0.008);
-  vec3 warmLava = vec3(0.95, 0.22, 0.015);
-  vec3 hotLava  = vec3(1.55, 0.72, 0.08);
-
-  vec3 col = mix(darkLava, warmLava, glow);
-  col = mix(col, hotLava, hot);
-
-  return vec4(col, n);
 }
 
 #endif
