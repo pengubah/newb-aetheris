@@ -37,7 +37,7 @@
 #define NL_TINT_HIGH vec3(1.0,1.0,1.0) // color tint for light tone
 
 /* Lighting */
-#define NL_SUNLIGHT_INTENSITY   2.85  // 1.0 weak ~ 5.0 bright
+#define NL_SUNLIGHT_INTENSITY   3.5 // 1.0 weak ~ 5.0 bright
 #define NL_MOONLIGHT_INTENSITY  0.35
 #define NL_TORCHLIGHT_INTENSITY 1.2  // 0.5 weak ~ 3.0 bright
 #define NL_SHADOW_INTENSITY     1.0  // 0.0 no shadow ~ 1.0 strong shadow
