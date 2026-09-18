@@ -8,8 +8,9 @@
   "texture_format": "",
   "default_texture": "",
   "unordered_access": false,
-  "always_one": 1,
+  "slot_count": 1,
   "texture_path": "textures/newb/noisevoxels",
+  "unknown": 0,
    "sampler_state": {
     "filter": "Bilinear",
     "wrapping": "Repeat"
