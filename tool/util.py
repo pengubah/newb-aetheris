@@ -5,7 +5,7 @@ import platform
 
 CONF_FILE = "tool/data/.builder.pkl"
 NS_DEV_RELEASE = "https://github.com/devendrn/newb-shader/releases/download/dev/"
-NS_DEV_MAT_SRC_URL = NS_DEV_RELEASE + "src-materials-1.26.40.zip"
+NS_DEV_MAT_SRC_URL = "https://github.com/Coolguyhehe2515/newb-x-krispy-depedencies/releases/download/26.50_v2/src-materials-1.26.50-v2.zip"
 NS_DEV_SHADERC_URL_PREFIX = NS_DEV_RELEASE + "shaderc-"
 SHADERC_PATH = os.path.join('tool', 'data', 'shaderc')
 if os.name == 'nt':
@@ -103,6 +103,5 @@ def check_conf(console: Console):
         console.print("       Please run build setup again.", style="bold red")
 
     return conf
-
 
 
