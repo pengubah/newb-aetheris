@@ -8,7 +8,7 @@
 #include "clouds.h"
 
 vec3 sunLightTint(float dayFactor, float rain) {
-  float nightFactor = step(dayFactor, 0.0);
+  float nightFactor = 1.0-smoothstep(-0.10,0.10,dayFactor);
   float dawnFactor = 1.0 - smoothstep(0.0, 1.0, abs(dayFactor));
   dawnFactor = dawnFactor*dawnFactor;
   dawnFactor *= dawnFactor;
@@ -57,7 +57,7 @@ vec3 nlLighting(
 
   } else {
     // overworld lighting
-    float nightFactor = step(env.dayFactor, 0.0);
+    float nightFactor = 1.0-smoothstep(-0.10,0.10,dayFactor);
     float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
     dawnFactor *= dawnFactor;
     dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
@@ -154,7 +154,7 @@ vec3 nlEntityLighting(nl_skycolor skycol, nl_environment env, vec3 pos, vec4 nor
     tl = max(tl-0.08, 0.0);
     tl *= 4.0*tl;
 
-    float nightFactor = step(env.dayFactor, 0.0);
+    float nightFactor = 1.0-smoothstep(-0.10,0.10,dayFactor);
     float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
     dawnFactor *= dawnFactor;
     dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
