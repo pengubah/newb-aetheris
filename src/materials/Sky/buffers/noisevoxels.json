@@ -1,0 +1,20 @@
+{
+  "name": "noisevoxels",
+  "register_slot": 10,
+  "binding_slot": 10,
+  "type": "texture2D",
+  "precision": "lowp",
+  "access": "readonly",
+  "texture_format": "",
+  "default_texture": "",
+  "unordered_access": false,
+  "slot_count": 1,
+  "texture_path": "textures/newb/noisevoxels",
+  "unknown": 0,
+   "sampler_state": {
+    "filter": "Bilinear",
+    "wrapping": "Repeat"
+  },
+  "custom_type_info": {}
+}
+
