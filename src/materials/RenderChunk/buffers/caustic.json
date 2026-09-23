@@ -1,0 +1,20 @@
+{
+  "name": "caustic",
+  "register_slot": 7,
+  "binding_slot": 7,
+  "type": "texture2D",
+  "precision": "lowp",
+  "access": "readonly",
+  "texture_format": "",
+  "default_texture": "",
+  "unordered_access": false,
+  "slot_count": 1,
+  "texture_path": "textures/newb/caustic",
+  "unknown": 0,
+   "sampler_state": {
+    "filter": "Bilinear",
+    "wrapping": "Repeat"
+  },
+  "custom_type_info": {}
+}
+
