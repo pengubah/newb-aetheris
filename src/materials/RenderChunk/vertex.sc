@@ -2,7 +2,7 @@ $input a_color0, a_position, a_texcoord0, a_texcoord1
 #ifdef INSTANCING
   $input i_data0, i_data1, i_data2, i_data3
 #endif
-$output v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra
+$output v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_position, v_extra, v_cpos, v_wpos
 
 #include <bgfx_shader.sh>
 #include <newb/main.sh>
@@ -115,10 +115,14 @@ void main() {
   relativeDist += RenderChunkFogAlpha.x;
 
   vec4 fogColor;
+  if (env.end) {
+  fogColor.rgb = nlRenderEndFog(skycol, viewDir);
+  } else {
   fogColor.rgb = nlRenderSky(skycol, env, viewDir, t, true);
+  }
   fogColor.a = nlRenderFogFade(relativeDist, FogColor.rgb, FogAndDistanceControl.xy);
   #if defined(NL_GODRAY) && defined(NL_FOG)
-    fogColor.a = mix(fogColor.a, 1.0, min(NL_GODRAY*nlRenderGodRayIntensity(cPos, worldPos, t, uv1, relativeDist, FogColor.rgb), 1.0));
+    fogColor.a=mix(fogColor.a,1.0,min(NL_GODRAY*nlRenderGodRayIntensity(cPos,worldPos,t,uv1,relativeDist,FogColor.rgb),1.0));
   #endif
 
   if (env.nether) {
@@ -167,16 +171,20 @@ void main() {
     float shimmer = 1.0;
   #endif
 
-  #ifdef NL_LAVA_NOISE
-    bool isc = (a_color0.r+a_color0.g+a_color0.b) > 2.999;
-    bool isb = bPos.y < 0.891 && bPos.y > 0.889;
-    if (isc && isb && (uv1.x > 0.81 && uv1.x < 0.876) && uv0.y > 0.5) {
-      vec4 lava = nlLavaNoise(gPos, t);
-      #ifdef NL_LAVA_NOISE_BUMP
+ #ifdef NL_LAVA_NOISE
+   vec4 lava = vec4(1.0);
+   bool isc = (a_color0.r + a_color0.g + a_color0.b) > 2.999;
+   bool isb = bPos.y < 0.891 && bPos.y > 0.889;
+   if (isc && isb && (uv1.x > 0.81 && uv1.x < 0.876) && a_texcoord0.y > 0.45) {
+     lava = nlLavaNoise(tiledCpos, t);
+     #ifdef NL_LAVA_WAVE
+        pos.y += cos(length(abs(a_position.xyz - 8.0) * 10.0) + ViewPositionAndTime.w * 4.0) * 0.03;
+    #endif
+     #ifdef NL_LAVA_NOISE_BUMP
         worldPos.y += NL_LAVA_NOISE_BUMP*lava.a;
-      #endif
-      color.rgb *= lava.rgb;
-    }
+    #endif
+  }
+   color.rgb= lava.rgb;
   #endif
 
   v_extra = vec4(shade, worldPos.y, water, shimmer);
@@ -186,6 +194,9 @@ void main() {
   v_color0 = color;
   v_color1 = a_color0;
   v_fog = fogColor;
+  v_position = gPos;
+  v_cpos = a_position.xyz;
+  v_wpos = worldPos;
 
   #else
 

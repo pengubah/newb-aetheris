@@ -1,4 +1,4 @@
-$input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra
+$input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_position, v_extra, v_wpos, v_cpos
 
 #include <bgfx_shader.sh>
 #include <newb/main.sh>
@@ -6,6 +6,13 @@ $input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_extra
 SAMPLER2D_AUTOREG(s_MatTexture);
 SAMPLER2D_AUTOREG(s_SeasonsTexture);
 SAMPLER2D_AUTOREG(s_LightMapTexture);
+SAMPLER2D_AUTOREG(s_caustic);
+
+uniform vec4 TimeOfDay;
+uniform vec4 FogColor;
+uniform vec4 FogAndDistanceControl;
+uniform vec4 ViewPositionAndTime;
+uniform vec4 CameraPosition;
 
 void main() {
   #if defined(DEPTH_ONLY_OPAQUE) || defined(DEPTH_ONLY) || defined(INSTANCING)
@@ -16,11 +23,38 @@ void main() {
   vec4 diffuse = texture2D(s_MatTexture, v_texcoord0);
   vec4 color = v_color0;
 
-  #ifdef ALPHA_TEST
+    #ifdef ALPHA_TEST
     if (diffuse.a < 0.6) {
       discard;
     }
   #endif
+
+nl_environment env = nlDetectEnvironment(TimeOfDay.x,FogColor.rgb,FogAndDistanceControl.xyz);
+  
+  vec3 N;
+     N = normalize(cross(dFdx(v_position), dFdy(v_position)));
+
+bool blockUnderWater = !env.end &&
+  v_lightmapUV.y < 0.9 &&
+  abs((2.0 * v_position.y - 15.0) / 16.0 - v_lightmapUV.y) < 0.00002;
+
+if(env.underwater || blockUnderWater){
+    vec2 uv = v_position.xz * 0.15; 
+    uv += vec2(ViewPositionAndTime.w * 0.02, ViewPositionAndTime.w * 0.02); 
+    vec3 caustic = texture2D(s_caustic, uv).rgb;
+
+    float ndotl = max(N.y, 0.0); 
+     caustic *= ndotl * 0.5;
+
+    vec3 watercol = vec3(0.0, 0.3, 0.5);
+    vec3 finalColor = watercol + caustic;
+
+    diffuse.rgb *= finalColor;
+    diffuse.rgb *= 2.7;
+}
+
+  float sideshadow = smoothstep(0.64, 0.62, v_color1.g) * max(v_lightmapUV.x, v_lightmapUV.y);
+  diffuse.rgb *= 1.0-0.25*sideshadow;
 
   #if defined(SEASONS) && (defined(OPAQUE) || defined(ALPHA_TEST))
     diffuse.rgb *= mix(vec3(1.0,1.0,1.0), texture2D(s_SeasonsTexture, v_color1.xy).rgb * 2.0, v_color1.z);
@@ -41,6 +75,41 @@ void main() {
 
   diffuse.rgb *= color.rgb;
   diffuse.rgb += glow;
+
+  //Water Foam Detection
+  float wcPos = v_wpos.y + CameraPosition.y;
+  float dy_w = abs(dFdy(v_wpos.y));
+
+  bool isOneBlockUnderwater = ((wcPos <= 62.89 && wcPos > 62.0) || (wcPos <= -60.11 && wcPos > -61.0)) 
+    && v_extra.b < 0.9 
+    && !(dy_w < 0.0002) 
+    && step(0.85, v_lightmapUV.y) * step(v_lightmapUV.y, 0.927) == 1.0; 
+
+  if (isOneBlockUnderwater) {
+    float d = 0.865;
+    float bpy = fract(v_cpos.y);
+    vec3 viewdir = normalize(-v_wpos);
+
+    // Proyección de rayos 3D
+    vec2 offset = (d - bpy) * viewdir.xz / viewdir.y;
+    vec2 watpos = v_cpos.xz + offset;
+
+    float fade = clamp((d - bpy) / abs(viewdir.y), 0.0, 1.0);
+    fade = 1.0 - fade;
+
+    float t = 0.3 * ViewPositionAndTime.w;
+    vec2 st = watpos;
+    float n = sin(st.x + 3.0*sin(0.5*st.y) + t) * sin(st.y + 3.0*sin(0.5*st.x) - t);
+    n = 0.5 + 0.5 * sin(st.x + 2.0*n + 0.2*t) * sin(st.y - 4.0*n + 0.1*t);
+    fade = pow(fade, 1.0 + 4.0 * n);
+
+    // Textura procedural de espuma
+    float foam = fract(238.084 * sin(dot(floor(16.0 * watpos), vec2(1.32, 141.3))));
+    foam *= fade;
+    foam = mix(foam, 1.0, fade * fade * fade);
+
+    diffuse.rgb = mix(diffuse.rgb, vec3(1.0, 1.0, 1.3)*3.0, foam);
+  }
 
   if (v_extra.b > 0.9) {
     diffuse.rgb += v_refl.rgb*v_refl.a;
