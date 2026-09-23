@@ -41,7 +41,7 @@ void main() {
       vec2 p = (vDir.xz)/(0.015 + 0.035*abs(vDir.y));
       p += 0.035*CameraPosition.xz;
 
-      vec4 clouds = renderClouds(p, v_color2.w, v_color1.w, v_color2.rgb, v_color1.rgb, NL_CLOUD3_SCALE, NL_CLOUD3_SPEED, NL_CLOUD3_SHADOW);
+      vec4 clouds = renderClouds(p, v_color2.w, v_color1.w, v_color2.rgb, v_color1.rgb, NL_CLOUD3_SCALE, NL_CLOUD3_SPEED, NL_CLOUD3_SHADOW, v_dayFactor);
       color = clouds;
 
       #ifdef NL_AURORA
