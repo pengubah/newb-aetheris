@@ -14,6 +14,8 @@ void main() {
   #ifndef INSTANCING
     vec4 diffuse = texture2D(s_SkyTexture, v_texcoord0);
 
+    vec3 viewDir = normalize(v_posTime.xyz);
+
     vec3 color = renderEndSky(getEndHorizonCol(), getEndZenithCol(), normalize(v_posTime.xyz), v_posTime.w);
 
     color += renderEndNebula(viewDir, v_posTime.w);
