@@ -63,7 +63,7 @@
 /* Fog */
 #define NL_FOG 1.0                // [toggle] 0.1 subtle ~ 1.0 blend with sky completely
 #define NL_MIST_DENSITY 0.65       // 0.0 no mist ~ 1.0 misty
-#define NL_RAIN_MIST_OPACITY 0.5 // [toggle] 0.04 very subtle ~ 0.5 thick rain mist blow
+#define NL_RAIN_MIST_OPACITY 0.35  // [toggle] 0.04 very subtle ~ 0.5 thick rain mist blow
 #define NL_CLOUDY_FOG 0.2         // [toggle] 0.0 subtle - 0.8 dense fog clouds
 
 /* Sky */
@@ -171,7 +171,7 @@
 #define NL_CLOUD3_SHADOW 0.9             // 0.1 subtle ~ 1.0 dark
 #define NL_CLOUD3_SHADOW_OFFSET 0.3      // 0.05 minimal ~ 1.0 large
 #define NL_CLOUD3_DAY_HORIZON_INTENSITY 1.0
-#define NL_CLOUD3_NIGHT_HORIZON_INTENSITY 0.2
+#define NL_CLOUD3_NIGHT_HORIZON_INTENSITY 0.6
 
 /* Aurora settings */
 //#define NL_AURORA 1.2           // [toggle] 0.4 dim ~ 4.0 very bright
