@@ -14,6 +14,53 @@ uniform vec4 FogAndDistanceControl;
 uniform vec4 ViewPositionAndTime;
 uniform vec4 CameraPosition;
 
+#define PORTAL_PI 3.14159265359
+
+float portalRand(vec2 co){
+    return fract(sin(dot(co,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+vec4 portalEffect(vec2 q){
+    vec2 size = vec2(26.0);
+
+    vec2 uv = floor(q*size);
+    uv = mod(uv,size);
+
+    float n = 0.0;
+
+    for(int dir=0;dir<2;dir++){
+        vec2 spiral = (uv-float(dir)*(size/2.0))/size*2.0;
+
+        if(spiral.x < -1.0) spiral.x += 2.0;
+        else if(spiral.x >= 1.0) spiral.x -= 2.0;
+
+        if(spiral.y < -1.0) spiral.y += 2.0;
+        else if(spiral.y >= 1.0) spiral.y -= 2.0;
+
+        float mag = spiral.x*spiral.x+spiral.y*spiral.y;
+
+        float out_spiral = atan(spiral.y,spiral.x);
+
+        out_spiral += ((ViewPositionAndTime.w*PORTAL_PI)-(mag*10.0)+float(dir*2))
+                    * float(dir*2-1);
+
+        out_spiral = sin(out_spiral)*0.5+0.5;
+        out_spiral /= mag+1.0;
+
+        n += out_spiral*0.5;
+    }
+
+    n += portalRand(uv+ViewPositionAndTime.w)*0.1;
+
+    vec3 col;
+
+    col.r = (n*n*245.0+55.0)/255.0;
+    col.g = (pow(n,4.0)*105.0+5.0)/255.0;
+    col.b = (n*165.0+70.0)/255.0;
+
+    return vec4(col,col.b);
+}
+
 void main() {
   #if defined(DEPTH_ONLY_OPAQUE) || defined(DEPTH_ONLY) || defined(INSTANCING)
     gl_FragColor = vec4(1.0,1.0,1.0,1.0);
