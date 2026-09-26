@@ -57,12 +57,12 @@ vec3 GetAurora(vec3 viewDir, vec4 ViewPositionAndTime, float dither) {
         noise *= mix(anim1, anim2, 1.0);
 
         aurora += noise * currentM *
-            mix(vec3(0.6, 0.38, 1.45),
-                vec3(0.0, 3.0, 2.55),
+            mix(vec3(0.6, 0.7, 1.45),
+                vec3(0.0, 4.8, 2.55),
                 pow2(pow2(currentM)));
     }
 
-    aurora *= 0.22;
+    aurora *= 0.32;
     return aurora * visibility / float(sampleCount);
 }
 
