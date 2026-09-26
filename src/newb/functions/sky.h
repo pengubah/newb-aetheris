@@ -119,7 +119,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   vh2 = mix(vh2, 1.0, mg8);
   float vh4 = vh2*vh2;
 
-  float dayMask = smoothstep(0.0,0.20,env.dayFactor);
+  float dayMask = smoothstep(0.0,0.20,env.dayFactor)*(1.0-env.rainFactor);;
   float gradient1 = vh4*vh4;
   float gradient2 = 2.0*gradient1 + 0.0*vh2;
   gradient1 *= gradient1;
@@ -140,7 +140,7 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   float sunGlow = pow(sunDot, 4.2);
   float sunBloom = pow(sunDot, 8.0);
   float dawnGlow = dawnFactor;
-  dawnGlow *= 1.0 - 0.75*env.rainFactor;
+  dawnGlow *= 1.0 - 0.9*env.rainFactor;
   vec3 dawnGlowCol = NL_DAWN_HORIZON_COL;
   sky += dawnGlowCol * (0.82*sunGlow + 1.35*sunBloom) * dawnGlow;
   
