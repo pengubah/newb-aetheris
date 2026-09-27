@@ -39,7 +39,7 @@ vec4 portalEffect(vec2 q){
 
         float mag = spiral.x*spiral.x+spiral.y*spiral.y;
 
-        float out_spiral = atan(spiral.y,spiral.x);
+        float out_spiral = atan2(spiral.y,spiral.x);
 
         out_spiral += ((ViewPositionAndTime.w*PORTAL_PI)-(mag*10.0)+float(dir*2))
                     * float(dir*2-1);
