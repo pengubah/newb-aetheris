@@ -21,7 +21,7 @@ float portalRand(vec2 co){
 }
 
 vec4 portalEffect(vec2 q){
-    vec2 size = vec2(26.0);
+    vec2 size = vec2(26.0, 26.0);
 
     vec2 uv = floor(q*size);
     uv = mod(uv,size);
