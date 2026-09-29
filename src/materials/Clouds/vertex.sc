@@ -97,7 +97,7 @@ void main() {
       #else // NL_CLOUD_TYPE 2
         v_dayFactor = env.dayFactor;
         v_color1 = vec4(skycol.zenith, rain);
-        v_color2 = vec4(skycol.horizonEdge, ViewPositionAndTime.w);
+        v_color2 = vec4(skycol.horizon, ViewPositionAndTime.w);
         color = vec4(worldPos, fade);
       #endif 
     #endif
