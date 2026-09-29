@@ -45,6 +45,19 @@
 //#define NL_BLINKING_TORCH            // [toggle] flickering light
 //#define NL_CLOUD_SHADOW            // [toggle] cloud shadow (simple clouds only)
 
+/* Fake Player Shadow */
+#define NL_PLAYER_SHADOW
+#define NL_PLAYER_SHADOW_INTENSITY 0.82
+#define NL_PLAYER_SHADOW_FOCUS 0.04
+#define NL_PLAYER_SHADOW_COLOR vec3(0.30, 0.32, 0.35)
+
+#define NL_PLAYER_SHADOW_ANIMATION
+#define NL_PLAYER_SHADOW_ANIMATION_SPEED 6.0
+#define NL_PLAYER_SHADOW_LEG_SWING 0.40
+#define NL_PLAYER_SHADOW_HAND_SWING 0.10
+#define NL_PLAYER_SHADOW_MOTION_START 0.003
+#define NL_PLAYER_SHADOW_MOTION_END 0.045
+
 /* Ambient light for nether/end */
 #define NL_NETHER_AMBIENT vec3(3.0,2.16,1.89)
 #define NL_END_AMBIENT    vec3(1.00,0.7,0.95)
