@@ -12,6 +12,7 @@
 #include "functions/clouds.h"
 #include "functions/lighting.h"
 #include "functions/water.h"
+#include "functions/player_shadow.h"
 #include "functions/rain.h"
 #include "functions/wave.h"
 #include "functions/glow.h"
