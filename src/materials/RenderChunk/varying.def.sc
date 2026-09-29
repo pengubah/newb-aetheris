@@ -18,3 +18,4 @@ vec3 v_position   : TEXCOORD2;
 vec4 v_extra      : TEXCOORD3;
 vec3 v_cpos       : TEXCOORD4;
 vec3 v_wpos       : TEXCOORD5;
+vec2 v_shadowData : TEXCOORD6;
