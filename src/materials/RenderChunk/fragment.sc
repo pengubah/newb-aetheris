@@ -76,6 +76,23 @@ if(env.underwater || blockUnderWater){
   diffuse.rgb *= color.rgb;
   diffuse.rgb += glow;
 
+#ifdef NL_PLAYER_SHADOW
+  if (v_extra.b < 0.9) {
+    float pShadow = nlPlayerShadow(v_position, v_shadowData.x, v_shadowData.y);
+    float pDist = length(v_position.xz);
+    float pFade = clamp(1.0 - pDist/12.0, 0.0, 1.0);
+    pShadow *= pFade;
+
+    diffuse.rgb *= (1.0 - pShadow*NL_PLAYER_SHADOW_INTENSITY);
+
+    diffuse.rgb = mix(
+      diffuse.rgb,
+      diffuse.rgb*NL_PLAYER_SHADOW_COLOR*2.0 + NL_PLAYER_SHADOW_COLOR*0.08,
+      pShadow*NL_PLAYER_SHADOW_INTENSITY*0.45
+    );
+  }
+#endif
+
   //Water Foam Detection
   float wcPos = v_wpos.y + CameraPosition.y;
   float dy_w = abs(dFdy(v_wpos.y));
