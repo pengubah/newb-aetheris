@@ -198,6 +198,8 @@ void main() {
   v_position = gPos;
   v_cpos = a_position.xyz;
   v_wpos = worldPos;
+  vec3 cameraDelta = CameraPosition.xyz - LastCameraPosition.xyz;
+  v_shadowData = vec2(ViewPositionAndTime.w, length(cameraDelta.xz));
 
   #else
 
