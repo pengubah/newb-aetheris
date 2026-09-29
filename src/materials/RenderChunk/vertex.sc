@@ -195,7 +195,7 @@ void main() {
   v_color0 = color;
   v_color1 = a_color0;
   v_fog = fogColor;
-  v_position = gPos;
+  v_position = worldPos;
   v_cpos = a_position.xyz;
   v_wpos = worldPos;
   vec3 cameraDelta = CameraPosition.xyz - LastCameraPosition.xyz;
