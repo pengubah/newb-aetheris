@@ -1,4 +1,4 @@
-$input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_position, v_extra, v_wpos, v_cpos
+$input v_color0, v_color1, v_fog, v_refl, v_texcoord0, v_lightmapUV, v_position, v_extra, v_wpos, v_cpos, v_shadowData
 
 #include <bgfx_shader.sh>
 #include <newb/main.sh>
