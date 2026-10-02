@@ -95,14 +95,14 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   vh2 = mix(vh2, 1.0, mg8);
   float vh4 = vh2*vh2;
 
-  float dayMask = 0.5 + 0.5*smoothstep(0.0,0.20,env.dayFactor)*(1.0 - 0.5*env.rainFactor);
+  float rainMask = 1.0 - 0.5*env.rainFactor;
   float gradient1 = vh4*vh4;
   float gradient2 = 2.0*gradient1 + 0.0*vh2;
   gradient1 *= gradient1;
   gradient1 = mix(gradient1*gradient1,1.0,mg8);
   gradient2 = mix(gradient2,1.0,mg8);
-  gradient1 *= dayMask;
-  gradient2 *= dayMask;
+  gradient1 *= rainMask;
+  gradient2 *= rainMask;
 
   float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
   float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
