@@ -20,13 +20,7 @@ vec4 nlWater(
   float fractCposY, float camDist, highp float t
 ) {
 
-  float waveTime = NL_WATER_WAVE_SPEED * t;
-  float waveA = movingNoise2D(gPos.xz * 0.24 + vec2(waveTime * 0.42, waveTime * 0.16), 0.0, 0.55);
-  float waveB = movingNoise2D(gPos.xz * 0.46 + vec2(-waveTime * 0.28, waveTime * 0.34), 0.0, 0.60);
-  float waveC = movingNoise2D(gPos.xz * 0.92 + vec2(waveTime * 0.65, -waveTime * 0.48), 0.0, 0.68);
-  float waveD = movingNoise2D(gPos.xz * 1.85 + vec2(-waveTime * 0.90, waveTime * 0.72), 0.0, 0.72);
-  float wave = waveA * 0.46 + waveB * 0.27 + waveC * 0.19 + waveD * 0.08;
-  vec2 bump = vec2(wave, waveA * 0.42 + waveB * 0.34 + waveC * 0.18 + waveD * 0.06);
+  vec2 bump = vec2_splat(movingNoise2D(gPos.xz + gPos.yy, NL_WATER_WAVE_SPEED*t, 0.6));
   
   vec3 nrm;
   if (fractCposY > 0.0) { // top plane
