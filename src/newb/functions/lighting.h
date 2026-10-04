@@ -8,14 +8,12 @@
 #include "clouds.h"
 
 vec3 sunLightTint(float dayFactor, float rain) {
-  float nightFactor = 1.0-smoothstep(-0.10,0.10,dayFactor);
-  float dawnFactor = 1.0 - smoothstep(0.0, 1.0, abs(dayFactor));
-  dawnFactor = dawnFactor*dawnFactor;
-  dawnFactor *= dawnFactor;
+  float nightFactor = step(dayFactor, 0.0);
+  float dawnFactor = 1.0-dayFactor*dayFactor;
+  dawnFactor *= dawnFactor*dawnFactor;
   dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
   vec3 tint = mix(NL_NOON_SUNLIGHT_COL, NL_NIGHT_MOONLIGHT_COL, nightFactor);
   tint = mix(tint, NL_DAWN_SUNLIGHT_COL, dawnFactor);
-  tint *= mix(1.0, NL_MOONLIGHT_INTENSITY, nightFactor);
   tint = mix(tint, vec3_splat(dot(tint, vec3_splat(0.33))), rain);
   return tint;
 }
@@ -57,16 +55,15 @@ vec3 nlLighting(
 
   } else {
     // overworld lighting
-    float nightFactor = 1.0-smoothstep(-0.10,0.10,env.dayFactor);
+    float nightFactor = step(dayFactor, 0.0);
     float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
-    dawnFactor *= dawnFactor;
+    dawnFactor *= dawnFactor*dawnFactor;
     dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
     float nightIntensity = 1.0-(0.5+0.5*env.dayFactor);
     nightIntensity *= nightIntensity;
 
-    float sunTimeDirection = mix(1.0,-1.0,smoothstep(0.48,0.52,TIME_OF_DAY));
-    float sunLightAttenuation = clamp(0.5*((sunTimeDirection*(wPos.x*cos(NL_SUN_PATH_YAW)+wPos.y*sin(NL_SUN_PATH_YAW))/renderdistance)+1.0),0.0,1.0);
-    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnFactor*dawnFactor*0.82);
+    float sunLightAttenuation = clamp(0.5*(((2.0*step(TIME_OF_DAY, 0.5)-1.0)*(wPos.x*cos(NL_SUN_PATH_YAW)+wPos.y*sin(NL_SUN_PATH_YAW))/renderdistance) + 1.0), 0.0, 1.0);
+    sunLightAttenuation = mix(1.0, sunLightAttenuation*sunLightAttenuation, dawnFactor);
     sunLightAttenuation *= 1.0-0.4*env.rainFactor;
 
     // shadow cast by sun light
@@ -94,8 +91,7 @@ vec3 nlLighting(
     #endif
 
     // direct light from top
-    float dawnBoost = mix(1.0, 1.65, dawnFactor);
-    light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation*dawnBoost)*sunLightTint(env.dayFactor, env.rainFactor);
+    light = (NL_SUNLIGHT_INTENSITY*shadow*sunLightAttenuation)*sunLightTint(env.dayFactor, env.rainFactor);
 
     // sky ambient
     lum = luminance(light);
@@ -155,9 +151,9 @@ vec3 nlEntityLighting(nl_skycolor skycol, nl_environment env, vec3 pos, vec4 nor
     tl = max(tl-0.08, 0.0);
     tl *= 4.0*tl;
 
-    float nightFactor = 1.0-smoothstep(-0.10,0.10,env.dayFactor);
+    float nightFactor = step(dayFactor, 0.0);
     float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
-    dawnFactor *= dawnFactor;
+    dawnFactor *= dawnFactor*dawnFactor;
     dawnFactor *= mix(1.0, dawnFactor*dawnFactor, nightFactor);
     float nightIntensity = 1.0-(0.5+0.5*env.dayFactor);
     nightIntensity *= nightIntensity;
