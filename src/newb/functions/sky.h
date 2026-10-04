@@ -107,11 +107,11 @@ vec3 renderOverworldSky(nl_skycolor skyCol, nl_environment env, vec3 viewDir, bo
   float dawnFactor = 1.0-env.dayFactor*env.dayFactor;
   float df = mix(1.0, g2.x, dawnFactor*dawnFactor);
 
-  float dawnSpread = 1.2;
-  float dawnEdge = 1.5;
+  float dawnSpread = NL_DAWN_SPREAD;
+  float dawnEdge = NL_POW_DAWN_EDGE;
 
-  float dawnGradient1 = mix(gradient1, vh2, dawnSpread*dawnFactor*dawnSpread);
-  float dawnGradient2 = mix(gradient2, vh2, dawnEdge*dawnFactor*dawnSpread);
+  float dawnGradient1 = mix(gradient1,vh2,clamp(dawnSpread*dawnFactor, 0.0, 1.0));
+  float dawnGradient2 = mix(gradient2,vh,clamp(dawnEdge*dawnFactor, 0.0, 1.0));
 
   vec3 sky = mix(skyCol.horizon, skyCol.horizonEdge, dawnGradient1*df*df);
   sky = mix(skyCol.zenith, sky, dawnGradient2*df);
