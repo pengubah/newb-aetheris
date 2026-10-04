@@ -40,7 +40,7 @@ nl_skycolor nlEndSkyColors(nl_environment env) {
 nl_skycolor nlOverworldSkyColors(nl_environment env) {
   nl_skycolor s;
   float f = 1.0 + 2.0*(1.0-max(-env.dayFactor, 0.0));
-  float nightFactor = 1.0-smoothstep(-0.10,0.10,env.dayFactor);
+  float nightFactor = step(env.dayFactor, 0.0);
   s.zenith = mix(NL_DAY_ZENITH_COL, NL_NIGHT_ZENITH_COL*f, nightFactor);
   s.horizon = mix(NL_DAY_HORIZON_COL, NL_NIGHT_HORIZON_COL*f, nightFactor);
   s.horizonEdge = mix(NL_DAY_EDGE_COL, NL_NIGHT_EDGE_COL*f, nightFactor);
@@ -258,18 +258,18 @@ vec3 nlRenderSky(nl_skycolor skycol, nl_environment env, vec3 viewDir, float t, 
   } else {
     sky = renderOverworldSky(skycol, env, viewDir, isSkyPlane);
     #ifdef NL_UNDERWATER_STREAKS
-      // if (env.underwater) {
-      //   float a = atan2(viewDir.x, viewDir.z);
-      //   float grad = 0.5 + 0.5*viewDir.y;
-      //   grad *= grad;
-      //   float spread = (0.5 + 0.5*sin(3.0*a + 0.2*t + 2.0*sin(5.0*a - 0.4*t)));
-      //   spread *= (0.5 + 0.5*sin(3.0*a - sin(0.5*t)))*grad;
-      //   spread += (1.0-spread)*grad;
-      //   float streaks = spread*spread;
-      //   streaks *= streaks;
-      //   streaks = (spread + 3.0*grad*grad + 4.0*streaks*streaks);
-      //   sky += 2.0*streaks*skycol.horizon;
-      // }
+       if (env.underwater) {
+         float a = atan2(viewDir.x, viewDir.z);
+         float grad = 0.5 + 0.5*viewDir.y;
+         grad *= grad;
+         float spread = (0.5 + 0.5*sin(3.0*a + 0.2*t + 2.0*sin(5.0*a - 0.4*t)));
+         spread *= (0.5 + 0.5*sin(3.0*a - sin(0.5*t)))*grad;
+         spread += (1.0-spread)*grad;
+         float streaks = spread*spread;
+         streaks *= streaks;
+         streaks = (spread + 3.0*grad*grad + 4.0*streaks*streaks);
+         sky += 2.0*streaks*skycol.horizon;
+       }
     #endif
   }
 
